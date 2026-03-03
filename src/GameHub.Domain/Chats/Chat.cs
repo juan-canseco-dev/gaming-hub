@@ -6,7 +6,7 @@ public class Chat : Entity<Guid>
 {
     private readonly List<ChatMember> _members = new();
     private readonly List<ChatMessage> _messages = new();
-    public string ChannelId { get; private init; } = default!;
+    public int ChannelId { get; private init; } = default!;
     public DateTime CreatedAt { get; private init; } = default!;
     public DateTime UpdatedAt { get; private set; }
     public IReadOnlyCollection<ChatMember> Members => _members.AsReadOnly();
@@ -16,7 +16,7 @@ public class Chat : Entity<Guid>
 
     private Chat(int channelId, DateTime createdAt)
     {
-        ChannelId = channelId.ToString();
+        ChannelId = channelId;
         CreatedAt = createdAt;
     }
 

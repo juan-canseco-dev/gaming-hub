@@ -4,7 +4,6 @@ namespace GameHub.Domain.Chats;
 
 public sealed class ChatMessage : Entity<Guid>
 {
-    public const int MaxLength = 2000;
     public Guid ChatId { get; private init; } = default!;
     public string SenderUserId { get; private init; } = default!;
     public string Content { get; private set; } = default!;
