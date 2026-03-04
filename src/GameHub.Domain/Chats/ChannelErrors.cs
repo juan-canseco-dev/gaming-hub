@@ -1,7 +1,6 @@
-﻿
-using GameHub.Domain.Abstractions;
+﻿using GameHub.Domain.Abstractions;
 
-namespace GameHub.Domain.Chats.Errors;
+namespace GameHub.Domain.Chats;
 
 public static class ChannelErrors
 {

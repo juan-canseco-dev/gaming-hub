@@ -1,6 +1,5 @@
 ﻿
 using GameHub.Domain.Chats;
-using GameHub.Domain.Chats.Errors;
 
 namespace GameHub.Domain.UnitTests;
 

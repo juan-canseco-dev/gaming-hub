@@ -1,5 +1,4 @@
 ﻿using GameHub.Domain.Abstractions;
-using GameHub.Domain.Chats.Errors;
 
 namespace GameHub.Domain.Chats;
 
