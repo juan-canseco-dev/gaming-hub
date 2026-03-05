@@ -5,6 +5,8 @@ namespace GameHub.Domain.Chats;
 
 public static class ChatErrors
 {
+
+
     public static Error UserIdRequired() =>
         new("Chat.UserIdRequired", "UserId must be provided.");
 
@@ -27,8 +29,4 @@ public static class ChatErrors
     public static Error ChatGroupNotFound(Guid chatGroupId) =>
         new("Chat.ChatGroupNotFound",
             $"Chat group '{chatGroupId}' was not found.");
-
-    public static Error DuplicateMembership() =>
-        new("Chat.DuplicateMembership",
-            "Membership already exists.");
 }
