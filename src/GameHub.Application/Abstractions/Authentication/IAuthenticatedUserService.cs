@@ -2,5 +2,5 @@
 
 public interface IAuthenticatedUserService
 {
-    public string? UserId { get; }
+    public Guid UserId { get; }
 }

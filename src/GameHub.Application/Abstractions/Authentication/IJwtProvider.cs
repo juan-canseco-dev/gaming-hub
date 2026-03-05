@@ -2,5 +2,5 @@
 
 public interface IJwtProvider
 {
-    Task<string> GenerateAsync(string userId, CancellationToken cancellationToken = default);
+    Task<string> GenerateAsync(Guid userId, CancellationToken cancellationToken = default);
 }
