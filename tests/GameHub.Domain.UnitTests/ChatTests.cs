@@ -11,6 +11,7 @@ public sealed class ChatTests
         // Arrange
         var channelId = 1; // Channel.GeneralGaming exists
         var createdAt = new DateTime(2026, 03, 03, 10, 30, 00, DateTimeKind.Utc);
+        var expectedCreatedAt = new DateTimeOffset(createdAt);
 
         // Act
         var result = Chat.Create(channelId, createdAt);
@@ -23,13 +24,14 @@ public sealed class ChatTests
         Assert.NotNull(chat);
 
         Assert.Equal(channelId, chat.ChannelId);
-        Assert.Equal(createdAt, chat.CreatedAt);
+        Assert.Equal(expectedCreatedAt, chat.CreatedAt);
 
         Assert.Empty(chat.Members);
         Assert.Empty(chat.Messages);
 
-        // Not set by ctor; default(DateTime) is expected
-        Assert.Equal(default, chat.UpdatedAt);
+        // New perf-related state
+        Assert.Equal(default, chat.LastMessageAt);
+        Assert.Equal(default, chat.LastMesageId);
     }
 
     [Theory]
@@ -72,5 +74,6 @@ public sealed class ChatTests
         Assert.True(result.IsSuccess);
         Assert.False(result.IsFailure);
         Assert.Equal(validChannelId, result.Value.ChannelId);
+        Assert.Equal(new DateTimeOffset(createdAt), result.Value.CreatedAt);
     }
 }

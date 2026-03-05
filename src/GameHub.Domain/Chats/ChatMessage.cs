@@ -5,12 +5,12 @@ namespace GameHub.Domain.Chats;
 public sealed class ChatMessage : Entity<Guid>
 {
     public Guid ChatId { get; private init; } = default!;
-    public string SenderUserId { get; private init; } = default!;
+    public Guid SenderUserId { get; private init; } = default!;
     public string Content { get; private set; } = default!;
-    public DateTime CreatedAt { get; private set; }
+    public DateTimeOffset CreatedAt { get; private set; }
     private ChatMessage() { }
     
-    public ChatMessage(Guid chatId, string senderUserId, string content, DateTime createdAt)
+    public ChatMessage(Guid chatId, Guid senderUserId, string content, DateTimeOffset createdAt)
     {
         ChatId = chatId;
         SenderUserId = senderUserId;
