@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\GameHub.Domain\GameHub.Domain.csproj" />
+    <ProjectReference Include="..\GameHub.EventBus.Contracts\GameHub.EventBus.Contracts.csproj" />
   </ItemGroup>
 
 </Project>

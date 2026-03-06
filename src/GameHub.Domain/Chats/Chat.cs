@@ -1,4 +1,5 @@
 ﻿using GameHub.Domain.Abstractions;
+using GameHub.Domain.Users;
 
 namespace GameHub.Domain.Chats;
 
@@ -43,7 +44,7 @@ public class Chat : Entity<Guid>
             return Result.Failure<ChatMessage>(MessageErrors.MessageTooLong(MaxMessageLength));
         }
 
-        var message = new ChatMessage(Id, senderUserId, content, createdAt);
+        var message = new ChatMessage(Id, senderUserId, content, createdAt, ChatMessageType.User);
         
         _messages.Add(message);
         LastMessageAt = createdAt;
@@ -51,6 +52,33 @@ public class Chat : Entity<Guid>
         LastMessagePreview = service.CreatePreview(content, MaxPreviewLength);
 
         return Result.Success(message);
+    }
+
+    public ChatMessage Join(
+        Guid userId, 
+        string username, 
+        DateTimeOffset joinedAt
+    )
+    {
+        var member = new ChatMember(Id, userId, joinedAt);
+        _members.Add(member);
+
+        var content = $"User {username} joined the chat.";
+
+        var message = new ChatMessage(
+            Id, 
+            SystemUsers.AdminUserId, 
+            content,
+            joinedAt, 
+            ChatMessageType.System
+        );
+        
+        _messages.Add(message);
+        LastMessageAt = joinedAt;
+        LastMesageId = message.Id;
+        LastMessagePreview = content;
+
+        return message;
     }
 
     public static Result<Chat> Create(int channelId, DateTime createdAt)

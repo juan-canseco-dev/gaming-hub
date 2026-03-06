@@ -10,7 +10,7 @@ public static class ChatErrors
     public static Error UserIdRequired() =>
         new("Chat.UserIdRequired", "UserId must be provided.");
 
-    public static Error AlreadyParticipant(string userId) =>
+    public static Error AlreadyParticipant(Guid userId) =>
         new("Chat.AlreadyParticipant",
             $"User '{userId}' is already a participant of this chat.");
 

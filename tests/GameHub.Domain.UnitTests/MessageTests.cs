@@ -25,6 +25,7 @@ public class MessageTests
 
         var message = result.Value;
         Assert.NotNull(message);
+        Assert.Equal(ChatMessageType.User, message.Type);
 
         Assert.Single(chat.Messages);
         Assert.Equal(createdAt, chat.LastMessageAt);
