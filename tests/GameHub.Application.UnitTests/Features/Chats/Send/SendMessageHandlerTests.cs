@@ -8,6 +8,7 @@ using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using GameHub.Application.Features.Chats.SendMessage;
+using MockQueryable.Moq;
 
 
 namespace GameHub.Application.UnitTests.Features.Chats.Send;
@@ -132,15 +133,22 @@ public sealed class SendMessageHandlerTests
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(userProfile);
 
+        var chatMembers = new List<ChatMember>
+        {
+            new ChatMember(chat.Id, Guid.NewGuid(), DateTimeOffset.UtcNow)
+        };
+        var chatMembersDbSetMock = chatMembers.BuildMockDbSet();
+
         _contextMock.Setup(x => x.Chats).Returns(chatsDbSetMock.Object);
         _contextMock.Setup(x => x.UserProfiles).Returns(userProfilesDbSetMock.Object);
+        _contextMock.Setup(x => x.ChatMembers).Returns(chatMembersDbSetMock.Object);
 
         // Act
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // Assert
         result.IsFailure.Should().BeTrue();
-        result.Error.Should().Be(ChatErrors.NotParticipant(userId.ToString()));
+        result.Error.Should().Be(ChatErrors.NotParticipant(userId));
 
         _publishEndpointMock.Verify(
             x => x.Publish(It.IsAny<ChatMessageSentEvent>(), It.IsAny<CancellationToken>()),
@@ -184,8 +192,15 @@ public sealed class SendMessageHandlerTests
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(userProfile);
 
+        var chatMembers = new List<ChatMember>
+        {
+            new ChatMember(chat.Id, userId, now.AddMinutes(-10))
+        };
+        var chatMembersDbSetMock = chatMembers.BuildMockDbSet();
+
         _contextMock.Setup(x => x.Chats).Returns(chatsDbSetMock.Object);
         _contextMock.Setup(x => x.UserProfiles).Returns(userProfilesDbSetMock.Object);
+        _contextMock.Setup(x => x.ChatMembers).Returns(chatMembersDbSetMock.Object);
 
         _dateTimeProviderMock
             .Setup(x => x.CurrentTimeUtc)
@@ -241,8 +256,14 @@ public sealed class SendMessageHandlerTests
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(userProfile);
 
+        var chatMembers = new List<ChatMember>
+        {
+            new ChatMember(chat.Id, userId, now.AddMinutes(-10))
+        };
+        var chatMembersDbSetMock = chatMembers.BuildMockDbSet();
         _contextMock.Setup(x => x.Chats).Returns(chatsDbSetMock.Object);
         _contextMock.Setup(x => x.UserProfiles).Returns(userProfilesDbSetMock.Object);
+        _contextMock.Setup(x => x.ChatMembers).Returns(chatMembersDbSetMock.Object);
 
         _contextMock
             .Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()))
