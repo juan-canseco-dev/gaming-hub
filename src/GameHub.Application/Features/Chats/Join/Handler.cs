@@ -6,6 +6,7 @@ using GameHub.Domain.Chats;
 using GameHub.Domain.Users;
 using GameHub.EventBus.Contracts;
 using MassTransit;
+using Microsoft.EntityFrameworkCore;
 
 namespace GameHub.Application.Features.Chats.Join;
 
@@ -42,7 +43,12 @@ public static partial class JoinChat
                 return Result.Failure(UserProfileErrors.NotFound(request.UserId));
             }
             
-            if (chat.Members.Any(m => m.UserId == request.UserId))
+            var isMember = await _context
+                .ChatMembers
+                .AnyAsync(cm => cm.ChatId == request.ChatId && cm.UserId == request.UserId, cancellationToken);
+
+
+            if (isMember)
             {
                 return Result.Failure(ChatErrors.AlreadyParticipant(request.UserId));
             }
