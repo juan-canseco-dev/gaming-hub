@@ -1,4 +1,4 @@
-﻿namespace GameHub.Domain.Abstractions;
+﻿namespace GameHub.Domain.Shared;
 
 public class PaginatedList<TEntity>
 {

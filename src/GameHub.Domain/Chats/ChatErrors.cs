@@ -14,10 +14,6 @@ public static class ChatErrors
         new("Chat.NotParticipant",
             $"User '{userId}' is not a participant of this chat.");
 
-    public static Error InvalidChannelId(int channelId) =>
-        new("Chat.InvalidChannelId",
-            $"Channel with id '{channelId}' does not exist.");
-
     public static Error ChatGroupNotFound(Guid chatGroupId) =>
         new("Chat.ChatGroupNotFound",
             $"Chat group '{chatGroupId}' was not found.");
