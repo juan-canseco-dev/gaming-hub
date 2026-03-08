@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using AutoMapper.QueryableExtensions;
-using GameHub.Domain.Abstractions;
+using GameHub.Domain.Shared;
 using Microsoft.EntityFrameworkCore;
 
 namespace GameHub.Application.Extensions;
