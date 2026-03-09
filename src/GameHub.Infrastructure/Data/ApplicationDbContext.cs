@@ -16,6 +16,13 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
     public DbSet<ChatMember> ChatMembers => Set<ChatMember>();
     public DbSet<UserProfile> UserProfiles => Set<UserProfile>();
 
+    protected override void OnModelCreating(ModelBuilder builder)
+    {
+        base.OnModelCreating(builder);
+        // Apply configs
+        builder.ApplyConfigurationsFromAssembly(typeof(DependencyInjection).Assembly);
+    }
+
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         => base.SaveChangesAsync(cancellationToken);
 }
