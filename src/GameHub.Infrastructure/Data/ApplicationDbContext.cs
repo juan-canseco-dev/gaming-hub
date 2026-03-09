@@ -2,6 +2,7 @@
 using GameHub.Domain.Chats;
 using GameHub.Domain.Users;
 using GameHub.Infrastructure.Identity.Models;
+using MassTransit;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,6 +20,10 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
+        // Add MassTransit Outbox/Inbox Configs 
+        builder.AddInboxStateEntity();
+        builder.AddOutboxMessageEntity();
+        builder.AddOutboxStateEntity();
         // Apply configs
         builder.ApplyConfigurationsFromAssembly(typeof(DependencyInjection).Assembly);
     }

@@ -5,11 +5,13 @@ using GameHub.Infrastructure.Authentication;
 using GameHub.Infrastructure.Clock;
 using GameHub.Infrastructure.Data;
 using GameHub.Infrastructure.Identity.Models;
+using MassTransit;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using ApplicationDI = GameHub.Application.DependecyInjection;
 
 namespace GameHub.Infrastructure;
 
@@ -45,6 +47,36 @@ public static class DependencyInjection
        .AddRoles<ApplicationRole>()
        .AddEntityFrameworkStores<ApplicationDbContext>()
        .AddDefaultTokenProviders();
+
+        // Register message broker 
+        services.AddMassTransit(x =>
+        {
+            x.AddConsumers(typeof(ApplicationDI).Assembly);
+            x.SetKebabCaseEndpointNameFormatter();
+
+            x.AddEntityFrameworkOutbox<ApplicationDbContext>(o =>
+            {
+                o.UseSqlServer();
+                o.UseBusOutbox();
+            });
+
+            x.AddConfigureEndpointsCallback((context, name, cfg) => {
+                cfg.UseEntityFrameworkOutbox<ApplicationDbContext>(context);
+            });
+
+
+            x.UsingRabbitMq((context, cfg) =>
+            {
+                var hostUri = new Uri(configuration["EventBusSettings:Host"]!);
+                cfg.Host(hostUri, h =>
+                {
+                    h.Username(configuration["EventBusSettings:Username"]!);
+                    h.Password(configuration["EventBusSettings:Password"]!);
+                });
+
+                cfg.ConfigureEndpoints(context);
+            });
+        });
 
         return services;
     }
