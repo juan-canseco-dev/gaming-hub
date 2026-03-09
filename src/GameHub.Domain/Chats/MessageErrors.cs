@@ -12,4 +12,8 @@ public static class MessageErrors
         new("Chat.MessageTooLong",
             $"Message content must not exceed {maxLength} characters.");
 
+    public static Error NotFound(Guid messageId) => new(
+        "Messages.NotFound",
+        $"The specified Message with the Id: {messageId} was not Found."
+    );
 }
