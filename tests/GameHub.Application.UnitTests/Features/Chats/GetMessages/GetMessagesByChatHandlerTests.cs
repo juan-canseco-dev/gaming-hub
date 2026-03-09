@@ -7,7 +7,7 @@ using MockQueryable.Moq;
 using System.Text;
 using GameHub.Application.Features.Chats.GetMessages;
 using System.Text.Json;
-
+using static GameHub.Application.UnitTests.Shared.Helpers.ReflectionTestHelper;
 
 namespace GameHub.Application.UnitTests.Features.Chats.GetMessages;
 
@@ -164,7 +164,7 @@ public sealed class GetMessagesByChatHandlerTests
         items[2].User.Username.Should().Be("user1");
 
         result.Value.After.Should().BeNull();
-        result.Value.Before.Should().BeNull();
+        result.Value.Before.Should().NotBeNull();
     }
 
     [Fact]
@@ -304,19 +304,6 @@ public sealed class GetMessagesByChatHandlerTests
     {
         var json = Encoding.UTF8.GetString(Convert.FromBase64String(encodedCursor));
         return JsonSerializer.Deserialize<TestCursor>(json)!;
-    }
-
-    private static void SetProperty<T>(object target, string propertyName, T value)
-    {
-        var property = target.GetType().GetProperty(
-            propertyName,
-            System.Reflection.BindingFlags.Instance |
-            System.Reflection.BindingFlags.Public |
-            System.Reflection.BindingFlags.NonPublic);
-
-        property.Should().NotBeNull($"Property '{propertyName}' was not found on type '{target.GetType().Name}'.");
-
-        property!.SetValue(target, value);
     }
 
     private sealed record TestCursor(DateTimeOffset CreatedAt, Guid MessageId);

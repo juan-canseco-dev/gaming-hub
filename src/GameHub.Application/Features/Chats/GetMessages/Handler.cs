@@ -65,7 +65,7 @@ public static partial class GetMessagesByChat
             bool hasMore = items.Count > request.Limit;
 
             string? afterCursor = hasMore ? Cursor.Encode(items[^1].CreatedAt, items[^1].Id) : null;
-            string? beforeCursor = hasMore ? Cursor.Encode(items[0].CreatedAt, items[0].Id) : null;
+            string? beforeCursor = items.Count > 0 ? Cursor.Encode(items[0].CreatedAt, items[0].Id) : null;
 
             if (hasMore)
             {
