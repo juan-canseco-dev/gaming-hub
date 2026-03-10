@@ -24,6 +24,7 @@ namespace GameHub.WebAPI
             builder.Services.AddInfrastructure(builder.Configuration);
             builder.Services.AddAuthorization();
             builder.Services.AddCarter();
+            builder.Services.AddJwtAuthentication(builder.Configuration);
 
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();

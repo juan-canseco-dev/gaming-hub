@@ -30,8 +30,4 @@
     <ProjectReference Include="..\GameHub.Application\GameHub.Application.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Authentication\Jwt\" />
-  </ItemGroup>
-
 </Project>

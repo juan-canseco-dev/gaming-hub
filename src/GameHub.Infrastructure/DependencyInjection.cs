@@ -1,12 +1,14 @@
 ﻿using GameHub.Application.Abstractions.Authentication;
 using GameHub.Application.Abstractions.Clock;
 using GameHub.Application.Abstractions.Data;
+using GameHub.Application.Abstractions.Identity;
 using GameHub.Domain.Chats;
 using GameHub.Infrastructure.Authentication;
 using GameHub.Infrastructure.Clock;
 using GameHub.Infrastructure.Data;
 using GameHub.Infrastructure.Data.Seed;
 using GameHub.Infrastructure.Data.Seed.Production;
+using GameHub.Infrastructure.Identity;
 using GameHub.Infrastructure.Identity.Models;
 using MassTransit;
 using Microsoft.AspNetCore.Http;
@@ -51,6 +53,9 @@ public static class DependencyInjection
        .AddRoles<ApplicationRole>()
        .AddEntityFrameworkStores<ApplicationDbContext>()
        .AddDefaultTokenProviders();
+
+        services.AddScoped<IIdentityService, IdentityService>();
+
 
         // Register message broker 
         services.AddMassTransit(x =>
