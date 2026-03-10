@@ -1,6 +1,7 @@
 ﻿using GameHub.Application.Abstractions.Authentication;
 using GameHub.Application.Abstractions.Clock;
 using GameHub.Application.Abstractions.Data;
+using GameHub.Domain.Chats;
 using GameHub.Infrastructure.Authentication;
 using GameHub.Infrastructure.Clock;
 using GameHub.Infrastructure.Data;
@@ -20,6 +21,7 @@ public static class DependencyInjection
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddTransient<IDateTimeProvider, DateTimeProvider>();
+        services.AddTransient<MessagePreviewService>();
         services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
         services.AddSingleton<IAuthenticatedUserService, AuthenticatedUserService>();
 

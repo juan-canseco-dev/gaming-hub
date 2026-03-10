@@ -22,6 +22,7 @@ public class Chat : Entity<Guid>
 
     private Chat(int channelId, DateTimeOffset createdAt)
     {
+        Id = Guid.CreateVersion7();
         ChannelId = channelId;
         CreatedAt = createdAt;
     }

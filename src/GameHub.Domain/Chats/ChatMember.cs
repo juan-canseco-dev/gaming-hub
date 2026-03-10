@@ -1,6 +1,8 @@
-﻿namespace GameHub.Domain.Chats;
+﻿using GameHub.Domain.Abstractions;
 
-public sealed class ChatMember
+namespace GameHub.Domain.Chats;
+
+public sealed class ChatMember : Entity<Guid>
 {
     public Guid ChatId { get; private init; } = default!;
     public Guid UserId { get; private init; } = default!;

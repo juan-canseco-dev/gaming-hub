@@ -37,7 +37,5 @@ public class UserProfilesConfiguration : IEntityTypeConfiguration<UserProfile>
             .IsRequired();
 
         builder.HasIndex(x => x.CreatedAt);
-
-        builder.HasKey(x => new { x.Username, x.Id });
     }
 }

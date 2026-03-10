@@ -63,9 +63,9 @@ public sealed class IdentityRoleClaimConfiguration : IEntityTypeConfiguration<Id
     }
 }
 
-public sealed class IdentityUserRoleConfiguration : IEntityTypeConfiguration<IdentityUserRole<string>>
+public sealed class IdentityUserRoleConfiguration : IEntityTypeConfiguration<IdentityUserRole<Guid>>
 {
-    public void Configure(EntityTypeBuilder<IdentityUserRole<string>> builder)
+    public void Configure(EntityTypeBuilder<IdentityUserRole<Guid>> builder)
     {
         builder.ToTable(name: "UserRoles", schema: "Identity");
     }
@@ -79,17 +79,17 @@ public sealed class IdentityUserClaimConfiguration : IEntityTypeConfiguration<Id
     }
 }
 
-public sealed class IdentityUserLoginConfiguration : IEntityTypeConfiguration<IdentityUserLogin<string>>
+public sealed class IdentityUserLoginConfiguration : IEntityTypeConfiguration<IdentityUserLogin<Guid>>
 {
-    public void Configure(EntityTypeBuilder<IdentityUserLogin<string>> builder)
+    public void Configure(EntityTypeBuilder<IdentityUserLogin<Guid>> builder)
     {
         builder.ToTable(name: "UserLogins", schema: "Identity");
     }
 }
 
-public sealed class IdentityUserTokenConfiguration : IEntityTypeConfiguration<IdentityUserToken<string>>
+public sealed class IdentityUserTokenConfiguration : IEntityTypeConfiguration<IdentityUserToken<Guid>>
 {
-    public void Configure(EntityTypeBuilder<IdentityUserToken<string>> builder)
+    public void Configure(EntityTypeBuilder<IdentityUserToken<Guid>> builder)
     {
         builder.ToTable(name: "UserTokens", schema: "Identity");
     }

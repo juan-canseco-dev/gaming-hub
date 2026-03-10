@@ -4,7 +4,6 @@ namespace GameHub.Domain.Users;
 
 public class UserProfile : Entity<Guid>
 {
-
     public string Email { get; private init; } = default!;
     public string Username { get; private init; } = default!;
     public string Fullname { get; private init; } = default!;
