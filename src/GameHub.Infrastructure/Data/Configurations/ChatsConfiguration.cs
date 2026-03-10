@@ -12,7 +12,8 @@ internal class ChatsConfiguration : IEntityTypeConfiguration<Chat>
         builder.ToTable("Chats", "GameHub");
 
         builder.Property(x => x.Id)
-            .ValueGeneratedNever();
+               .HasValueGenerator<UUIDv7Generator>()
+               .ValueGeneratedOnAdd();
 
         builder.HasKey(x => x.Id);
 
@@ -58,8 +59,6 @@ internal class ChatsConfiguration : IEntityTypeConfiguration<Chat>
             i.Property(x => x.Type)
                 .IsRequired()
                 .HasConversion<int>();
-
-            //i.HasIndex(i => new { i.CreatedAt, i.ChatId });
         });
 
         builder.OwnsMany(c => c.Members, i =>
@@ -85,13 +84,5 @@ internal class ChatsConfiguration : IEntityTypeConfiguration<Chat>
             i.Property(x => x.CreatedAt)
                 .IsRequired();           
         });
-
-        var defaultChats = Channel.GetValues()
-            .Select(r =>
-                Chat.Create(r.Id, DateTimeOffset.UtcNow).Value
-             )
-            .ToList();
-
-        builder.HasData(defaultChats);
     }
 }

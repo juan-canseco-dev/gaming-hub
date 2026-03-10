@@ -416,19 +416,6 @@ namespace GameHub.Infrastructure.Data.Migrations
                     { 5, "Indie games, cozy games and creative discussions.", "Indie & Creative", "indie-creative" }
                 });
 
-            migrationBuilder.InsertData(
-                schema: "GameHub",
-                table: "Chats",
-                columns: new[] { "Id", "ChannelId", "CreatedAt", "LastMesageId", "LastMessageAt", "LastMessagePreview" },
-                values: new object[,]
-                {
-                    { new Guid("019cd6ae-038a-71c9-a57a-1c412843622e"), 4, new DateTimeOffset(new DateTime(2026, 3, 10, 7, 37, 34, 346, DateTimeKind.Unspecified).AddTicks(5732), new TimeSpan(0, 0, 0, 0, 0)), new Guid("00000000-0000-0000-0000-000000000000"), new DateTimeOffset(new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), null },
-                    { new Guid("019cd6ae-038a-71ce-96e4-ae9f97c60b52"), 1, new DateTimeOffset(new DateTime(2026, 3, 10, 7, 37, 34, 345, DateTimeKind.Unspecified).AddTicks(7980), new TimeSpan(0, 0, 0, 0, 0)), new Guid("00000000-0000-0000-0000-000000000000"), new DateTimeOffset(new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), null },
-                    { new Guid("019cd6ae-038a-750d-92dc-9134905976eb"), 3, new DateTimeOffset(new DateTime(2026, 3, 10, 7, 37, 34, 346, DateTimeKind.Unspecified).AddTicks(5728), new TimeSpan(0, 0, 0, 0, 0)), new Guid("00000000-0000-0000-0000-000000000000"), new DateTimeOffset(new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), null },
-                    { new Guid("019cd6ae-038a-7956-9e10-831d22ea8f94"), 5, new DateTimeOffset(new DateTime(2026, 3, 10, 7, 37, 34, 346, DateTimeKind.Unspecified).AddTicks(5734), new TimeSpan(0, 0, 0, 0, 0)), new Guid("00000000-0000-0000-0000-000000000000"), new DateTimeOffset(new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), null },
-                    { new Guid("019cd6ae-038a-7c2c-8cf1-b1f4dc67b4b4"), 2, new DateTimeOffset(new DateTime(2026, 3, 10, 7, 37, 34, 346, DateTimeKind.Unspecified).AddTicks(5698), new TimeSpan(0, 0, 0, 0, 0)), new Guid("00000000-0000-0000-0000-000000000000"), new DateTimeOffset(new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), null }
-                });
-
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",

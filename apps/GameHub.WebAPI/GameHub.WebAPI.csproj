@@ -20,4 +20,8 @@
     <ProjectReference Include="..\..\src\GameHub.Infrastructure\GameHub.Infrastructure.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Endpoints\Chats\" />
+  </ItemGroup>
+
 </Project>

@@ -87,6 +87,7 @@ namespace GameHub.Infrastructure.Data.Migrations
             modelBuilder.Entity("GameHub.Domain.Chats.Chat", b =>
                 {
                     b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("ChannelId")
@@ -112,48 +113,6 @@ namespace GameHub.Infrastructure.Data.Migrations
                     b.HasIndex("CreatedAt");
 
                     b.ToTable("Chats", "GameHub");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("019cd6ae-038a-71ce-96e4-ae9f97c60b52"),
-                            ChannelId = 1,
-                            CreatedAt = new DateTimeOffset(new DateTime(2026, 3, 10, 7, 37, 34, 345, DateTimeKind.Unspecified).AddTicks(7980), new TimeSpan(0, 0, 0, 0, 0)),
-                            LastMesageId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            LastMessageAt = new DateTimeOffset(new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0))
-                        },
-                        new
-                        {
-                            Id = new Guid("019cd6ae-038a-7c2c-8cf1-b1f4dc67b4b4"),
-                            ChannelId = 2,
-                            CreatedAt = new DateTimeOffset(new DateTime(2026, 3, 10, 7, 37, 34, 346, DateTimeKind.Unspecified).AddTicks(5698), new TimeSpan(0, 0, 0, 0, 0)),
-                            LastMesageId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            LastMessageAt = new DateTimeOffset(new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0))
-                        },
-                        new
-                        {
-                            Id = new Guid("019cd6ae-038a-750d-92dc-9134905976eb"),
-                            ChannelId = 3,
-                            CreatedAt = new DateTimeOffset(new DateTime(2026, 3, 10, 7, 37, 34, 346, DateTimeKind.Unspecified).AddTicks(5728), new TimeSpan(0, 0, 0, 0, 0)),
-                            LastMesageId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            LastMessageAt = new DateTimeOffset(new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0))
-                        },
-                        new
-                        {
-                            Id = new Guid("019cd6ae-038a-71c9-a57a-1c412843622e"),
-                            ChannelId = 4,
-                            CreatedAt = new DateTimeOffset(new DateTime(2026, 3, 10, 7, 37, 34, 346, DateTimeKind.Unspecified).AddTicks(5732), new TimeSpan(0, 0, 0, 0, 0)),
-                            LastMesageId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            LastMessageAt = new DateTimeOffset(new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0))
-                        },
-                        new
-                        {
-                            Id = new Guid("019cd6ae-038a-7956-9e10-831d22ea8f94"),
-                            ChannelId = 5,
-                            CreatedAt = new DateTimeOffset(new DateTime(2026, 3, 10, 7, 37, 34, 346, DateTimeKind.Unspecified).AddTicks(5734), new TimeSpan(0, 0, 0, 0, 0)),
-                            LastMesageId = new Guid("00000000-0000-0000-0000-000000000000"),
-                            LastMessageAt = new DateTimeOffset(new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0))
-                        });
                 });
 
             modelBuilder.Entity("GameHub.Domain.Users.UserProfile", b =>

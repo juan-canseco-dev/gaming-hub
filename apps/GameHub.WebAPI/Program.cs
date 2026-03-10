@@ -8,7 +8,7 @@ namespace GameHub.WebAPI
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +23,7 @@ namespace GameHub.WebAPI
             builder.Services.AddApplication();
             builder.Services.AddInfrastructure(builder.Configuration);
             builder.Services.AddAuthorization();
+            builder.Services.AddCarter();
 
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
@@ -33,6 +34,7 @@ namespace GameHub.WebAPI
             if (app.Environment.IsDevelopment())
             {
                 app.MapOpenApi();
+                await app.RecreateDatabaseWithMigrationsAsync();
             }
 
             app.UseHttpsRedirection();
