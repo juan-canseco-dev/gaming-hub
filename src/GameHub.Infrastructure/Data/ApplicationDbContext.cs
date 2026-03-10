@@ -1,0 +1,33 @@
+﻿using GameHub.Application.Abstractions.Data;
+using GameHub.Domain.Chats;
+using GameHub.Domain.Users;
+using GameHub.Infrastructure.Identity.Models;
+using MassTransit;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+
+namespace GameHub.Infrastructure.Data;
+
+public class ApplicationDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, Guid>, IApplicationDbContext
+{
+    public ApplicationDbContext(DbContextOptions options) : base(options) {}
+    public DbSet<Channel> Channels => Set<Channel>();
+    public DbSet<Chat> Chats => Set<Chat>();
+    public DbSet<ChatMessage> ChatMessages => Set<ChatMessage>();
+    public DbSet<ChatMember> ChatMembers => Set<ChatMember>();
+    public DbSet<UserProfile> UserProfiles => Set<UserProfile>();
+
+    protected override void OnModelCreating(ModelBuilder builder)
+    {
+        base.OnModelCreating(builder);
+        // Add MassTransit Outbox/Inbox Configs 
+        builder.AddInboxStateEntity();
+        builder.AddOutboxMessageEntity();
+        builder.AddOutboxStateEntity();
+        // Apply configs
+        builder.ApplyConfigurationsFromAssembly(typeof(DependencyInjection).Assembly);
+    }
+
+    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        => base.SaveChangesAsync(cancellationToken);
+}

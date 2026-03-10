@@ -81,7 +81,7 @@ public class Chat : Entity<Guid>
         return message;
     }
 
-    public static Result<Chat> Create(int channelId, DateTime createdAt)
+    public static Result<Chat> Create(int channelId, DateTimeOffset createdAt)
     {
         var channel = Channel.FromIdResult(channelId);
         if (channel.IsFailure)

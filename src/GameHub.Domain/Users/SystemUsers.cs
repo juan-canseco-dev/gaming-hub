@@ -6,6 +6,7 @@ public static class SystemUsers
         Guid.Parse("019cc46e-98c2-721a-aac6-6cacdf4f52bf");
 
     public static readonly string AdminUsername = "system-admin";
-
     public static readonly string AdminEmail = "system@gaminghub.local";
+    public static readonly string AdminName = "System Admin";
+    public static readonly string AdminPassword = "Admin.Password.01";
 }
