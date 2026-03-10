@@ -1,4 +1,5 @@
 ﻿using GameHub.Infrastructure.Data;
+using GameHub.Infrastructure.Data.Seed;
 using GameHub.WebAPI.Middleware;
 using Microsoft.EntityFrameworkCore;
 
@@ -42,6 +43,14 @@ public static class ApplicationBuilderExtensions
 
             throw;
         }
+    }
+
+    public static async Task SeedDataAsync(this IApplicationBuilder app)
+    {
+        using var scope = app.ApplicationServices.CreateScope();
+        var services = scope.ServiceProvider;
+        var appSeeder = services.GetRequiredService<ApplicationSeeder>();
+        await appSeeder.SeedAsync();
     }
 
 }

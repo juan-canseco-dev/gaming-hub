@@ -5,6 +5,8 @@ using GameHub.Domain.Chats;
 using GameHub.Infrastructure.Authentication;
 using GameHub.Infrastructure.Clock;
 using GameHub.Infrastructure.Data;
+using GameHub.Infrastructure.Data.Seed;
+using GameHub.Infrastructure.Data.Seed.Production;
 using GameHub.Infrastructure.Identity.Models;
 using MassTransit;
 using Microsoft.AspNetCore.Http;
@@ -79,6 +81,12 @@ public static class DependencyInjection
                 cfg.ConfigureEndpoints(context);
             });
         });
+
+
+        // Add Application seeders
+        services.AddScoped<IProductionDataSeeder, AdminUserSeeder>();
+        services.AddScoped<IProductionDataSeeder, ChannelChatsSeeder>();
+        services.AddScoped<ApplicationSeeder>();
 
         return services;
     }

@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GameHub.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260310172430_Initial")]
+    [Migration("20260310194845_Initial")]
     partial class Initial
     {
         /// <inheritdoc />

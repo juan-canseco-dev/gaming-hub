@@ -37,6 +37,8 @@ namespace GameHub.WebAPI
                 await app.RecreateDatabaseWithMigrationsAsync();
             }
 
+            await app.SeedDataAsync();
+
             app.UseHttpsRedirection();
 
             app.UseCustomExceptionHandler();
