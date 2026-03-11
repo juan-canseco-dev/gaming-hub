@@ -1,6 +1,9 @@
 @GameHub.WebAPI_HostAddress = http://localhost:5192
 
-GET {{GameHub.WebAPI_HostAddress}}/weatherforecast/
-Accept: application/json
-
 ###
+POST {{GameHub.WebAPI_HostAddress}}/api/identity/auth
+Content-Type: application/json
+{
+  "email": "juan.canseco@gmail.com  ",
+  "password": "juan1234"
+}
