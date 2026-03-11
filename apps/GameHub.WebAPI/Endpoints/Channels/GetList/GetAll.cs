@@ -10,7 +10,7 @@ public class GetAll : ICarterModule
 {
     public void AddRoutes(IEndpointRouteBuilder app)
     {
-        app.MapGet("api/channels", async (
+        app.MapGet("/api/channels", async (
          IMediator mediator,
          CancellationToken cancellationToken
         ) =>

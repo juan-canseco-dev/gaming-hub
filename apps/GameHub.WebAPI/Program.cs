@@ -31,14 +31,19 @@ namespace GameHub.WebAPI
 
             var app = builder.Build();
 
+
+
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
                 app.MapOpenApi();
                 await app.RecreateDatabaseWithMigrationsAsync();
             }
+            if (!app.Environment.IsEnvironment("IntegrationTesting"))
+            {
+                await app.SeedDataAsync();
+            }
 
-            await app.SeedDataAsync();
 
             app.UseHttpsRedirection();
 
@@ -47,6 +52,7 @@ namespace GameHub.WebAPI
             app.UseAuthentication();
             app.UseAuthorization();
 
+            app.MapGet("/", () => "Welcome to Game Hub");
             app.MapCarter();
             app.Run();
         }
