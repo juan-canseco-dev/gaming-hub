@@ -1,4 +1,5 @@
-﻿using GameHub.Infrastructure.Data;
+﻿using GameHub.Application.Features.Chats.Consumers;
+using GameHub.Infrastructure.Data;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Hosting;
@@ -8,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Respawn;
 using System.Data.Common;
 using Testcontainers.MsSql;
+using Testcontainers.Redis;
 
 namespace GameHub.WebAPI.IntegrationTests.Abstractions;
 
@@ -19,6 +21,11 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>, IAsyn
         .WithPassword("Password01")
         .Build();
 
+    // Added Redis test container
+    private readonly RedisContainer _redisContainer = new RedisBuilder()
+        .WithImage("redis:latest")
+        .Build();
+
     private DbConnection _dbConnection = null!;
     private Respawner _respawner = null!;
 
@@ -27,6 +34,8 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>, IAsyn
     public async Task InitializeAsync()
     {
         await _dbContainer.StartAsync();
+
+        await _redisContainer.StartAsync();
 
         HttpClient = CreateClient();
 
@@ -45,6 +54,8 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>, IAsyn
     public async new Task DisposeAsync()
     {
         await _dbContainer.DisposeAsync();
+        await _redisContainer.DisposeAsync();
+
         if (_dbConnection != null)
         {
             await _dbConnection.DisposeAsync();
@@ -62,6 +73,7 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>, IAsyn
         builder.UseEnvironment("IntegrationTesting");
 
         Environment.SetEnvironmentVariable("ConnectionStrings:ConnectionString", _dbContainer.GetConnectionString());
+        Environment.SetEnvironmentVariable("ConnectionStrings:Redis", _redisContainer.GetConnectionString());
         Environment.SetEnvironmentVariable("Jwt:SecretKey", "3bc3ecfd4d6d0855e7df9b43b452ebcfab80b1ae368873721e7b6e0fe70e1756");
         Environment.SetEnvironmentVariable("Jwt:Issuer", "https://test-issuer");
         Environment.SetEnvironmentVariable("Jwt:Audience", "https://test-audience");
@@ -79,7 +91,8 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>, IAsyn
 
             services.AddMassTransitTestHarness(cfg =>
             {
-
+                cfg.AddConsumer<ChatMessageSentConsumer>();
+                cfg.AddConsumer<ChatMemberJoinedConsumer>();
             });
         });
     }
