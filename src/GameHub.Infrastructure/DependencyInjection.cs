@@ -2,6 +2,7 @@
 using GameHub.Application.Abstractions.Clock;
 using GameHub.Application.Abstractions.Data;
 using GameHub.Application.Abstractions.Identity;
+using GameHub.Application.Abstractions.Realtime.Chats;
 using GameHub.Domain.Chats;
 using GameHub.Infrastructure.Authentication;
 using GameHub.Infrastructure.Clock;
@@ -10,6 +11,7 @@ using GameHub.Infrastructure.Data.Seed;
 using GameHub.Infrastructure.Data.Seed.Production;
 using GameHub.Infrastructure.Identity;
 using GameHub.Infrastructure.Identity.Models;
+using GameHub.Infrastructure.Realtime;
 using MassTransit;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -92,6 +94,10 @@ public static class DependencyInjection
         services.AddScoped<IProductionDataSeeder, AdminUserSeeder>();
         services.AddScoped<IProductionDataSeeder, ChannelChatsSeeder>();
         services.AddScoped<ApplicationSeeder>();
+
+        // Add realtime notifiers
+        services.AddScoped<IMessageSentNotifier, SignalRMessageSentNotifier>();
+        services.AddScoped<IUserJoinedChatNotifier, SignalRUserJoinedChatNotifier>();
 
         return services;
     }

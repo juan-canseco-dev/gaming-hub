@@ -3,6 +3,7 @@ using Carter;
 using GameHub.Application;
 using GameHub.Infrastructure;
 using GameHub.WebAPI.Extensions;
+using GameHub.Infrastructure.Hubs;
 
 namespace GameHub.WebAPI
 {
@@ -18,6 +19,13 @@ namespace GameHub.WebAPI
 
 
             // Add services to the container.
+            var redisConnectionString = builder.Configuration.GetConnectionString("Redis") 
+                ?? throw new InvalidOperationException("Redis connection string was not configured.");
+
+            builder.Services
+                .AddSignalR()
+                .AddStackExchangeRedis(redisConnectionString);
+
 
             builder.Services.AddControllers();
             builder.Services.AddApplication();
@@ -53,6 +61,8 @@ namespace GameHub.WebAPI
             app.UseAuthorization();
 
             app.MapGet("/", () => "Welcome to Game Hub");
+            
+            app.MapHub<ChatHub>("/hubs/chat");
             app.MapCarter();
             app.Run();
         }
