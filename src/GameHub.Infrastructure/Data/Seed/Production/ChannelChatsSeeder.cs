@@ -33,4 +33,6 @@ public class ChannelChatsSeeder : IProductionDataSeeder
         _context.AddRange(newChats);
         _logger.LogInformation("Channels chats were prepared prepared successfully for seeding");
     }
+
+    public int Order => 2;
 }

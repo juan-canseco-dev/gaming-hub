@@ -8,6 +8,7 @@ using GameHub.Infrastructure.Authentication;
 using GameHub.Infrastructure.Clock;
 using GameHub.Infrastructure.Data;
 using GameHub.Infrastructure.Data.Seed;
+using GameHub.Infrastructure.Data.Seed.Development;
 using GameHub.Infrastructure.Data.Seed.Production;
 using GameHub.Infrastructure.Identity;
 using GameHub.Infrastructure.Identity.Models;
@@ -93,6 +94,8 @@ public static class DependencyInjection
         // Add Application seeders
         services.AddScoped<IProductionDataSeeder, AdminUserSeeder>();
         services.AddScoped<IProductionDataSeeder, ChannelChatsSeeder>();
+        services.AddScoped<IDevelopmentDataSeeder, DemoUsersSeeder>();
+        services.AddScoped<IDevelopmentDataSeeder, DemoChatSeeder>();
         services.AddScoped<ApplicationSeeder>();
 
         // Add realtime notifiers

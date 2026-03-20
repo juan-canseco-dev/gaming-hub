@@ -77,4 +77,6 @@ internal class AdminUserSeeder : IProductionDataSeeder
 
         _logger.LogInformation("Admin user and related profile were prepared successfully for seeding.");
     }
+
+    public int Order => 1;
 }

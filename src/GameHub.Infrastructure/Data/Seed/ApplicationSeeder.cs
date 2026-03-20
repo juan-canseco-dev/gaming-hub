@@ -20,8 +20,8 @@ public sealed class ApplicationSeeder
         IHostEnvironment environment,
         ILogger<ApplicationSeeder> logger)
     {
-        _productionSeeders = productionSeeders;
-        _developmentSeeders = developmentSeeders;
+        _productionSeeders = productionSeeders.OrderBy(x => x.Order);
+        _developmentSeeders = developmentSeeders.OrderBy(x => x.Order);
         _context = context;
         _environment = environment;
         _logger = logger;
