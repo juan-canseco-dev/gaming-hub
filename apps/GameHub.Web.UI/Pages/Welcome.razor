@@ -1,0 +1,141 @@
+﻿@page "/"
+
+@attribute [AllowAnonymous]
+
+<PageTitle>GameHub</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="py-12">
+
+    <!-- Hero -->
+    <MudPaper Class="pa-8 pa-md-12 mb-8 text-center" Elevation="0" Outlined="true">
+        <MudText Typo="Typo.h3" GutterBottom="true">
+            Welcome to GameHub
+        </MudText>
+
+        <MudText Typo="Typo.subtitle1" Class="mb-6">
+            Join the conversation across gaming communities and explore channels
+            built for every kind of player.
+        </MudText>
+
+        <MudButton Variant="Variant.Filled"
+                   Color="Color.Primary"
+                   Href="/auth/register"
+                   StartIcon="@Icons.Material.Filled.PersonAdd">
+            Join GameHub
+        </MudButton>
+    </MudPaper>
+
+    <!-- Intro -->
+    <MudText Typo="Typo.h5" Class="mb-2">
+        Explore Channels
+    </MudText>
+
+    <MudText Typo="Typo.body1" Class="mb-6">
+        From retro nostalgia to competitive strategy, GameHub has a space for every style of gaming discussion.
+    </MudText>
+
+    <MudGrid>
+
+        <!-- General Gaming -->
+        <MudItem xs="12" sm="6" md="4">
+            <MudCard Class="h-100">
+                <MudCardContent Class="text-center pa-6">
+                    <MudIcon Icon="@Icons.Material.Filled.SportsEsports"
+                             Size="Size.Large"
+                             Color="Color.Primary" />
+
+                    <MudText Typo="Typo.h6" Class="mt-3 mb-2">
+                        General Gaming
+                    </MudText>
+
+                    <MudText Typo="Typo.body2">
+                        Talk about what you're currently playing, share opinions on recent releases,
+                        and discuss the latest gaming news with the community.
+                    </MudText>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+
+        <!-- Retro Gaming -->
+        <MudItem xs="12" sm="6" md="4">
+            <MudCard Class="h-100">
+                <MudCardContent Class="text-center pa-6">
+                    <MudIcon Icon="@Icons.Material.Filled.VideogameAsset"
+                             Size="Size.Large"
+                             Color="Color.Secondary" />
+
+                    <MudText Typo="Typo.h6" Class="mt-3 mb-2">
+                        Retro Gaming
+                    </MudText>
+
+                    <MudText Typo="Typo.body2">
+                        Celebrate classic consoles, arcade favorites, and unforgettable old-school titles
+                        that shaped gaming history.
+                    </MudText>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+
+        <!-- RPG & Story -->
+        <MudItem xs="12" sm="6" md="4">
+            <MudCard Class="h-100">
+                <MudCardContent Class="text-center pa-6">
+                    <MudIcon Icon="@Icons.Material.Filled.AutoStories"
+                             Size="Size.Large"
+                             Color="Color.Info" />
+
+                    <MudText Typo="Typo.h6" Class="mt-3 mb-2">
+                        RPG & Story
+                    </MudText>
+
+                    <MudText Typo="Typo.body2">
+                        Dive into story-driven adventures, character builds, world lore,
+                        and discussions about memorable narratives.
+                    </MudText>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+
+        <!-- Competitive Play -->
+        <MudItem xs="12" sm="6" md="6">
+            <MudCard Class="h-100">
+                <MudCardContent Class="text-center pa-6">
+                    <MudIcon Icon="@Icons.Material.Filled.EmojiEvents"
+                             Size="Size.Large"
+                             Color="Color.Error" />
+
+                    <MudText Typo="Typo.h6" Class="mt-3 mb-2">
+                        Competitive Play
+                    </MudText>
+
+                    <MudText Typo="Typo.body2">
+                        Focus on ranked strategies, esports, team coordination,
+                        and high-level multiplayer gameplay discussions.
+                    </MudText>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+
+        <!-- Indie & Creative -->
+        <MudItem xs="12" sm="6" md="6">
+            <MudCard Class="h-100">
+                <MudCardContent Class="text-center pa-6">
+                    <MudIcon Icon="@Icons.Material.Filled.Palette"
+                             Size="Size.Large"
+                             Color="Color.Success" />
+
+                    <MudText Typo="Typo.h6" Class="mt-3 mb-2">
+                        Indie & Creative
+                    </MudText>
+
+                    <MudText Typo="Typo.body2">
+                        Discover indie games, cozy experiences, creative ideas,
+                        and unique discussions around artistic game design.
+                    </MudText>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+
+    </MudGrid>
+
+</MudContainer>

@@ -1,4 +1,4 @@
-﻿using GameHub.Domain.Shared;
+﻿using GameHub.Abstractions.Pagination;
 using Microsoft.EntityFrameworkCore;
 
 namespace GameHub.Application.Extensions;

@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AutoMapper" Version="16.1.0" />
+    <PackageReference Include="AutoMapper" Version="16.1.1" />
     <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
     <PackageReference Include="MassTransit" Version="9.0.1" />
     <PackageReference Include="MediatR" Version="12.3.0" />
@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\GameHub.Contracts\GameHub.Contracts.csproj" />
     <ProjectReference Include="..\GameHub.Domain\GameHub.Domain.csproj" />
     <ProjectReference Include="..\GameHub.EventBus.Contracts\GameHub.EventBus.Contracts.csproj" />
   </ItemGroup>

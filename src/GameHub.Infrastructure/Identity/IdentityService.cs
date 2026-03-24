@@ -1,8 +1,8 @@
 ﻿using GameHub.Application.Abstractions.Authentication;
 using GameHub.Application.Abstractions.Clock;
 using GameHub.Application.Abstractions.Identity;
-using GameHub.Application.Contracts.Identity;
-using GameHub.Domain.Abstractions;
+using GameHub.Contracts.Identity;
+using GameHub.Abstractions.Primitives;
 using GameHub.Domain.Users;
 using GameHub.Infrastructure.Data;
 using GameHub.Infrastructure.Identity.Models;

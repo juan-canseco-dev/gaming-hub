@@ -4,6 +4,7 @@ using MediatR;
 using GameHub.Application.Features.Chats.Queries.GetPartcipantsCount;
 using GameHub.Application.Features.Chats.Queries.GetMessage;
 using GameHub.Application.Abstractions.Realtime.Chats;
+using GameHub.Contracts.Notifications;
 using Microsoft.Extensions.Logging;
 
 namespace GameHub.Application.Features.Chats.Consumers;
@@ -66,7 +67,7 @@ public class ChatMemberJoinedConsumer : IConsumer<ChatMemberJoinedEvent>
             return;
         }
 
-        var notification = new IUserJoinedChatNotifier.Notification(
+        var notification = new UserJoinedNotification(
             NumberOfParticipants: participantCountResult.Value,
             Message: getMessageResult.Value);
 

@@ -1,6 +1,7 @@
 ﻿using GameHub.Application.Abstractions.Realtime.Chats;
 using GameHub.Application.Features.Chats.Queries.GetMessage;
 using GameHub.EventBus.Contracts;
+using GameHub.Contracts.Notifications;
 using MassTransit;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -50,7 +51,7 @@ public class ChatMessageSentConsumer : IConsumer<ChatMessageSentEvent>
             return;
         }
 
-        var notification = new IMessageSentNotifier.Notification(
+        var notification = new MessageNotification(
             Message: getMessageResult.Value
         );
 

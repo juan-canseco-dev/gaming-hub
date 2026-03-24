@@ -1,6 +1,6 @@
 ﻿using Carter;
 using GameHub.Application.Abstractions.Identity;
-using GameHub.Application.Contracts.Identity;
+using GameHub.Contracts.Identity;
 
 namespace GameHub.WebAPI.Endpoints.Identity;
 

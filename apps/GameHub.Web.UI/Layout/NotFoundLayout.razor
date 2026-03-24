@@ -1,0 +1,37 @@
+﻿@inherits LayoutComponentBase
+@inject NavigationManager NavManager
+@inject JwtAuthenticationStateProvider AuthProvider
+
+<MudThemeProvider Theme="GameHubTheme.DefaultTheme" />
+<MudSnackbarProvider />
+<MudContainer MaxWidth="MaxWidth.Small">
+    <MudStack Justify="Justify.Center"
+              AlignItems="AlignItems.Center"
+              Style="height:100vh"
+              Spacing="2">
+
+        <MudIcon Icon="@Icons.Material.Filled.SearchOff" Size="Size.Large" />
+
+        <MudText Typo="Typo.h5">
+            The page you were looking for doesn't exist.
+        </MudText>
+
+        <MudButton Variant="Variant.Filled"
+                   Color="Color.Primary"
+                   OnClick="GoToHome">
+            Go Home
+        </MudButton>
+
+    </MudStack>
+</MudContainer>
+@code {
+    async void GoToHome()
+    {
+        if (await AuthProvider.IsLoggedInAsync())
+        {
+            NavManager.NavigateTo("/home");
+            return;
+        }
+        NavManager.NavigateTo("/");
+    }
+}

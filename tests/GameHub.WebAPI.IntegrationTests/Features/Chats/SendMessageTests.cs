@@ -9,7 +9,7 @@ using System.Net;
 using System.Net.Http.Json;
 using FluentAssertions;
 using MassTransit.Testing;
-using GameHub.Application.Contracts.Identity;
+using GameHub.Contracts.Identity;
 using GameHub.Domain.Chats;
 using Microsoft.AspNetCore.Identity;
 using GameHub.Infrastructure.Identity.Models;

@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
 using GameHub.Application.Abstractions.Data;
 using GameHub.Application.Abstractions.Identity;
-using GameHub.Application.Contracts.Identity;
+using GameHub.Contracts.Identity;
 using GameHub.Domain.Chats;
 using GameHub.Domain.Users;
 using GameHub.Infrastructure.Identity.Models;
@@ -12,7 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Net.Http.Headers;
 using System.Net;
 using System.Net.Http.Json;
-using GameHub.Application.Contracts.Chats;
+using GameHub.Contracts.Chats;
 
 namespace GameHub.WebAPI.IntegrationTests.Features.Chats;
 

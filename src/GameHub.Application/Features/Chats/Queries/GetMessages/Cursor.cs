@@ -1,4 +1,4 @@
-﻿using GameHub.Domain.Abstractions;
+﻿using GameHub.Abstractions.Primitives;
 using System.Text.Json;
 
 namespace GameHub.Application.Features.Chats.Queries.GetMessages;

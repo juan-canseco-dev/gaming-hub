@@ -1,6 +1,6 @@
 ﻿
 using GameHub.Application.Abstractions.Messaging;
-using GameHub.Application.Contracts.Chats;
+using GameHub.Contracts.Chats;
 
 namespace GameHub.Application.Features.Chats.Queries.GetMessage;
 

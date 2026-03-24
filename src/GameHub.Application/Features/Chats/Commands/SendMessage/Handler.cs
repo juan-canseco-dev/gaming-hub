@@ -2,7 +2,7 @@
 using GameHub.Application.Abstractions.Clock;
 using GameHub.Application.Abstractions.Data;
 using GameHub.Application.Abstractions.Messaging;
-using GameHub.Domain.Abstractions;
+using GameHub.Abstractions.Primitives;
 using GameHub.Domain.Chats;
 using GameHub.Domain.Users;
 using GameHub.EventBus.Contracts;

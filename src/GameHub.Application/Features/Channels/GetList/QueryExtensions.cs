@@ -1,5 +1,5 @@
 ﻿using GameHub.Application.Abstractions.Messaging;
-using GameHub.Application.Contracts.Channels;
+using GameHub.Contracts.Channels;
 
 namespace GameHub.Application.Features.Channels.GetList;
 

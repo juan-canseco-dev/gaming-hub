@@ -1,5 +1,6 @@
 ﻿
 using GameHub.Application.Abstractions.Realtime.Chats;
+using GameHub.Contracts.Notifications;
 using GameHub.Infrastructure.Hubs;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
@@ -21,7 +22,7 @@ internal sealed class SignalRUserJoinedChatNotifier : IUserJoinedChatNotifier
 
     public async Task NotifyAsync(
         Guid chatId,
-        IUserJoinedChatNotifier.Notification notification,
+        UserJoinedNotification notification,
         CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(notification);

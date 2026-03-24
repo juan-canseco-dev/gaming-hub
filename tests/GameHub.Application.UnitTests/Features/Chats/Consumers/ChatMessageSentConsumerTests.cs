@@ -1,9 +1,10 @@
 ﻿using GameHub.Application.Abstractions.Realtime.Chats;
-using GameHub.Application.Contracts.Chats;
-using GameHub.Application.Contracts.Profile;
+using GameHub.Contracts.Chats;
+using GameHub.Contracts.Profile;
 using GameHub.Application.Features.Chats.Consumers;
 using GameHub.Application.Features.Chats.Queries.GetMessage;
-using GameHub.Domain.Abstractions;
+using GameHub.Abstractions.Primitives;
+using GameHub.Contracts.Notifications;
 using GameHub.Domain.Chats;
 using GameHub.EventBus.Contracts;
 using MassTransit;
@@ -70,7 +71,7 @@ public class ChatMessageSentConsumerTests
         _notifierMock.Verify(
             x => x.NotifyAsync(
                 chatId,
-                It.Is<IMessageSentNotifier.Notification>(n => n.Message == messageDto),
+                It.Is<MessageNotification>(n => n.Message == messageDto),
                 cancellationToken),
             Times.Once);
     }
@@ -106,7 +107,7 @@ public class ChatMessageSentConsumerTests
         _notifierMock.Verify(
             x => x.NotifyAsync(
                 It.IsAny<Guid>(),
-                It.IsAny<IMessageSentNotifier.Notification>(),
+                It.IsAny<MessageNotification>(),
                 It.IsAny<CancellationToken>()),
             Times.Never);
     }

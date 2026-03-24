@@ -1,10 +1,9 @@
 ﻿using FluentAssertions;
 using GameHub.Application.Abstractions.Data;
 using GameHub.Application.Abstractions.Identity;
-using GameHub.Application.Contracts.Identity;
-using GameHub.Application.Contracts.Profile;
+using GameHub.Contracts.Identity;
+using GameHub.Contracts.Profile;
 using GameHub.Domain.Chats;
-using GameHub.Domain.Shared;
 using GameHub.Domain.Users;
 using GameHub.Infrastructure.Identity.Models;
 using GameHub.WebAPI.IntegrationTests.Abstractions;
@@ -13,6 +12,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using GameHub.Abstractions.Pagination;
 
 namespace GameHub.WebAPI.IntegrationTests.Features.Chats;
 

@@ -1,5 +1,5 @@
-﻿using GameHub.Application.Contracts.Identity;
-using GameHub.Domain.Abstractions;
+﻿using GameHub.Contracts.Identity;
+using GameHub.Abstractions.Primitives;
 
 namespace GameHub.Application.Abstractions.Identity;
 

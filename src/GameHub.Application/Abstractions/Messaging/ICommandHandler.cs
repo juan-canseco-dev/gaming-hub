@@ -1,4 +1,4 @@
-﻿using GameHub.Domain.Abstractions;
+﻿using GameHub.Abstractions.Primitives;
 using MediatR;
 
 namespace GameHub.Application.Abstractions.Messaging;

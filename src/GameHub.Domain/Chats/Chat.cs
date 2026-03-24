@@ -1,5 +1,6 @@
 ﻿using GameHub.Domain.Abstractions;
 using GameHub.Domain.Users;
+using GameHub.Abstractions.Primitives;
 
 namespace GameHub.Domain.Chats;
 

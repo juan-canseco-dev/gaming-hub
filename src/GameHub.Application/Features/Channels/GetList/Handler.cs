@@ -1,7 +1,7 @@
 ﻿using GameHub.Application.Abstractions.Data;
 using GameHub.Application.Abstractions.Messaging;
-using GameHub.Application.Contracts.Channels;
-using GameHub.Domain.Abstractions;
+using GameHub.Contracts.Channels;
+using GameHub.Abstractions.Primitives;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 

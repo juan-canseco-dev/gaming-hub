@@ -1,6 +1,6 @@
 ﻿using Bogus;
 using GameHub.Application.Abstractions.Clock;
-using GameHub.Application.Contracts.Identity;
+using GameHub.Contracts.Identity;
 using GameHub.Domain.Users;
 using GameHub.Infrastructure.Identity.Models;
 using Microsoft.AspNetCore.Identity;
