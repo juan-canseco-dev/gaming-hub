@@ -4,12 +4,7 @@ using GameHub.Application.Features.Chats.Queries.GetPartcipantsCount;
 using GameHub.Domain.Chats;
 using MockQueryable.Moq;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static GameHub.Application.UnitTests.Shared.Helpers.ReflectionTestHelper;
+using static GameHub.Application.UnitTests.Shared.Factories.ChatTestFactory;
 
 namespace GameHub.Application.UnitTests.Features.Chats.Queries.GetPartcipantsCount;
 
@@ -54,8 +49,8 @@ public class GetParticipantCountByChatHandlerTests
         var chatId = Guid.NewGuid();
         var anotherChatId = Guid.NewGuid();
 
-        var chat = CreateChat(chatId, Channel.GeneralGaming.Id, DateTimeOffset.UtcNow);
-        var anotherChat = CreateChat(anotherChatId, Channel.RetroGaming.Id, DateTimeOffset.UtcNow);
+        var chat = CreateNew(chatId, Channel.GeneralGaming.Id, DateTimeOffset.UtcNow);
+        var anotherChat = CreateNew(anotherChatId, Channel.RetroGaming.Id, DateTimeOffset.UtcNow);
 
         var chats = new List<Chat>
         {
@@ -90,7 +85,7 @@ public class GetParticipantCountByChatHandlerTests
         // Arrange
         var chatId = Guid.NewGuid();
 
-        var chat = CreateChat(chatId, Channel.GeneralGaming.Id, DateTimeOffset.UtcNow);
+        var chat = CreateNew(chatId, Channel.GeneralGaming.Id, DateTimeOffset.UtcNow);
 
         var chats = new List<Chat>
         {
@@ -111,17 +106,4 @@ public class GetParticipantCountByChatHandlerTests
         result.IsSuccess.Should().BeTrue();
         result.Value.Should().Be(0);
     }
-
-
-    private static Chat CreateChat(Guid chatId, int channelId, DateTimeOffset createdAt)
-    {
-        var chat = (Chat)Activator.CreateInstance(typeof(Chat), nonPublic: true)!;
-
-        SetProperty(chat, nameof(Chat.Id), chatId);
-        SetProperty(chat, nameof(Chat.ChannelId), channelId);
-        SetProperty(chat, nameof(Chat.CreatedAt), createdAt);
-        SetProperty(chat, nameof(Chat.Channel), Channel.FromValue(channelId)!);
-        return chat;
-    }
-
 }

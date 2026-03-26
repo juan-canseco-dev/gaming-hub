@@ -3,4 +3,98 @@
 @inject NavigationManager NavManager
 @attribute [Authorize]
 
-<h3> Home Page</h3>
+<MudContainer MaxWidth="MaxWidth.False" Class="pa-6 home-page">
+    <MudStack Spacing="4">
+        <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+            <div>
+                <MudText Typo="Typo.h4" Class="fw-bold">Join a Chat Room</MudText>
+                <MudText Typo="Typo.body1" Color="Color.Secondary">
+                    Explore channels and join the conversations that match your interests.
+                </MudText>
+            </div>
+
+            <MudPaper Class="pa-3 stats-chip" Elevation="0">
+                <MudText Typo="Typo.subtitle2">Available Rooms</MudText>
+                <MudText Typo="Typo.h6">@Channels.Count</MudText>
+            </MudPaper>
+        </MudStack>
+
+        <MudGrid Spacing="3">
+            @foreach (var channel in Channels)
+            {
+                <MudItem xs="12" sm="6" md="6" lg="4" xl="3">
+                    <MudCard Class="channel-card h-100">
+                        <MudCardContent>
+                            <MudStack Spacing="2">
+                                <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Start">
+                                    <div>
+                                        <MudText Typo="Typo.h6" Class="fw-bold">
+                                            #@channel.Slug
+                                        </MudText>
+                                        <MudText Typo="Typo.caption" Color="Color.Secondary">
+                                            Chat Room
+                                        </MudText>
+                                    </div>
+
+                                    <MudAvatar Size="Size.Medium" Class="channel-avatar">
+                                        <MudIcon Icon="@Icons.Material.Filled.Forum" />
+                                    </MudAvatar>
+                                </MudStack>
+
+                                <MudText Typo="Typo.body2" Class="channel-description">
+                                    @channel.Description
+                                </MudText>
+
+                                <MudDivider Class="my-2" />
+
+                                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="1">
+                                    <MudIcon Icon="@Icons.Material.Filled.Groups" Size="Size.Small" Color="Color.Primary" />
+                                    <MudText Typo="Typo.body2">
+                                        <strong>@channel.ParticipantsCount</strong> participants
+                                    </MudText>
+                                </MudStack>
+                            </MudStack>
+                        </MudCardContent>
+
+                        <MudCardActions Class="px-4 pb-4 pt-0">
+                            <MudButton Variant="Variant.Filled"
+                                       Color="Color.Primary"
+                                       FullWidth="true"
+                                       StartIcon="@Icons.Material.Filled.Login"
+                                       OnClick="@(() => JoinChannel(channel))">
+                                Join Room
+                            </MudButton>
+                        </MudCardActions>
+                    </MudCard>
+                </MudItem>
+            }
+        </MudGrid>
+    </MudStack>
+</MudContainer>
+
+@code {
+    // Replace this with your real data from API/application layer
+    private List<ChannelDto> Channels { get; set; } = new()
+    {
+        new(1, Guid.NewGuid(), "general-gaming", "Talk about what you're currently playing and gaming news.", 128),
+        new(2, Guid.NewGuid(), "retro-gaming", "Classic consoles, arcade games and nostalgia.", 54),
+        new(3, Guid.NewGuid(), "rpg-story", "Story-driven games, lore and character builds.", 87),
+        new(4, Guid.NewGuid(), "competitive", "Ranked strategies, esports and multiplayer.", 201),
+        new(5, Guid.NewGuid(), "indie-creative", "Indie games, cozy games and creative discussions.", 63)
+    };
+
+    private Task JoinChannel(ChannelDto channel)
+    {
+        // Example:
+        // NavigationManager.NavigateTo($"/channels/{channel.Slug}");
+        return Task.CompletedTask;
+    }
+
+    public sealed record ChannelDto(
+        int Id,
+        Guid ChatId,
+        string Slug,
+        string Description,
+        int ParticipantsCount
+    );
+}

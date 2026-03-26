@@ -353,7 +353,8 @@ namespace GameHub.Infrastructure.Data.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     ChatId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false)
+                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    LastReadAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -403,6 +404,34 @@ namespace GameHub.Infrastructure.Data.Migrations
                         principalColumn: "Id");
                 });
 
+            migrationBuilder.CreateTable(
+                name: "UserChats",
+                schema: "GameHub",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ChatId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserChats", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_UserChats_Chats_ChatId",
+                        column: x => x.ChatId,
+                        principalSchema: "GameHub",
+                        principalTable: "Chats",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_UserChats_UserProfiles_UserId",
+                        column: x => x.UserId,
+                        principalSchema: "GameHub",
+                        principalTable: "UserProfiles",
+                        principalColumn: "Id");
+                });
+
             migrationBuilder.InsertData(
                 schema: "GameHub",
                 table: "Channels",
@@ -431,6 +460,12 @@ namespace GameHub.Infrastructure.Data.Migrations
                 schema: "GameHub",
                 table: "ChatMembers",
                 column: "ChatId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ChatMembers_LastReadAt",
+                schema: "GameHub",
+                table: "ChatMembers",
+                column: "LastReadAt");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ChatMembers_UserId",
@@ -503,6 +538,18 @@ namespace GameHub.Infrastructure.Data.Migrations
                 column: "NormalizedName",
                 unique: true,
                 filter: "[NormalizedName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserChats_ChatId",
+                schema: "GameHub",
+                table: "UserChats",
+                column: "ChatId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserChats_UserId",
+                schema: "GameHub",
+                table: "UserChats",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_UserLogins_UserId",
@@ -584,6 +631,10 @@ namespace GameHub.Infrastructure.Data.Migrations
                 schema: "Identity");
 
             migrationBuilder.DropTable(
+                name: "UserChats",
+                schema: "GameHub");
+
+            migrationBuilder.DropTable(
                 name: "UserClaims",
                 schema: "Identity");
 
@@ -600,18 +651,18 @@ namespace GameHub.Infrastructure.Data.Migrations
                 schema: "Identity");
 
             migrationBuilder.DropTable(
+                name: "InboxState");
+
+            migrationBuilder.DropTable(
+                name: "OutboxState");
+
+            migrationBuilder.DropTable(
                 name: "Chats",
                 schema: "GameHub");
 
             migrationBuilder.DropTable(
                 name: "UserProfiles",
                 schema: "GameHub");
-
-            migrationBuilder.DropTable(
-                name: "InboxState");
-
-            migrationBuilder.DropTable(
-                name: "OutboxState");
 
             migrationBuilder.DropTable(
                 name: "Roles",

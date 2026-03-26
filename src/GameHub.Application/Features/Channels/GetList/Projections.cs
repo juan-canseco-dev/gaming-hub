@@ -10,14 +10,19 @@ internal static class ChannelProjections
         return query.OrderBy(c => c.ChannelId);
     }
 
-    public static IQueryable<ChannelDto> ProjectToResponse(this IQueryable<Chat> query)
+    public static IQueryable<ChannelDto> ProjectToResponse(
+        this IQueryable<Chat> query,
+        IQueryable<ChatMember> members,
+        Guid userId
+        )
     {
         return query.Select(chat => new ChannelDto(
             chat.Channel.Id,
             chat.Id,
             chat.Channel.Slug,
             chat.Channel.Description,
-            chat.Members.Count
+            chat.Members.Count,
+            members.Any(m => m.UserId == userId && m.ChatId == chat.Id)
         ));
     }
 }

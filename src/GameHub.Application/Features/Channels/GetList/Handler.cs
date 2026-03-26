@@ -3,19 +3,21 @@ using GameHub.Application.Abstractions.Messaging;
 using GameHub.Contracts.Channels;
 using GameHub.Abstractions.Primitives;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
+using GameHub.Application.Abstractions.Authentication;
 
 namespace GameHub.Application.Features.Channels.GetList;
 
 public static partial class GetChannels
 {
-    internal sealed class Handler : IQueryHandler<Query, IReadOnlyCollection<ChannelDto>>
+    public sealed class Handler : IQueryHandler<Query, IReadOnlyCollection<ChannelDto>>
     {
         private readonly IApplicationDbContext _context;
+        private readonly IAuthenticatedUserService _authService;
 
-        public Handler(IApplicationDbContext context, ILogger<Handler> logger)
+        public Handler(IApplicationDbContext context, IAuthenticatedUserService authService)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
+            _authService = authService ?? throw new ArgumentNullException(nameof(authService));
         }
 
         public async Task<Result<IReadOnlyCollection<ChannelDto>>> Handle(Query request, CancellationToken cancellationToken)
@@ -23,7 +25,7 @@ public static partial class GetChannels
             return await _context.Chats
                 .AsNoTracking()
                 .ApplySortingByChannel()
-                .ProjectToResponse()
+                .ProjectToResponse(_context.ChatMembers, _authService.UserId)
                 .ToListAsync(cancellationToken);
         }
     }

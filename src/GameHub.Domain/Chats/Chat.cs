@@ -19,6 +19,7 @@ public class Chat : Entity<Guid>
     public IReadOnlyCollection<ChatMember> Members => _members.AsReadOnly();
     public IReadOnlyCollection<ChatMessage> Messages => _messages.AsReadOnly();
     public Channel Channel { get; private init; } = default!;
+
     private Chat() { }
 
     private Chat(int channelId, DateTimeOffset createdAt)

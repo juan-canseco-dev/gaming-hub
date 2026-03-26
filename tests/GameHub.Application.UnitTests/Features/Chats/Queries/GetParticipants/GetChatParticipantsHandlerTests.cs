@@ -8,7 +8,6 @@ using MockQueryable.Moq;
 using Moq;
 using System.Text;
 using System.Text.Json;
-using static GameHub.Application.UnitTests.Shared.Helpers.ReflectionTestHelper;
 
 namespace GameHub.Application.UnitTests.Features.Chats.Queries.GetParticipants;
 public sealed class GetChatParticipantsHandlerTests
@@ -46,7 +45,7 @@ public sealed class GetChatParticipantsHandlerTests
         // Arrange
         var chatId = Guid.NewGuid();
 
-        var chat = CreateChat(chatId, 1, DateTimeOffset.UtcNow);
+        var chat = Shared.Factories.ChatTestFactory.CreateNew(chatId, 1, DateTimeOffset.UtcNow);
 
         var chats = new List<Chat> { chat }.BuildMockDbSet();
         var chatMembers = new List<ChatMember>().BuildMockDbSet();
@@ -75,15 +74,15 @@ public sealed class GetChatParticipantsHandlerTests
         var chatId = Guid.NewGuid();
         var joinedAt = DateTimeOffset.UtcNow;
 
-        var chat = CreateChat(chatId, 1, joinedAt);
+        var chat = Shared.Factories.ChatTestFactory.CreateNew(chatId, 1, joinedAt);
 
         var user1 = new UserProfile(Guid.NewGuid(), "zoe@example.com", "zoe", "Zoe", joinedAt);
         var user2 = new UserProfile(Guid.NewGuid(), "ana@example.com", "ana", "Ana", joinedAt);
         var user3 = new UserProfile(Guid.NewGuid(), "bob@example.com", "bob", "Bob", joinedAt);
 
-        var member1 = CreateChatMember(chatId, user1.Id, joinedAt);
-        var member2 = CreateChatMember(chatId, user2.Id, joinedAt);
-        var member3 = CreateChatMember(chatId, user3.Id, joinedAt);
+        var member1 = CreateNew(chatId, user1.Id, joinedAt);
+        var member2 = CreateNew(chatId, user2.Id, joinedAt);
+        var member3 = CreateNew(chatId, user3.Id, joinedAt);
 
         var chats = new List<Chat> { chat }.BuildMockDbSet();
         var chatMembers = new List<ChatMember> { member1, member2, member3 }.BuildMockDbSet();
@@ -119,15 +118,15 @@ public sealed class GetChatParticipantsHandlerTests
         var chatId = Guid.NewGuid();
         var joinedAt = DateTimeOffset.UtcNow;
 
-        var chat = CreateChat(chatId, 1, joinedAt);
+        var chat = Shared.Factories.ChatTestFactory.CreateNew(chatId, 1, joinedAt);
 
         var user1 = new UserProfile(Guid.NewGuid(), "ana@example.com", "ana", "Ana", joinedAt);
         var user2 = new UserProfile(Guid.NewGuid(), "bob@example.com", "bob", "Bob", joinedAt);
         var user3 = new UserProfile(Guid.NewGuid(), "zoe@example.com", "zoe", "Zoe", joinedAt);
 
-        var member1 = CreateChatMember(chatId, user1.Id, joinedAt);
-        var member2 = CreateChatMember(chatId, user2.Id, joinedAt);
-        var member3 = CreateChatMember(chatId, user3.Id, joinedAt);
+        var member1 = CreateNew(chatId, user1.Id, joinedAt);
+        var member2 = CreateNew(chatId, user2.Id, joinedAt);
+        var member3 = CreateNew(chatId, user3.Id, joinedAt);
 
         var chats = new List<Chat> { chat }.BuildMockDbSet();
         var chatMembers = new List<ChatMember> { member1, member2, member3 }.BuildMockDbSet();
@@ -174,23 +173,11 @@ public sealed class GetChatParticipantsHandlerTests
         return context;
     }
 
-    private static Chat CreateChat(Guid chatId, int channelId, DateTimeOffset createdAt)
-    {
-        var chat = (Chat)Activator.CreateInstance(typeof(Chat), nonPublic: true)!;
 
-        SetProperty(chat, nameof(Chat.Id), chatId);
-        SetProperty(chat, nameof(Chat.ChannelId), channelId);
-        SetProperty(chat, nameof(Chat.CreatedAt), createdAt);
-        SetProperty(chat, nameof(Chat.Channel), Channel.FromValue(channelId)!);
-
-        return chat;
-    }
-
-    private static ChatMember CreateChatMember(Guid chatId, Guid userId, DateTimeOffset joinedAt)
+    private static ChatMember CreateNew(Guid chatId, Guid userId, DateTimeOffset joinedAt)
     {
         return new ChatMember(chatId, userId, joinedAt);
     }
-
 
     private static string EncodeCursor(string username, Guid userId)
     {

@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GameHub.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260313190806_Initial")]
+    [Migration("20260325231753_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -130,12 +130,17 @@ namespace GameHub.Infrastructure.Data.Migrations
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<DateTimeOffset>("LastReadAt")
+                        .HasColumnType("datetimeoffset");
+
                     b.Property<Guid>("UserId")
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ChatId");
+
+                    b.HasIndex("LastReadAt");
 
                     b.HasIndex("UserId");
 
@@ -172,6 +177,30 @@ namespace GameHub.Infrastructure.Data.Migrations
                     b.HasIndex("SenderUserId");
 
                     b.ToTable("ChatMessages", "GameHub");
+                });
+
+            modelBuilder.Entity("GameHub.Domain.Users.UserChat", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("ChatId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ChatId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("UserChats", "GameHub");
                 });
 
             modelBuilder.Entity("GameHub.Domain.Users.UserProfile", b =>
@@ -645,7 +674,7 @@ namespace GameHub.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("GameHub.Domain.Chats.ChatMember", b =>
                 {
-                    b.HasOne("GameHub.Domain.Chats.Chat", null)
+                    b.HasOne("GameHub.Domain.Chats.Chat", "Chat")
                         .WithMany("Members")
                         .HasForeignKey("ChatId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -656,6 +685,8 @@ namespace GameHub.Infrastructure.Data.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
+
+                    b.Navigation("Chat");
                 });
 
             modelBuilder.Entity("GameHub.Domain.Chats.ChatMessage", b =>
@@ -669,6 +700,21 @@ namespace GameHub.Infrastructure.Data.Migrations
                     b.HasOne("GameHub.Domain.Users.UserProfile", null)
                         .WithMany()
                         .HasForeignKey("SenderUserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("GameHub.Domain.Users.UserChat", b =>
+                {
+                    b.HasOne("GameHub.Domain.Chats.Chat", null)
+                        .WithMany()
+                        .HasForeignKey("ChatId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("GameHub.Domain.Users.UserProfile", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });

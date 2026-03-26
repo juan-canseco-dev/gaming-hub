@@ -16,6 +16,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
     public DbSet<ChatMessage> ChatMessages => Set<ChatMessage>();
     public DbSet<ChatMember> ChatMembers => Set<ChatMember>();
     public DbSet<UserProfile> UserProfiles => Set<UserProfile>();
+    public DbSet<UserChat> UserChats => Set<UserChat>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

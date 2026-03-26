@@ -61,6 +61,14 @@ public static partial class JoinChat
             var joinedAt = _dateTimeProvider.CurrentTimeUtc;
 
             var joinedUserMessage = chat.Join(userId, userProfile.Username, joinedAt);
+            
+            var userChat = new UserChat(
+                chatId: request.ChatId,
+                userId: userId,
+                createdAt: joinedAt
+            );
+
+            _context.UserChats.Add(userChat);
 
             var @event = new ChatMemberJoinedEvent
             {

@@ -4,9 +4,9 @@ using GameHub.Domain.Chats;
 using MediatR;
 using static GameHub.Application.Features.Channels.GetList.GetChannels;
 
-namespace GameHub.WebAPI.Endpoints.Channels.GetList;
+namespace GameHub.WebAPI.Endpoints.Channels;
 
-public class GetAll : ICarterModule
+public class GetList : ICarterModule
 {
     public void AddRoutes(IEndpointRouteBuilder app)
     {

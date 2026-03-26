@@ -155,12 +155,20 @@ public sealed class JoinChatHandlerTests
                 It.IsAny<CancellationToken>()))
             .ReturnsAsync(userProfile);
 
+        var userChats = new List<UserChat>();
+        var userChatsDbSetMock = new Mock<DbSet<UserChat>>();
+
+        userChatsDbSetMock
+            .Setup(x => x.Add(It.IsAny<UserChat>()))
+            .Callback<UserChat>(uc => userChats.Add(uc));
+
         var chatMembers = new List<ChatMember>();
         var chatMembersDbSetMock = chatMembers.BuildMockDbSet();
 
         _contextMock.Setup(x => x.Chats).Returns(chatsDbSetMock.Object);
         _contextMock.Setup(x => x.UserProfiles).Returns(userProfilesDbSetMock.Object);
         _contextMock.Setup(x => x.ChatMembers).Returns(chatMembersDbSetMock.Object);
+        _contextMock.Setup(x => x.UserChats).Returns(userChatsDbSetMock.Object);
 
         _contextMock
             .Setup(x => x.SaveChangesAsync(It.IsAny<CancellationToken>()))
@@ -189,6 +197,13 @@ public sealed class JoinChatHandlerTests
         var message = chat.Messages.Should().ContainSingle(x =>
             x.Content == $"User {userProfile.Username} joined the chat.")
             .Subject;
+
+        userChats.Should().ContainSingle();
+
+        var addedUserChat = userChats.Single();
+        addedUserChat.ChatId.Should().Be(chat.Id);
+        addedUserChat.UserId.Should().Be(userId);
+        addedUserChat.CreatedAt.Should().Be(now);
 
         publishedEvent.Should().NotBeNull();
         publishedEvent!.ChatId.Should().Be(chat.Id);

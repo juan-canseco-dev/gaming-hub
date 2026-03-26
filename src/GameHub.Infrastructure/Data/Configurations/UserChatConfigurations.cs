@@ -5,25 +5,24 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace GameHub.Infrastructure.Data.Configurations;
 
-public class ChatMemberConfiguration : IEntityTypeConfiguration<ChatMember>
+public class UserChatConfigurations : IEntityTypeConfiguration<UserChat>
 {
-    public void Configure(EntityTypeBuilder<ChatMember> builder)
+    public void Configure(EntityTypeBuilder<UserChat> builder)
     {
-        builder.ToTable("ChatMembers", "GameHub");
+        builder.ToTable("UserChats", "GameHub");
 
         builder.Property(x => x.Id)
-              .HasValueGenerator<UUIDv7Generator>()
-              .ValueGeneratedOnAdd();
+            .HasValueGenerator<UUIDv7Generator>()
+            .ValueGeneratedOnAdd();
 
         builder.HasKey(x => x.Id);
 
         builder.Property(x => x.ChatId);
 
-        builder.HasOne(x=> x.Chat)
-            .WithMany(c => c.Members)
+        builder.HasOne<Chat>()
+            .WithMany()
             .HasForeignKey(x => x.ChatId)
             .OnDelete(DeleteBehavior.Cascade);
-
 
         builder.Property(i => i.UserId);
 
@@ -34,10 +33,5 @@ public class ChatMemberConfiguration : IEntityTypeConfiguration<ChatMember>
 
         builder.Property(x => x.CreatedAt)
             .IsRequired();
-
-        builder.Property(x => x.LastReadAt)
-            .IsRequired();
-
-        builder.HasIndex(x => x.LastReadAt);
     }
 }

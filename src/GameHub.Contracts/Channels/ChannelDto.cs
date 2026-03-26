@@ -5,5 +5,6 @@ public sealed record ChannelDto(
     Guid ChatId,
     string Slug,
     string Description,
-    int ParticipantsCount
+    int ParticipantsCount,
+    bool IsJoined
 );
