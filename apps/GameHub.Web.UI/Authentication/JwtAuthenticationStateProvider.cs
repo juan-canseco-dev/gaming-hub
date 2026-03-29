@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.JSInterop;
-using System.Net.Http.Headers;
 using System.Security.Claims;
 
 namespace GameHub.Web.UI.Authentication;
@@ -9,21 +8,19 @@ namespace GameHub.Web.UI.Authentication;
 public class JwtAuthenticationStateProvider : AuthenticationStateProvider
 {
     private ILocalStorageService _localStorage;
-    private HttpClient _httpClient;
 
-    public JwtAuthenticationStateProvider(ILocalStorageService localStorage, HttpClient httpClient)
+    public JwtAuthenticationStateProvider(ILocalStorageService localStorage)
     {
         _localStorage = localStorage ?? throw new ArgumentNullException(nameof(localStorage));
-        _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
     }
+
+    public string? Token => _localStorage.GetItem<string>("token");
 
     public async override Task<AuthenticationState> GetAuthenticationStateAsync()
     {
         var token = _localStorage.GetItem<string>("token");
 
         var identity = string.IsNullOrEmpty(token) ? new ClaimsIdentity() : new ClaimsIdentity(ParseClaimsFromJwt(token), "jwt");
-
-        _httpClient.DefaultRequestHeaders.Authorization = string.IsNullOrEmpty(token) ? null : new AuthenticationHeaderValue("Bearer", token);
 
         return new AuthenticationState(new ClaimsPrincipal(identity));
     }

@@ -38,8 +38,9 @@ public static partial class GetUserChats
                     cm.Chat.LastMessagePreview,
                     cm.Chat.LastMessageAt,
                     cm.Chat.Messages.Count(m =>
-                        m.CreatedAt > cm.LastReadAt &&
-                        m.SenderUserId != _authService.UserId
+                       cm.LastReadAt == null
+                       ? m.SenderUserId != _authService.UserId 
+                       : m.CreatedAt > cm.LastReadAt && m.SenderUserId != _authService.UserId
                     )
                  ))
                 .ToListAsync(cancellationToken);

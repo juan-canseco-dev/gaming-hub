@@ -28,7 +28,7 @@ public static partial class GetTotalChatUnreadMessagesCount
                  join message in _context.ChatMessages
                      on member.ChatId equals message.ChatId
                  where member.UserId == userId
-                       && message.CreatedAt > member.LastReadAt
+                       && (message.CreatedAt > member.LastReadAt || member.LastReadAt == null) 
                        && message.SenderUserId != userId
                  select message.Id)
                 .CountAsync(cancellationToken);

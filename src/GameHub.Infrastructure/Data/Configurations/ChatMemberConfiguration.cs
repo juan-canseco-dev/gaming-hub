@@ -35,8 +35,7 @@ public class ChatMemberConfiguration : IEntityTypeConfiguration<ChatMember>
         builder.Property(x => x.CreatedAt)
             .IsRequired();
 
-        builder.Property(x => x.LastReadAt)
-            .IsRequired();
+        builder.Property(x => x.LastReadAt);
 
         builder.HasIndex(x => x.LastReadAt);
     }

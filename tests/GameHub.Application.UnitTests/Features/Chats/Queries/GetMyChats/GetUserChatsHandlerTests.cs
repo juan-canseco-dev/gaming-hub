@@ -95,6 +95,8 @@ public sealed class GetUserChatsHandlerTests
             messageTime: now,
             messageContent: "last message");
 
+        membership.ReadUpTo(now.AddMinutes(-10));
+
         _contextMock.Setup(x => x.ChatMembers)
             .Returns(new List<ChatMember> { membership }.BuildMockDbSet().Object);
 

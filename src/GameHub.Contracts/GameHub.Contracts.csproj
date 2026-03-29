@@ -9,4 +9,8 @@
     <RootNamespace>GameHub.Contracts</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\GameHub.Abstractions\GameHub.Abstractions.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -1,148 +1,215 @@
 ﻿@page "/channels"
 @attribute [Authorize]
+
 @inject NavigationManager NavigationManager
+@inject IChatService ChatService
+@inject ISnackbar Snackbar
+@using static GameHub.Web.UI.Helpers.UiTextHelper
 
-<MudContainer MaxWidth="MaxWidth.False" Class="pa-6 channels-page">
+<MudContainer MaxWidth="MaxWidth.Large" Class="pa-6">
     <MudStack Spacing="3">
-        <div>
-            <MudText Typo="Typo.h4" Class="fw-bold">My Channels</MudText>
-            <MudText Typo="Typo.body1" Color="Color.Secondary">
-                Jump back into your active gaming conversations.
-            </MudText>
-        </div>
 
-        <MudPaper Class="channels-list pa-2" Elevation="0">
-            <MudList T="MyChannelListItemDto" Class="pa-0">
-                @foreach (var channel in ChannelsList)
-                {
-                    <MudListItem Class="channel-item"
-                                 OnClick="@(() => OpenChannel(channel))">
-                        <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2" Class="w-100">
+        <!-- Header -->
+        @if (_channels.Count > 0)
+        {
+            <MudStack Spacing="1">
+                <MudText Typo="Typo.h4" Class="fw-bold">My Channels</MudText>
+                <MudText Typo="Typo.body1" Color="Color.Secondary">
+                    Jump back into your active gaming conversations.
+                </MudText>
+            </MudStack>
+        }
+        
 
-                            <!-- Avatar -->
-                            <MudAvatar Size="Size.Large" Class="channel-avatar">
-                                @GetInitials(channel.Name)
-                            </MudAvatar>
+        <!-- CONTENT -->
+        @if (_isLoading)
+        {
+            <MudPaper Elevation="0" Class="pa-0 rounded-lg">
+                <MudStack Spacing="3">
 
-                            <!-- Main content -->
-                            <div class="flex-grow-1 min-width-0">
-                                <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Start" Class="w-100">
-                                    <MudText Typo="Typo.subtitle1" Class="fw-bold text-truncate">
-                                        @channel.Name
-                                    </MudText>
+                    <!-- Optional skeleton header -->
+                    <MudStack Spacing="1" Class="px-4 pt-4">
+                        <MudSkeleton Width="180px" Height="28px" />
+                        <MudSkeleton Width="280px" Height="16px" />
+                    </MudStack>
 
-                                    <MudText Typo="Typo.caption" Color="Color.Secondary" Class="channel-time">
-                                        @FormatTime(channel.LastMessageAt)
-                                    </MudText>
+                    <!-- Chat-like loading items -->
+                    <MudList T="string" Class="pa-0">
+                        @for (int i = 0; i < 6; i++)
+                        {
+                            <MudListItem DisableRipple="true" Class="px-4 py-3">
+                                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2" Class="w-100">
+
+                                    <!-- Avatar -->
+                                    <MudSkeleton Width="52px" Height="52px" Variant="Variant.Circular" />
+
+                                    <!-- Main content -->
+                                    <MudStack Class="flex-grow-1" Spacing="1">
+
+                                        <!-- Top row -->
+                                        <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+                                            <MudSkeleton Width="140px" Height="18px" />
+                                            <MudSkeleton Width="56px" Height="14px" />
+                                        </MudStack>
+
+                                        <!-- Message preview -->
+                                        <MudSkeleton Width="85%" Height="14px" />
+                                        <MudSkeleton Width="45%" Height="12px" />
+
+                                    </MudStack>
+
+                                    <!-- Unread badge placeholder -->
+                                    <MudSkeleton Width="22px" Height="22px" Variant="Variant.Circular" />
                                 </MudStack>
+                            </MudListItem>
 
-                                <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="w-100 mt-1">
-                                    <div class="channel-preview-wrapper">
-                                        <MudText Typo="Typo.body2" Color="Color.Secondary" Class="text-truncate">
-                                            @(string.IsNullOrWhiteSpace(channel.LastMessagePreview)
-                                                ? "No messages yet"
-                                                : channel.LastMessagePreview)
+                            @if (i < 5)
+                            {
+                                <MudDivider />
+                            }
+                        }
+                    </MudList>
+                </MudStack>
+            </MudPaper>
+        }
+        else if (_hasError)
+        {
+            <MudPaper Elevation="0" Class="pa-6">
+                <MudStack AlignItems="AlignItems.Center" Spacing="2">
+                    <MudIcon Icon="@Icons.Material.Filled.ErrorOutline" Size="Size.Large" Color="Color.Error" />
+                    <MudText Typo="Typo.h6">Something went wrong</MudText>
+                    <MudText Typo="Typo.body2" Color="Color.Secondary">
+                        We couldn't load your channels. Please try again.
+                    </MudText>
+
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="LoadAsync">
+                        Retry
+                    </MudButton>
+                </MudStack>
+            </MudPaper>
+        }
+        else if (_channels.Count == 0)
+        {
+            <MudPaper Elevation="0" Class="pa-6">
+                <MudStack AlignItems="AlignItems.Center" Spacing="2">
+                    <MudIcon Icon="@Icons.Material.Filled.Forum" Size="Size.Large" />
+                    <MudText Typo="Typo.h6">No channels yet</MudText>
+                    <MudText Typo="Typo.body2" Color="Color.Secondary">
+                        Join a channel to start chatting with other gamers.
+                    </MudText>
+
+                    <MudButton Variant="Variant.Filled"
+                               Color="Color.Primary"
+                               OnClick="@(() => NavigationManager.NavigateTo("/"))">
+                        Go to Home
+                    </MudButton>
+                </MudStack>
+            </MudPaper>
+        }
+        else
+        {
+            <MudPaper Elevation="0">
+                <MudList T="ChatDto">
+
+                    @foreach (var channel in _channels)
+                    {
+                        <MudListItem OnClick="@(() => OpenChannel(channel))">
+                            <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2" Class="w-100">
+
+                                <!-- Avatar -->
+                                <MudAvatar Size="Size.Large">
+                                    @GetInitial(channel.Name)
+                                </MudAvatar>
+
+                                <!-- Content -->
+                                <MudStack Class="flex-grow-1" Spacing="0">
+
+                                    <!-- Top row -->
+                                    <MudStack Row="true" Justify="Justify.SpaceBetween">
+                                        <MudText Typo="Typo.subtitle1" Class="fw-bold" Style="overflow:hidden; text-overflow:ellipsis;">
+                                            @channel.Name
                                         </MudText>
 
-                                        <MudText Typo="Typo.caption" Class="mt-1 participants-text">
-                                            @channel.ParticipantsCount participants
+                                        <MudText Typo="Typo.caption" Color="Color.Secondary">
+                                            @FormatTime(channel.LastMessageAt)
                                         </MudText>
-                                    </div>
+                                    </MudStack>
 
-                                    <MudStack AlignItems="AlignItems.End" Spacing="1">
+                                    <!-- Bottom row -->
+                                    <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
+
+                                        <MudStack Spacing="0">
+                                            <MudText Typo="Typo.body2" Color="Color.Secondary"
+                                                     Style="overflow:hidden; text-overflow:ellipsis;">
+                                                @(string.IsNullOrWhiteSpace(channel.LastMesagePreview)
+                                                    ? "No messages yet"
+                                                    : channel.LastMesagePreview)
+                                            </MudText>
+
+                                            <MudText Typo="Typo.caption" Color="Color.Secondary">
+                                                @channel.ParticipantsCount participants
+                                            </MudText>
+                                        </MudStack>
+
                                         @if (channel.UnreadCount > 0)
                                         {
-                                            <MudBadge Content="@channel.UnreadCount"
-                                                      Color="Color.Primary"
-                                                      Class="unread-badge" />
+                                            <MudBadge Class="me-3" Content="@channel.UnreadCount" Color="Color.Primary" />
                                         }
                                     </MudStack>
                                 </MudStack>
-                            </div>
-                        </MudStack>
-                    </MudListItem>
+                            </MudStack>
+                        </MudListItem>
 
-                    <MudDivider />
-                }
-            </MudList>
-        </MudPaper>
+                        <MudDivider />
+                    }
+
+                </MudList>
+            </MudPaper>
+        }
+
     </MudStack>
 </MudContainer>
 
 @code {
-    private List<MyChannelListItemDto> ChannelsList = new()
+    private List<ChatDto> _channels = [];
+    private bool _isLoading = true;
+    private bool _hasError = false;
+
+    protected override async Task OnInitializedAsync()
     {
-        new(
-            1,
-            Guid.NewGuid(),
-            "general-gaming",
-            "General Gaming",
-            "Talk about what you're currently playing and gaming news.",
-            128,
-            "Anyone playing Helldivers 2 tonight?",
-            DateTimeOffset.Now.AddMinutes(-10),
-            3),
-
-        new(
-            2,
-            Guid.NewGuid(),
-            "retro-gaming",
-            "Retro Gaming",
-            "Classic consoles, arcade games and nostalgia.",
-            54,
-            "I still think the SNES had the best RPG era.",
-            DateTimeOffset.Now.AddHours(-1),
-            0),
-
-        new(
-            3,
-            Guid.NewGuid(),
-            "rpg-story",
-            "RPG & Story",
-            "Story-driven games, lore and character builds.",
-            87,
-            "The Witcher 3 side quests are still unmatched.",
-            DateTimeOffset.Now.AddMinutes(-35),
-            7),
-
-        new(
-            4,
-            Guid.NewGuid(),
-            "competitive",
-            "Competitive Play",
-            "Ranked strategies, esports and multiplayer.",
-            201,
-            "We need one more for ranked tonight.",
-            DateTimeOffset.Now.AddDays(-1),
-            1),
-
-        new(
-            5,
-            Guid.NewGuid(),
-            "indie-creative",
-            "Indie & Creative",
-            "Indie games, cozy games and creative discussions.",
-            63,
-            null,
-            null,
-            0)
-    };
-
-    private void OpenChannel(MyChannelListItemDto channel)
-    {
-        NavigationManager.NavigateTo($"/channels/{channel.Slug}");
+        await LoadAsync();
     }
 
-    private static string GetInitials(string value)
+    private async Task LoadAsync()
     {
-        if (string.IsNullOrWhiteSpace(value))
-            return "?";
+        _isLoading = true;
+        _hasError = false;
 
-        var parts = value.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-        return parts.Length == 1
-            ? parts[0][0].ToString().ToUpper()
-            : $"{char.ToUpper(parts[0][0])}{char.ToUpper(parts[1][0])}";
+        await Task.Delay(1500);
+
+        var result = await ChatService.GetListAsync();
+
+        if (result.IsFailure)
+        {
+            _hasError = true;
+
+            Snackbar.Clear();
+            Snackbar.Add(result.Error.Description, Severity.Error);
+
+            _isLoading = false;
+            return;
+        }
+
+        _channels = result.Value;
+        _isLoading = false;
     }
+
+    private void OpenChannel(ChatDto channel)
+    {
+        NavigationManager.NavigateTo($"/channels/{channel.Id}");
+    }
+
+    
 
     private static string FormatTime(DateTimeOffset? value)
     {
@@ -160,16 +227,4 @@
 
         return date.ToString("dd/MM/yyyy");
     }
-
-    public sealed record MyChannelListItemDto(
-        int Id,
-        Guid ChatId,
-        string Slug,
-        string Name,
-        string Description,
-        int ParticipantsCount,
-        string? LastMessagePreview,
-        DateTimeOffset? LastMessageAt,
-        int UnreadCount
-    );
 }

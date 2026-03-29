@@ -63,7 +63,7 @@ public sealed class ChatMemberTests
     }
 
     [Fact]
-    public void Constructor_Should_SetLastReadAt_ToCreatedAt()
+    public void Constructor_Should_SetLastReadAt_ToNull()
     {
         // Arrange
         var createdAt = new DateTimeOffset(2026, 03, 24, 10, 00, 00, TimeSpan.Zero);
@@ -75,6 +75,6 @@ public sealed class ChatMemberTests
             createdAt: createdAt);
 
         // Assert
-        chatMember.LastReadAt.Should().Be(createdAt);
+        chatMember.LastReadAt.Should().BeNull();
     }
 }

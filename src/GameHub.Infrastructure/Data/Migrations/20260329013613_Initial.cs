@@ -354,7 +354,7 @@ namespace GameHub.Infrastructure.Data.Migrations
                     ChatId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
-                    LastReadAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false)
+                    LastReadAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true)
                 },
                 constraints: table =>
                 {

@@ -127,7 +127,7 @@ namespace GameHub.Infrastructure.Data.Migrations
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<DateTimeOffset>("LastReadAt")
+                    b.Property<DateTimeOffset?>("LastReadAt")
                         .HasColumnType("datetimeoffset");
 
                     b.Property<Guid>("UserId")

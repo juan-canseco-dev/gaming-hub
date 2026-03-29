@@ -43,6 +43,7 @@ public sealed class GetMessageByIdHandlerTests
         var userProfilesDbSetMock = users.BuildMockDbSet();
 
         var contextMock = new Mock<IApplicationDbContext>();
+
         contextMock.Setup(x => x.ChatMessages).Returns(chatMessagesDbSetMock.Object);
         contextMock.Setup(x => x.UserProfiles).Returns(userProfilesDbSetMock.Object);
 
@@ -81,6 +82,7 @@ public sealed class GetMessageByIdHandlerTests
         var userProfilesDbSetMock = users.BuildMockDbSet();
 
         var contextMock = new Mock<IApplicationDbContext>();
+
         contextMock.Setup(x => x.ChatMessages).Returns(chatMessagesDbSetMock.Object);
         contextMock.Setup(x => x.UserProfiles).Returns(userProfilesDbSetMock.Object);
 

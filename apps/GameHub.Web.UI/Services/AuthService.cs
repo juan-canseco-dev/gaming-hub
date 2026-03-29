@@ -1,6 +1,7 @@
 ﻿using GameHub.Abstractions.Primitives;
 using GameHub.Contracts.Identity;
 using GameHub.Web.UI.Authentication;
+using GameHub.Web.UI.Services.Interfaces;
 using Microsoft.AspNetCore.Components.Authorization;
 using System.Net;
 using System.Net.Http.Json;

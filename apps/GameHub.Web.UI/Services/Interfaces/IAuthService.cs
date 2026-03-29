@@ -2,7 +2,7 @@
 using GameHub.Contracts.Identity;
 using GameHub.Web.UI.Authentication;
 
-namespace GameHub.Web.UI.Services;
+namespace GameHub.Web.UI.Services.Interfaces;
 
 public interface IAuthService
 {

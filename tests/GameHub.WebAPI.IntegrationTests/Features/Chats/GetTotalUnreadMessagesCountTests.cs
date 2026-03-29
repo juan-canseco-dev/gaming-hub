@@ -59,9 +59,13 @@ public class GetTotalUnreadMessagesCountTests(CustomWebApplicationFactory factor
         AuthenticateClient(user.Id);
 
         var chat = await CreateChatWithChannelsAsync();
-        var joinedAt = DateTimeOffset.UtcNow.AddMinutes(-30);
+        var joinedAt = DateTimeOffset.UtcNow;
 
         chat.Join(user.Id, user.Username, joinedAt);
+
+        var member = chat.Members.First(x => x.ChatId == chat.Id && x.UserId == user.Id);
+        member.ReadUpTo(joinedAt);
+
         await Context.SaveChangesAsync();
 
         // Act

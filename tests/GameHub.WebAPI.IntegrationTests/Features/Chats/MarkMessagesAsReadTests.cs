@@ -105,7 +105,7 @@ public class MarkMessagesAsReadTests(CustomWebApplicationFactory factory) : IAsy
         var membershipBefore = Context.ChatMembers
             .First(x => x.ChatId == chat.Id && x.UserId == user.Id);
 
-        membershipBefore.LastReadAt.Should().Be(createdAt);
+        membershipBefore.LastReadAt.Should().BeNull();
 
         // Act
         var response = await HttpClient.PostAsync($"/api/chats/{chat.Id}/read", content: null);

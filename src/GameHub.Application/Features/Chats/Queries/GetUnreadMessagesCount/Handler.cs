@@ -50,8 +50,9 @@ public static partial class GetUnreadMessagesCountByChat
                 .AsNoTracking()
                 .Where(x => x.ChatId == request.ChatId)
                 .Where(x => 
-                    x.CreatedAt > membership.LastReadAt && 
-                    x.SenderUserId != userId
+                    membership.LastReadAt == null
+                    ? x.SenderUserId != userId
+                    : x.CreatedAt > membership.LastReadAt && x.SenderUserId != userId
                  )
                 .CountAsync(cancellationToken);
         }

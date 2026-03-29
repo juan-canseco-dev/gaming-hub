@@ -4,6 +4,7 @@ using GameHub.Contracts.Chats;
 using GameHub.Abstractions.Primitives;
 using GameHub.Domain.Chats;
 using Microsoft.EntityFrameworkCore;
+using GameHub.Application.Abstractions.Authentication;
 
 namespace GameHub.Application.Features.Chats.Queries.GetMessage;
 
@@ -12,7 +13,9 @@ public static partial class GetMessageById
     public sealed class Handler : IQueryHandler<Query, MessageDto>
     {
         private readonly IApplicationDbContext _context;
-        public Handler(IApplicationDbContext context)
+        public Handler(
+            IApplicationDbContext context
+        )
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }

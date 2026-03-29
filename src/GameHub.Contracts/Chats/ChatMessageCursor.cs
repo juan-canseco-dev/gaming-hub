@@ -1,11 +1,11 @@
 ﻿using GameHub.Abstractions.Primitives;
 using System.Text.Json;
 
-namespace GameHub.Application.Features.Chats.Queries.GetMessages;
+namespace GameHub.Contracts.Chats;
 
-public static partial class GetMessagesByChat
+public static class ChatMessageCursor
 {
-    internal sealed record Cursor(
+    public sealed record Cursor(
         DateTimeOffset CreatedAt,
         Guid MessageId
     )
@@ -35,4 +35,13 @@ public static partial class GetMessagesByChat
             }
         }
     }
+
+    public static class Errors
+    {
+        public static Error InvalidCursor => new(
+            "ChatMessages.InvalidCursor",
+            "The provided cursor is invalid."
+        );
+    }
 }
+

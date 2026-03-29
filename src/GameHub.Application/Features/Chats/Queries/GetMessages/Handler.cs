@@ -5,6 +5,7 @@ using GameHub.Domain.Chats;
 using GameHub.Abstractions.Primitives;
 using Microsoft.EntityFrameworkCore;
 using GameHub.Abstractions.Pagination;
+using static GameHub.Contracts.Chats.ChatMessageCursor;
 
 namespace GameHub.Application.Features.Chats.Queries.GetMessages;
 
@@ -14,7 +15,9 @@ public static partial class GetMessagesByChat
     {
         private readonly IApplicationDbContext _context;
 
-        public Handler(IApplicationDbContext context)
+        public Handler(
+            IApplicationDbContext context
+        )
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }

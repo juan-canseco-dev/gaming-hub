@@ -11,7 +11,8 @@ public static class GetMessagesByChatProjections
 
     public static IQueryable<MessageDto> ProjectToDto(
       this IQueryable<ChatMessage> messages,
-      IQueryable<UserProfile> userProfiles)
+      IQueryable<UserProfile> userProfiles
+    )
     {
         return
             from message in messages
