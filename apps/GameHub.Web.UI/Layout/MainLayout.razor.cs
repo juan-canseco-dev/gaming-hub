@@ -1,5 +1,5 @@
-﻿using GameHub.Web.UI.Authentication;
-using GameHub.Web.UI.Themes;
+﻿using GameHub.Web.UI.Features.Auth.State;
+using GameHub.Web.UI.Shared.Themes;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 

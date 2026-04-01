@@ -5,6 +5,7 @@ using GameHub.Domain.Chats;
 using GameHub.Abstractions.Primitives;
 using Microsoft.EntityFrameworkCore;
 using GameHub.Abstractions.Pagination;
+using static GameHub.Contracts.Chats.ChatParticipantCursor;
 
 namespace GameHub.Application.Features.Chats.Queries.GetParticipants;
 

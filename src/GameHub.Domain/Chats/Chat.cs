@@ -46,7 +46,8 @@ public class Chat : Entity<Guid>
             return Result.Failure<ChatMessage>(MessageErrors.MessageTooLong(MaxMessageLength));
         }
 
-        var message = new ChatMessage(Id, senderUserId, content, createdAt, ChatMessageType.User);
+        var messageId = Guid.CreateVersion7();
+        var message = new ChatMessage(messageId, this.Id, senderUserId, content, createdAt, ChatMessageType.User);
         
         _messages.Add(message);
         LastMessageAt = createdAt;
@@ -67,7 +68,9 @@ public class Chat : Entity<Guid>
 
         var content = $"User {username} joined the chat.";
 
+        var messageId = Guid.CreateVersion7();
         var message = new ChatMessage(
+            messageId,
             Id, 
             SystemUsers.AdminUserId, 
             content,

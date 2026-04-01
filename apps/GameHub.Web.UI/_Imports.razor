@@ -1,5 +1,6 @@
 ﻿@using System.Net.Http
 @using System.Net.Http.Json
+@using System.Linq
 @using Microsoft.AspNetCore.Components.Forms
 @using Microsoft.AspNetCore.Components.Routing
 @using Microsoft.AspNetCore.Components.Web
@@ -16,8 +17,15 @@
 @using GameHub.Contracts.Identity
 @using GameHub.Contracts.Notifications
 @using GameHub.Contracts.Channels
-@using GameHub.Web.UI.Authentication
-@using GameHub.Web.UI.Services
-@using GameHub.Web.UI.Themes
-@using GameHub.Web.UI.Services.Interfaces
 @using GameHub.Contracts.Chats
+@using GameHub.Contracts.Profile
+@using GameHub.Web.UI.Shared.Helpers
+@using GameHub.Web.UI.Shared.Themes
+@using GameHub.Web.UI.Features.Auth.Models
+@using GameHub.Web.UI.Features.Auth.Pages
+@using GameHub.Web.UI.Features.Auth.State
+@using GameHub.Web.UI.Features.Auth.Services
+@using GameHub.Web.UI.Features.Channels.Models
+@using GameHub.Web.UI.Features.Channels.Pages
+@using GameHub.Web.UI.Features.Channels.Services
+@using GameHub.Web.UI.Features.Channels.Services.Interfaces

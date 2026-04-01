@@ -1,4 +1,5 @@
-﻿using GameHub.Web.UI.Authentication;
+﻿using GameHub.Web.UI.Features.Auth.Models;
+using GameHub.Web.UI.Features.Auth.State;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 

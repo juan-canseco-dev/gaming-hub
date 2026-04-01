@@ -12,8 +12,8 @@ public class ChatMessageConfiguration : IEntityTypeConfiguration<ChatMessage>
         builder.ToTable("ChatMessages", "GameHub");
 
         builder.Property(x => x.Id)
-          .HasValueGenerator<UUIDv7Generator>()
-          .ValueGeneratedOnAdd();
+            .IsRequired()
+            .ValueGeneratedNever();
 
         builder.HasKey(x => x.Id);
 

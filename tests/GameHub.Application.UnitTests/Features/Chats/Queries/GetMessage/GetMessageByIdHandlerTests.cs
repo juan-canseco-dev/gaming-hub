@@ -21,6 +21,7 @@ public sealed class GetMessageByIdHandlerTests
         var createdAt = new DateTimeOffset(2026, 03, 08, 10, 30, 00, TimeSpan.Zero);
 
         var message = new ChatMessage(
+            Guid.NewGuid(),
             chatId,
             senderUserId,
             "Hello world",
