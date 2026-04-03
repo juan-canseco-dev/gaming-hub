@@ -68,6 +68,8 @@ internal sealed class DemoChatSeeder : IDevelopmentDataSeeder
             foreach (var user in users)
             {
                 chat.Join(user.Id, user.Username, joinedAt);
+                var newUserChat = new UserChat(chat.Id, user.Id, joinedAt);
+                _context.UserChats.Add(newUserChat);
                 joinedAt = joinedAt.AddMinutes(JoinIntervalMinutes);
                 joinedCount++;
             }
@@ -81,7 +83,7 @@ internal sealed class DemoChatSeeder : IDevelopmentDataSeeder
         IReadOnlyCollection<Chat> chats)
     {
         var messageCount = 0;
-        var messageAt = _timeProvider.CurrentTimeUtc;
+        var messageAt = _timeProvider.CurrentTimeUtc.AddDays(-13);
 
         foreach (var chat in chats)
         {

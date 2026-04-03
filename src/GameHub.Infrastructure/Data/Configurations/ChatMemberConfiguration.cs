@@ -19,7 +19,7 @@ public class ChatMemberConfiguration : IEntityTypeConfiguration<ChatMember>
 
         builder.Property(x => x.ChatId);
 
-        builder.HasOne<Chat>()
+        builder.HasOne(x=> x.Chat)
             .WithMany(c => c.Members)
             .HasForeignKey(x => x.ChatId)
             .OnDelete(DeleteBehavior.Cascade);
@@ -34,5 +34,9 @@ public class ChatMemberConfiguration : IEntityTypeConfiguration<ChatMember>
 
         builder.Property(x => x.CreatedAt)
             .IsRequired();
+
+        builder.Property(x => x.LastReadAt);
+
+        builder.HasIndex(x => x.LastReadAt);
     }
 }

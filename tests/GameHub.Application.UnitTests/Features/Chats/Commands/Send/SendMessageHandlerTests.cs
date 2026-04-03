@@ -332,7 +332,7 @@ public sealed class SendMessageHandlerTests
     {
         var result = Chat.Create(
             channelId: 1,
-            createdAt: DateTime.UtcNow);
+            createdAt: DateTimeOffset.UtcNow);
 
         result.IsSuccess.Should().BeTrue();
 

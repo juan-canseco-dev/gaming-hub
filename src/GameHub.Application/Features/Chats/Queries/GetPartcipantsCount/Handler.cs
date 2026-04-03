@@ -1,7 +1,7 @@
 ﻿
 using GameHub.Application.Abstractions.Data;
 using GameHub.Application.Abstractions.Messaging;
-using GameHub.Domain.Abstractions;
+using GameHub.Abstractions.Primitives;
 using GameHub.Domain.Chats;
 using Microsoft.EntityFrameworkCore;
 

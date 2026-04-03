@@ -12,6 +12,7 @@ public sealed class ChatMessage : Entity<Guid>
     private ChatMessage() { }
     
     public ChatMessage(
+        Guid id,
         Guid chatId, 
         Guid senderUserId, 
         string content, 
@@ -19,6 +20,7 @@ public sealed class ChatMessage : Entity<Guid>
         ChatMessageType type
     )
     {
+        Id = id;
         ChatId = chatId;
         SenderUserId = senderUserId;
         Content = content;

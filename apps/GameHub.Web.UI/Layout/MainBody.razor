@@ -1,0 +1,79 @@
+﻿<MudAppBar Fixed="true" Color="Color.Primary" Elevation="0">
+    <MudSpacer />
+    <MudIconButton Icon="@Icons.Material.Filled.NotificationsNone" Color="Color.Inherit" />
+</MudAppBar>
+
+<MudDrawer @bind-Open="_drawerOpen"
+           Width="300px"
+           Fixed="true"
+           Variant="DrawerVariant.Persistent"
+           Color="Color.Primary"
+           Elevation="0"
+           Style="z-index:1200">
+
+    <MudDrawerHeader>
+        <MudText Typo="Typo.h6">GameHub</MudText>
+    </MudDrawerHeader>
+
+    <MudStack Class="pa-4" Style="height:100%;" Spacing="3">
+
+        <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+            <MudAvatar Size="Size.Large" Color="Color.Secondary">@FirstLetterOfName</MudAvatar>
+            <MudStack Spacing="0">
+                <MudText Typo="Typo.subtitle1">@Fullname</MudText>
+                <MudText Typo="Typo.subtitle2" Color="Color.Secondary">@UserName</MudText>
+            </MudStack>
+        </MudStack>
+
+        <MudNavMenu Bordered="false" Rounded="true" Color="Color.Secondary">
+            <MudNavLink Href="/home" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home" IconColor="Color.Inherit">
+                Home
+            </MudNavLink>
+
+            <MudNavLink Href="/channels" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Groups" IconColor="Color.Inherit">
+                My Channels
+            </MudNavLink>
+        </MudNavMenu>
+
+        <MudSpacer />
+
+        <MudNavMenu Bordered="false" Rounded="true">
+            <MudNavLink Icon="@Icons.Material.Filled.Logout" IconColor="Color.Inherit" OnClick="OpenLogoutDialog">
+                Log Out
+            </MudNavLink>
+        </MudNavMenu>
+
+    </MudStack>
+</MudDrawer>
+
+<MudMainContent Class="main-body-content">
+    <MudContainer MaxWidth="MaxWidth.False" Class="main-body-container">
+        <CascadingValue Value="_hubConnection" Name="HubConnection">
+            @ChildContent
+        </CascadingValue>
+    </MudContainer>
+</MudMainContent>
+
+<style>
+    .main-body-content {
+        height: 100vh;
+        overflow: hidden;
+        padding-top: 64px;
+    }
+
+    .main-body-container {
+        height: calc(100vh - 64px);
+        padding: 16px;
+    }
+
+    @@media (max-width: 600px) {
+        .main-body-content {
+            padding-top: 56px;
+        }
+
+        .main-body-container {
+            height: calc(100vh - 56px);
+            padding: 12px;
+        }
+    }
+</style>

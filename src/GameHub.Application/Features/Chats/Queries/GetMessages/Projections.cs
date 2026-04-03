@@ -1,5 +1,5 @@
-﻿using GameHub.Application.Contracts.Chats;
-using GameHub.Application.Contracts.Profile;
+﻿using GameHub.Contracts.Chats;
+using GameHub.Contracts.Profile;
 using GameHub.Domain.Chats;
 using GameHub.Domain.Users;
 
@@ -11,7 +11,8 @@ public static class GetMessagesByChatProjections
 
     public static IQueryable<MessageDto> ProjectToDto(
       this IQueryable<ChatMessage> messages,
-      IQueryable<UserProfile> userProfiles)
+      IQueryable<UserProfile> userProfiles
+    )
     {
         return
             from message in messages

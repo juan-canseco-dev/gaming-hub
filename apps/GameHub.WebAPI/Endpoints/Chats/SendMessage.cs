@@ -23,7 +23,7 @@ public class SendMessage : ICarterModule
                 }
                 return Results.BadRequest(result.Error);
             }
-            return Results.Ok();
+            return Results.Ok(result.Value);
         }
         )
         .RequireAuthorization()

@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AssemblyName>GameHub.Contracts</AssemblyName>
+    <AssemblyTitle>GameHub.Contracts</AssemblyTitle>
+    <RootNamespace>GameHub.Contracts</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\GameHub.Abstractions\GameHub.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>

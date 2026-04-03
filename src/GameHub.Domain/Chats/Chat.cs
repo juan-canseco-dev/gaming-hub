@@ -1,5 +1,6 @@
 ﻿using GameHub.Domain.Abstractions;
 using GameHub.Domain.Users;
+using GameHub.Abstractions.Primitives;
 
 namespace GameHub.Domain.Chats;
 
@@ -18,6 +19,7 @@ public class Chat : Entity<Guid>
     public IReadOnlyCollection<ChatMember> Members => _members.AsReadOnly();
     public IReadOnlyCollection<ChatMessage> Messages => _messages.AsReadOnly();
     public Channel Channel { get; private init; } = default!;
+
     private Chat() { }
 
     private Chat(int channelId, DateTimeOffset createdAt)
@@ -44,7 +46,8 @@ public class Chat : Entity<Guid>
             return Result.Failure<ChatMessage>(MessageErrors.MessageTooLong(MaxMessageLength));
         }
 
-        var message = new ChatMessage(Id, senderUserId, content, createdAt, ChatMessageType.User);
+        var messageId = Guid.CreateVersion7();
+        var message = new ChatMessage(messageId, this.Id, senderUserId, content, createdAt, ChatMessageType.User);
         
         _messages.Add(message);
         LastMessageAt = createdAt;
@@ -65,7 +68,9 @@ public class Chat : Entity<Guid>
 
         var content = $"User {username} joined the chat.";
 
+        var messageId = Guid.CreateVersion7();
         var message = new ChatMessage(
+            messageId,
             Id, 
             SystemUsers.AdminUserId, 
             content,

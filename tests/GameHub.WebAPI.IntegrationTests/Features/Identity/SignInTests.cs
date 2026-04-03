@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
 using GameHub.Application.Abstractions.Identity;
-using GameHub.Application.Contracts.Identity;
-using GameHub.Domain.Abstractions;
+using GameHub.Contracts.Identity;
+using GameHub.Abstractions.Primitives;
 using GameHub.Infrastructure.Identity.Models;
 using GameHub.WebAPI.IntegrationTests.Abstractions;
 using Microsoft.AspNetCore.Identity;

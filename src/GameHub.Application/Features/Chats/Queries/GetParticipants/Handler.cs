@@ -1,10 +1,11 @@
 ﻿using GameHub.Application.Abstractions.Data;
 using GameHub.Application.Abstractions.Messaging;
-using GameHub.Application.Contracts.Profile;
-using GameHub.Domain.Abstractions;
+using GameHub.Contracts.Profile;
 using GameHub.Domain.Chats;
-using GameHub.Domain.Shared;
+using GameHub.Abstractions.Primitives;
 using Microsoft.EntityFrameworkCore;
+using GameHub.Abstractions.Pagination;
+using static GameHub.Contracts.Chats.ChatParticipantCursor;
 
 namespace GameHub.Application.Features.Chats.Queries.GetParticipants;
 

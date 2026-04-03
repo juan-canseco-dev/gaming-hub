@@ -1,6 +1,6 @@
 ﻿
 
-using GameHub.Application.Contracts.Chats;
+using GameHub.Contracts.Notifications;
 
 namespace GameHub.Application.Abstractions.Realtime.Chats;
 
@@ -8,10 +8,7 @@ public interface IMessageSentNotifier
 {
     Task NotifyAsync(
         Guid chatId,
-        Notification notification,
-        CancellationToken cancellationToken = default);
-
-    public sealed record Notification(
-        MessageDto Message
-    );
+        MessageNotification notification,
+        CancellationToken cancellationToken = default
+     );
 }

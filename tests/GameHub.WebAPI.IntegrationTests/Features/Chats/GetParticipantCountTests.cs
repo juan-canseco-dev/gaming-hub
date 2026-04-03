@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
 using GameHub.Application.Abstractions.Data;
 using GameHub.Application.Abstractions.Identity;
-using GameHub.Application.Contracts.Identity;
+using GameHub.Contracts.Identity;
 using GameHub.Domain.Chats;
 using GameHub.Domain.Users;
 using GameHub.Infrastructure.Identity.Models;

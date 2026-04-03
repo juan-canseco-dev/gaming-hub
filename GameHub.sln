@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.14.37027.9 d17.14
+# Visual Studio Version 18
+VisualStudioVersion = 18.4.11612.150
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
 EndProject
@@ -24,6 +24,12 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameHub.WebAPI", "apps\GameHub.WebAPI\GameHub.WebAPI.csproj", "{5D343470-43D3-431D-A657-D521868368A0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameHub.WebAPI.IntegrationTests", "tests\GameHub.WebAPI.IntegrationTests\GameHub.WebAPI.IntegrationTests.csproj", "{566685BF-E2F5-40A9-84B0-2D6F44D84B0B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameHub.Abstractions", "src\GameHub.Abstractions\GameHub.Abstractions.csproj", "{4813CD7E-6870-4690-B3C4-1EE08D21521F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameHub.Contracts", "src\GameHub.Contracts\GameHub.Contracts.csproj", "{DC965BD9-C116-4D4A-9C8C-95DCEC56336E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameHub.Web.UI", "apps\GameHub.Web.UI\GameHub.Web.UI.csproj", "{49CB521D-20F6-44FE-915A-3F26DADC847B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -63,6 +69,18 @@ Global
 		{566685BF-E2F5-40A9-84B0-2D6F44D84B0B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{566685BF-E2F5-40A9-84B0-2D6F44D84B0B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{566685BF-E2F5-40A9-84B0-2D6F44D84B0B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4813CD7E-6870-4690-B3C4-1EE08D21521F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4813CD7E-6870-4690-B3C4-1EE08D21521F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4813CD7E-6870-4690-B3C4-1EE08D21521F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4813CD7E-6870-4690-B3C4-1EE08D21521F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DC965BD9-C116-4D4A-9C8C-95DCEC56336E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DC965BD9-C116-4D4A-9C8C-95DCEC56336E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DC965BD9-C116-4D4A-9C8C-95DCEC56336E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DC965BD9-C116-4D4A-9C8C-95DCEC56336E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{49CB521D-20F6-44FE-915A-3F26DADC847B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{49CB521D-20F6-44FE-915A-3F26DADC847B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{49CB521D-20F6-44FE-915A-3F26DADC847B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{49CB521D-20F6-44FE-915A-3F26DADC847B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -76,6 +94,9 @@ Global
 		{8617A192-0422-4F15-8AD3-CB2D4B869791} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
 		{5D343470-43D3-431D-A657-D521868368A0} = {B7813C0A-2750-4330-B84A-7DF30D0D39A5}
 		{566685BF-E2F5-40A9-84B0-2D6F44D84B0B} = {97C100EA-32E8-4FDB-BB48-0A222A8E135A}
+		{4813CD7E-6870-4690-B3C4-1EE08D21521F} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{DC965BD9-C116-4D4A-9C8C-95DCEC56336E} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{49CB521D-20F6-44FE-915A-3F26DADC847B} = {B7813C0A-2750-4330-B84A-7DF30D0D39A5}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A046FFAE-AD28-42F2-9016-7A587E97B81F}

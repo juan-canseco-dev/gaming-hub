@@ -21,6 +21,7 @@ public sealed class GetMessageByIdHandlerTests
         var createdAt = new DateTimeOffset(2026, 03, 08, 10, 30, 00, TimeSpan.Zero);
 
         var message = new ChatMessage(
+            Guid.NewGuid(),
             chatId,
             senderUserId,
             "Hello world",
@@ -43,6 +44,7 @@ public sealed class GetMessageByIdHandlerTests
         var userProfilesDbSetMock = users.BuildMockDbSet();
 
         var contextMock = new Mock<IApplicationDbContext>();
+
         contextMock.Setup(x => x.ChatMessages).Returns(chatMessagesDbSetMock.Object);
         contextMock.Setup(x => x.UserProfiles).Returns(userProfilesDbSetMock.Object);
 
@@ -81,6 +83,7 @@ public sealed class GetMessageByIdHandlerTests
         var userProfilesDbSetMock = users.BuildMockDbSet();
 
         var contextMock = new Mock<IApplicationDbContext>();
+
         contextMock.Setup(x => x.ChatMessages).Returns(chatMessagesDbSetMock.Object);
         contextMock.Setup(x => x.UserProfiles).Returns(userProfilesDbSetMock.Object);
 

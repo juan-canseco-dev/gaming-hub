@@ -1,0 +1,144 @@
+﻿@page "/auth/login"
+
+@inject ISnackbar Snackbar
+@inject IAuthService AuthService
+@inject JwtAuthenticationStateProvider AuthProvider
+@inject NavigationManager NavManager
+@attribute [AllowAnonymous]
+
+@if (UserCreated)
+{
+    <MudAlert Severity="Severity.Success"
+              Elevation="6"
+              ShowCloseIcon="true"
+              CloseIconClicked="CloseAlert">
+        Registration successful. Please sign in to continue.
+    </MudAlert>
+}
+
+<PageTitle>Login</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Small" Class="mt-5">
+    <MudPaper Elevation="4" Class="p-4">
+        <MudText Typo="Typo.h4" Class="mb-4">Login</MudText>
+        <MudText Typo="Typo.subtitle2" Class="mb-4">Sign In to your account</MudText>
+
+        <EditForm Model="@request" OnValidSubmit="OnValidSubmit">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <MudTextField @bind-Value="request.Email"
+                          Label="Email"
+                          InputType="InputType.Email"
+                          Required="true"
+                          Disabled="@IsLoading" />
+
+            <MudTextField @bind-Value="request.Password"
+                          Label="Password"
+                          InputType="@PasswordInputType"
+                          Required="true"
+                          Disabled="@IsLoading"
+                          Adornment="Adornment.End"
+                          AdornmentIcon="@PasswordInputIcon"
+                          OnAdornmentClick="TogglePasswordVisibility" />
+
+            @if (!IsLoading)
+            {
+                <MudButton ButtonType="ButtonType.Submit"
+                           Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           Class="mt-4"
+                           FullWidth="true">
+                    Login
+                </MudButton>
+            }
+            else
+            {
+                <MudButton Disabled="true"
+                           Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           Class="mt-4"
+                           FullWidth="true">
+                    <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true" />
+                </MudButton>
+            }
+
+            <MudSpacer />
+            <MudSpacer />
+        </EditForm>
+    </MudPaper>
+</MudContainer>
+
+@code {
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "userCreated")]
+    public bool UserCreated { get; set; }
+
+    [Parameter]
+    [SupplyParameterFromQuery(Name = "sessionExpired")]
+    public bool SessionExpired { get; set; }
+
+    private bool IsLoading { get; set; }
+    private bool ShowPassword { get; set; }
+    private bool _sessionExpiredMessageShown;
+
+    private GetTokenRequest request = new();
+
+    private InputType PasswordInputType =>
+        ShowPassword ? InputType.Text : InputType.Password;
+
+    private string PasswordInputIcon =>
+        ShowPassword
+            ? Icons.Material.Filled.VisibilityOff
+            : Icons.Material.Filled.Visibility;
+
+    protected override void OnParametersSet()
+    {
+        if (SessionExpired && !_sessionExpiredMessageShown)
+        {
+            _sessionExpiredMessageShown = true;
+
+            Snackbar.Clear();
+            Snackbar.Add("Your session has expired. Please sign in again.", Severity.Warning);
+        }
+    }
+
+    private void TogglePasswordVisibility()
+    {
+        ShowPassword = !ShowPassword;
+    }
+
+    private void CloseAlert()
+    {
+        UserCreated = false;
+    }
+
+    private async Task OnValidSubmit()
+    {
+        IsLoading = true;
+
+        var result = await AuthService.LoginAsync(request);
+
+        IsLoading = false;
+
+        if (result.IsFailure)
+        {
+            var message = result.Error.Description;
+
+            var severity = result.Error.Equals(Error.InternalServerError)
+                ? Severity.Error
+                : Severity.Warning;
+
+            Snackbar.Clear();
+            Snackbar.Add(message, severity);
+            return;
+        }
+
+        var userDetails = result.Value;
+
+        Snackbar.Clear();
+        Snackbar.Add($"Welcome {userDetails.UserName}", Severity.Success);
+
+        NavManager.NavigateTo("/home");
+    }
+}

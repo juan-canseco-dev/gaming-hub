@@ -1,7 +1,9 @@
 ﻿using GameHub.Application.Abstractions.Realtime.Chats;
+using GameHub.Contracts.Notifications;
 using GameHub.Infrastructure.Hubs;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
+
 
 namespace GameHub.Infrastructure.Realtime;
 
@@ -21,7 +23,7 @@ internal sealed class SignalRMessageSentNotifier : IMessageSentNotifier
 
     public async Task NotifyAsync(
         Guid chatId, 
-        IMessageSentNotifier.Notification notification, 
+        MessageNotification notification, 
         CancellationToken cancellationToken = default
     )
     {

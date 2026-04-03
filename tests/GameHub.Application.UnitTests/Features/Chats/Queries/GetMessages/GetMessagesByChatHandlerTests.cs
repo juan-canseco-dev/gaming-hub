@@ -8,6 +8,7 @@ using System.Text;
 using GameHub.Application.Features.Chats.Queries.GetMessages;
 using System.Text.Json;
 using static GameHub.Application.UnitTests.Shared.Helpers.ReflectionTestHelper;
+using static GameHub.Application.UnitTests.Shared.Factories.ChatTestFactory;
 
 namespace GameHub.Application.UnitTests.Features.Chats.Queries.GetMessages;
 
@@ -46,7 +47,7 @@ public sealed class GetMessagesByChatHandlerTests
         // Arrange
         var chatId = Guid.NewGuid();
 
-        var chat = CreateChat(chatId, Channel.GeneralGaming.Id, DateTimeOffset.UtcNow);
+        var chat = CreateNew(chatId, Channel.GeneralGaming.Id, DateTimeOffset.UtcNow);
 
         var chats = new List<Chat> { chat }.BuildMockDbSet();
         var chatMessages = new List<ChatMessage>().BuildMockDbSet();
@@ -77,9 +78,10 @@ public sealed class GetMessagesByChatHandlerTests
         var userId = Guid.NewGuid();
         var otherUserId = Guid.NewGuid();
 
-        var chat = CreateChat(chatId, Channel.GeneralGaming.Id, DateTimeOffset.UtcNow.AddHours(-2));
+        var chat = CreateNew(chatId, Channel.GeneralGaming.Id, DateTimeOffset.UtcNow.AddHours(-2));
 
         var message1 = new ChatMessage(
+            Guid.NewGuid(),
             chatId,
             userId,
             "first message",
@@ -90,6 +92,7 @@ public sealed class GetMessagesByChatHandlerTests
         };
 
         var message2 = new ChatMessage(
+            Guid.NewGuid(),
             chatId,
             otherUserId,
             "second message",
@@ -100,6 +103,7 @@ public sealed class GetMessagesByChatHandlerTests
         };
 
         var systemMessage = new ChatMessage(
+            Guid.NewGuid(),
             chatId,
             SystemUsers.AdminUserId,
             "User joined",
@@ -173,7 +177,7 @@ public sealed class GetMessagesByChatHandlerTests
         var chatId = Guid.NewGuid();
         var userId = Guid.NewGuid();
 
-        var chat = CreateChat(chatId, Channel.GeneralGaming.Id, DateTimeOffset.UtcNow.AddDays(-1));
+        var chat = CreateNew(chatId, Channel.GeneralGaming.Id, DateTimeOffset.UtcNow.AddDays(-1));
 
         var m1 = NewMessage(chatId, userId, "message-1", new DateTimeOffset(2026, 03, 08, 15, 00, 00, TimeSpan.Zero), "00000000-0000-0000-0000-000000000005");
         var m2 = NewMessage(chatId, userId, "message-2", new DateTimeOffset(2026, 03, 08, 14, 00, 00, TimeSpan.Zero), "00000000-0000-0000-0000-000000000004");
@@ -213,18 +217,6 @@ public sealed class GetMessagesByChatHandlerTests
             .ContainInOrder("message-4", "message-5");
     }
 
-    private static Chat CreateChat(Guid chatId, int channelId, DateTimeOffset createdAt)
-    {
-        var chat = (Chat)Activator.CreateInstance(typeof(Chat), nonPublic: true)!;
-
-        SetProperty(chat, nameof(Chat.Id), chatId);
-        SetProperty(chat, nameof(Chat.ChannelId), channelId);
-        SetProperty(chat, nameof(Chat.CreatedAt), createdAt);
-        SetProperty(chat, nameof(Chat.Channel), Channel.FromValue(channelId)!);
-
-        return chat;
-    }
-
     private static ChatMessage NewMessage(
         Guid chatId,
         Guid senderUserId,
@@ -232,7 +224,7 @@ public sealed class GetMessagesByChatHandlerTests
         DateTimeOffset createdAt,
         string id)
     {
-        var message = new ChatMessage(chatId, senderUserId, content, createdAt, ChatMessageType.User);
+        var message = new ChatMessage(Guid.NewGuid(), chatId, senderUserId, content, createdAt, ChatMessageType.User);
         SetProperty(message, nameof(ChatMessage.Id), Guid.Parse(id));
         return message;
     }

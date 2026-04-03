@@ -11,6 +11,6 @@ public interface IApplicationDbContext
     public DbSet<ChatMessage> ChatMessages { get; }
     public DbSet<ChatMember> ChatMembers { get; }
     public DbSet<UserProfile> UserProfiles { get; }
-
+    public DbSet<UserChat> UserChats { get;  }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

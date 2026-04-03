@@ -37,6 +37,20 @@ namespace GameHub.WebAPI
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
             builder.Services.AddOpenApi();
 
+
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("MyCors",
+                    builder =>
+                    {
+                        builder.WithOrigins("https://localhost:7238")
+                               .AllowAnyHeader()
+                               .AllowAnyMethod();
+                    });
+            });
+
+
+
             var app = builder.Build();
 
 
@@ -57,6 +71,7 @@ namespace GameHub.WebAPI
 
             app.UseCustomExceptionHandler();
 
+            app.UseCors("MyCors");
             app.UseAuthentication();
             app.UseAuthorization();
 

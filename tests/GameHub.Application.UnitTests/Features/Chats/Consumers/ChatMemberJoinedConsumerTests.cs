@@ -1,9 +1,10 @@
 ﻿using GameHub.Application.Abstractions.Realtime.Chats;
-using GameHub.Application.Contracts.Chats;
+using GameHub.Contracts.Chats;
 using GameHub.Application.Features.Chats.Consumers;
 using GameHub.Application.Features.Chats.Queries.GetMessage;
 using GameHub.Application.Features.Chats.Queries.GetPartcipantsCount;
-using GameHub.Domain.Abstractions;
+using GameHub.Abstractions.Primitives;
+using GameHub.Contracts.Notifications;
 using GameHub.Domain.Chats;
 using GameHub.EventBus.Contracts;
 using MassTransit;
@@ -64,7 +65,7 @@ public class ChatMemberJoinedConsumerTests
 
         _notifierMock.Verify(x => x.NotifyAsync(
                 It.IsAny<Guid>(),
-                It.IsAny<IUserJoinedChatNotifier.Notification>(),
+                It.IsAny<UserJoinedNotification>(),
                 It.IsAny<CancellationToken>()),
             Times.Never);
     }
@@ -113,7 +114,7 @@ public class ChatMemberJoinedConsumerTests
 
         _notifierMock.Verify(x => x.NotifyAsync(
                 It.IsAny<Guid>(),
-                It.IsAny<IUserJoinedChatNotifier.Notification>(),
+                It.IsAny<UserJoinedNotification>(),
                 It.IsAny<CancellationToken>()),
             Times.Never);
     }
@@ -169,7 +170,7 @@ public class ChatMemberJoinedConsumerTests
 
         _notifierMock.Verify(x => x.NotifyAsync(
                 message.ChatId,
-                It.Is<IUserJoinedChatNotifier.Notification>(n =>
+                It.Is<UserJoinedNotification>(n =>
                     n.NumberOfParticipants == participantCount &&
                     n.Message == messageDto),
                 cancellationToken),
