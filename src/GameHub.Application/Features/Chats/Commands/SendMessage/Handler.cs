@@ -8,12 +8,14 @@ using GameHub.Domain.Users;
 using GameHub.EventBus.Contracts;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
+using GameHub.Contracts.Chats;
+using GameHub.Contracts.Profile;
 
 namespace GameHub.Application.Features.Chats.Commands.SendMessage;
 
 public static partial class ChatSendMessage
 {
-    public sealed class Handler : ICommandHandler<Command>
+    public sealed class Handler : ICommandHandler<Command,MessageDto>
     {
         private readonly IApplicationDbContext _context;
         private readonly IAuthenticatedUserService _authenticatedUserService;
@@ -35,7 +37,7 @@ public static partial class ChatSendMessage
             _messagePreviewService = messagePreviewService ?? throw new ArgumentNullException(nameof(messagePreviewService));
         }
 
-        public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
+        public async Task<Result<MessageDto>> Handle(Command request, CancellationToken cancellationToken)
         {
             var chat = await _context.Chats.FindAsync([request.ChatId], cancellationToken);
 
@@ -43,20 +45,20 @@ public static partial class ChatSendMessage
 
             if (chat is null)
             {
-                return Result.Failure(ChatErrors.ChatGroupNotFound(request.ChatId));
+                return Result.Failure<MessageDto>(ChatErrors.ChatGroupNotFound(request.ChatId));
             }
 
             var userProfile = await _context.UserProfiles.FindAsync([userId], cancellationToken);
             if (userProfile is null)
             {
-                return Result.Failure(UserProfileErrors.NotFound(userId));
+                return Result.Failure<MessageDto>(UserProfileErrors.NotFound(userId));
             }
 
             var isMember = await _context.ChatMembers.AnyAsync(cm => cm.ChatId == request.ChatId && cm.UserId == userId, cancellationToken);
 
             if (!isMember)
             {
-                return Result.Failure(ChatErrors.NotParticipant(userId));
+                return Result.Failure<MessageDto>(ChatErrors.NotParticipant(userId));
             }
 
             var createdAt = _dateTimeProvider.CurrentTimeUtc;
@@ -69,7 +71,7 @@ public static partial class ChatSendMessage
 
             if (messageResult.IsFailure)
             {
-                return Result.Failure(messageResult.Error);
+                return Result.Failure<MessageDto>(messageResult.Error);
             }
 
             var @event = new ChatMessageSentEvent
@@ -83,7 +85,20 @@ public static partial class ChatSendMessage
 
             await _context.SaveChangesAsync(cancellationToken);
 
-            return Result.Success();
+            return new MessageDto
+            {
+                Id = messageResult.Value.Id,
+                User = new UserDto
+                {
+                    Id = userProfile.Id,
+                    Email = userProfile.Email,
+                    Fullname = userProfile.Fullname,
+                    Username = userProfile.Username,
+                },
+                Content = messageResult.Value.Content,
+                CreatedAt = createdAt,
+                IsSystem = messageResult.Value.Type == ChatMessageType.System
+            };
         }
     }
 }

@@ -3,6 +3,7 @@ using GameHub.Web.UI.Features.Auth.State;
 using GameHub.Web.UI.Features.Channels.Services;
 using GameHub.Web.UI.Features.Channels.Services.Interfaces;
 using GameHub.Web.UI.Infrastructure.Http;
+using GameHub.Web.UI.Infrastructure.Options;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
@@ -18,15 +19,13 @@ namespace GameHub.Web.UI
             builder.RootComponents.Add<App>("#app");
             builder.RootComponents.Add<HeadOutlet>("head::after");
 
-            var baseApiUri = new Uri(builder.Configuration["Api:BaseUrl"]!);
-
-            builder.Services.AddScoped(sp => 
-                new AuthorizationInterceptor(
-                    baseApiUri, 
-                    sp.GetRequiredService<JwtAuthenticationStateProvider>()
-                )
+            builder.Services.Configure<ApiSettings>(
+                builder.Configuration.GetSection(ApiSettings.SectionName)
             );
 
+            var baseApiUri = new Uri(builder.Configuration["ApiSettings:BaseUrl"]!);
+
+            builder.Services.AddScoped<AuthorizationInterceptor>();
             builder.Services.AddScoped<UnauthorizedInterceptor>();
 
             builder.Services.AddHttpClient(

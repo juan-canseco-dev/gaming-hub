@@ -1,4 +1,6 @@
-﻿namespace GameHub.Web.UI.Features.Channels.Models;
+﻿using MudBlazor;
+
+namespace GameHub.Web.UI.Features.Channels.Models;
 
 public sealed class ChatMemberViewModel
 {
@@ -7,6 +9,7 @@ public sealed class ChatMemberViewModel
     public string DisplayName { get; set; } = string.Empty;
     public string Initial { get; set; } = "?";
     public bool IsYou { get; set; }
+    public Color AvatarColor { get; set; }
 
     public sealed class Comparer : IComparer<ChatMemberViewModel>
     {

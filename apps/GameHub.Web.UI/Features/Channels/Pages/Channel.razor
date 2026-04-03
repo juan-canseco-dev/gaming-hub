@@ -1,13 +1,14 @@
 ﻿@page "/channels/{chatId:guid?}"
 @attribute [Authorize]
-<MudContainer MaxWidth="MaxWidth.False" Class="pa-0 full-height">
-    <MudGrid Class="ma-0 full-height">
+
+<MudContainer MaxWidth="MaxWidth.False" Class="pa-0 channels-page">
+    <MudGrid Class="ma-0 channels-grid">
 
         <!-- MAIN CHAT -->
         <MudItem xs="12" md="9" Class="chat-layout">
 
-            <!-- HEADER (STATIC) -->
-            <MudPaper Elevation="0" Class="px-6 pt-0 pb-2 chat-header">
+            <!-- HEADER -->
+            <MudPaper Elevation="0" Class="px-6 pt-4 pb-3 chat-header">
                 @if (_isHeaderLoading)
                 {
                     <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center">
@@ -23,15 +24,20 @@
                 }
                 else if (!string.IsNullOrWhiteSpace(_headerError))
                 {
-                    <MudAlert Severity="Severity.Error" Dense="true" Class="mb-2">
-                        @_headerError
-                    </MudAlert>
-
-                    <MudButton Variant="Variant.Outlined"
-                               Color="Color.Error"
-                               OnClick="RetryHeaderAsync">
-                        Retry
-                    </MudButton>
+                    <div class="section-error-host">
+                        <MudStack Spacing="2" AlignItems="AlignItems.Center" Justify="Justify.Center" Class="section-error-content">
+                            <MudIcon Icon="@Icons.Material.Filled.ErrorOutline" Size="Size.Large" Color="Color.Error" />
+                            <MudText Typo="Typo.h6">Unable to load channel header</MudText>
+                            <MudText Typo="Typo.body2" Color="Color.Secondary" Align="Align.Center">
+                                @_headerError
+                            </MudText>
+                            <MudButton Variant="Variant.Outlined"
+                                       Color="Color.Error"
+                                       OnClick="RetryHeaderAsync">
+                                Retry
+                            </MudButton>
+                        </MudStack>
+                    </div>
                 }
                 else
                 {
@@ -53,13 +59,13 @@
                 }
             </MudPaper>
 
-            <!-- SCROLLABLE MESSAGES -->
+            <!-- MESSAGES -->
             <div class="message-container" @ref="_messagesContainerRef">
                 <div @ref="_messagesTopSentinelRef" class="observer-sentinel"></div>
 
                 @if (_isMessagesLoading && Messages.Count == 0)
                 {
-                    <MudStack Spacing="3">
+                    <MudStack Spacing="3" Class="messages-stack">
                         @for (var i = 0; i < 6; i++)
                         {
                             <div class="message-row">
@@ -80,17 +86,20 @@
                 }
                 else if (!string.IsNullOrWhiteSpace(_messagesError) && Messages.Count == 0)
                 {
-                    <MudPaper Class="pa-4">
-                        <MudAlert Severity="Severity.Error" Dense="true" Class="mb-3">
-                            @_messagesError
-                        </MudAlert>
-
-                        <MudButton Variant="Variant.Filled"
-                                   Color="Color.Error"
-                                   OnClick="RetryMessagesAsync">
-                            Retry messages
-                        </MudButton>
-                    </MudPaper>
+                    <div class="section-error-host section-error-host-messages">
+                        <MudStack Spacing="2" AlignItems="AlignItems.Center" Justify="Justify.Center" Class="section-error-content">
+                            <MudIcon Icon="@Icons.Material.Filled.ErrorOutline" Size="Size.Large" Color="Color.Error" />
+                            <MudText Typo="Typo.h6">Unable to load messages</MudText>
+                            <MudText Typo="Typo.body2" Color="Color.Secondary" Align="Align.Center">
+                                @_messagesError
+                            </MudText>
+                            <MudButton Variant="Variant.Filled"
+                                       Color="Color.Error"
+                                       OnClick="RetryMessagesAsync">
+                                Retry messages
+                            </MudButton>
+                        </MudStack>
+                    </div>
                 }
                 else
                 {
@@ -107,13 +116,13 @@
                         </MudAlert>
                     }
 
-                    <MudStack Spacing="3">
+                    <MudStack Spacing="3" Class="messages-stack">
                         <Virtualize Items="@Messages"
                                     Context="message"
                                     OverscanCount="5">
                             <ItemContent>
                                 <div class="@(message.IsMine ? "message-row mine" : "message-row")">
-                                    <MudAvatar Size="Size.Medium" Class="message-avatar">
+                                    <MudAvatar Size="Size.Medium" Class="message-avatar" Color="@message.AvatarColor">
                                         @message.Initial
                                     </MudAvatar>
 
@@ -123,8 +132,9 @@
                                                 <MudText Typo="Typo.subtitle2" Class="fw-bold">
                                                     @message.AuthorName
                                                 </MudText>
+
                                                 <MudText Typo="Typo.caption" Color="Color.Secondary">
-                                                    @FormatMessageTime(message.SentAt)
+                                                    @DateFormatter.ToChatFormat(message.SentAt)
                                                 </MudText>
                                             </MudStack>
 
@@ -173,6 +183,7 @@
                 <div @ref="_messagesBottomAnchorRef"></div>
             </div>
 
+            <!-- COMPOSER -->
             <MudPaper Elevation="0" Class="chat-composer pa-4">
                 @if (!string.IsNullOrWhiteSpace(_sendMessageError))
                 {
@@ -181,14 +192,13 @@
                         <MudButton Variant="Variant.Text"
                                    Color="Color.Error"
                                    Class="ms-2"
-                                   Disabled="@_isSendingMessage"
                                    OnClick="RetrySendMessageAsync">
                             Retry
                         </MudButton>
                     </MudAlert>
                 }
 
-                <MudStack Row="true" Spacing="2" AlignItems="AlignItems.End">
+                <MudStack Row="true" Spacing="2" AlignItems="AlignItems.Center">
                     <MudTextField T="string"
                                   @bind-Value="_messageText"
                                   Placeholder="Write a message..."
@@ -201,14 +211,14 @@
                     <MudButton Variant="Variant.Filled"
                                Color="Color.Primary"
                                StartIcon="@(!_isSendingMessage ? Icons.Material.Filled.Send : null)"
-                               Disabled="@(_isSendingMessage || !CanSendMessage)"
-                               OnClick="SendMessageAsync">
+                               OnClick="SendMessageAsync"
+                               Class="composer-send-button">
                         @if (_isSendingMessage)
                         {
-                            <MudProgressCircular Size="Size.Small"
-                                                 Indeterminate="true"
-                                                 Class="me-2" />
-                            <span>Sending...</span>
+                            <MudProgressCircular Style="color: white;"
+                                                 Class="ms-n1"
+                                                 Size="Size.Small"
+                                                 Indeterminate="true" />
                         }
                         else
                         {
@@ -222,13 +232,26 @@
 
         <!-- SIDEBAR -->
         <MudItem md="3" Class="members-sidebar d-none d-md-flex">
-            <div @ref="_membersContainerRef" class="members-panel-scroll-host">
-                <MudPaper Elevation="0" Class="members-panel pa-4">
-                    <MudText Typo="Typo.h6" Class="fw-bold mb-4">Members</MudText>
+            <MudPaper Elevation="0" Class="members-panel">
 
+                <div class="members-header pa-4">
+                    @if (_isMembersLoading && string.IsNullOrWhiteSpace(_membersError))
+                    {
+                        <MudStack Spacing="1">
+                            <MudSkeleton Height="24px" Width="110px" />
+                            <MudSkeleton Height="16px" Width="140px" />
+                        </MudStack>
+                    }
+                    else
+                    {
+                        <MudText Typo="Typo.h6" Class="fw-bold">Members</MudText>
+                    }
+                </div>
+
+                <div @ref="_membersContainerRef" class="members-list-scroll-host">
                     @if (_isMembersLoading && Members.Count == 0)
                     {
-                        <MudStack Spacing="3">
+                        <MudStack Spacing="3" Class="pa-4">
                             @for (var i = 0; i < 8; i++)
                             {
                                 <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
@@ -240,38 +263,43 @@
                     }
                     else if (!string.IsNullOrWhiteSpace(_membersError) && Members.Count == 0)
                     {
-                        <MudAlert Severity="Severity.Error" Dense="true" Class="mb-3">
-                            @_membersError
-                        </MudAlert>
-
-                        <MudButton Variant="Variant.Filled"
-                                   Color="Color.Error"
-                                   OnClick="RetryMembersAsync">
-                            Retry members
-                        </MudButton>
+                        <div class="section-error-host section-error-host-members">
+                            <MudStack Spacing="2" AlignItems="AlignItems.Center" Justify="Justify.Center" Class="section-error-content">
+                                <MudIcon Icon="@Icons.Material.Filled.ErrorOutline" Size="Size.Large" Color="Color.Error" />
+                                <MudText Typo="Typo.h6">Unable to load members</MudText>
+                                <MudText Typo="Typo.body2" Color="Color.Secondary" Align="Align.Center">
+                                    @_membersError
+                                </MudText>
+                                <MudButton Variant="Variant.Filled"
+                                           Color="Color.Error"
+                                           OnClick="RetryMembersAsync">
+                                    Retry members
+                                </MudButton>
+                            </MudStack>
+                        </div>
                     }
                     else
                     {
-                        @if (!string.IsNullOrWhiteSpace(_membersPagingError))
-                        {
-                            <MudAlert Severity="Severity.Warning" Dense="true" Class="mb-3">
-                                @_membersPagingError
-                                <MudButton Variant="Variant.Text"
-                                           Color="Color.Warning"
-                                           Class="ms-2"
-                                           OnClick="RetryMembersPagingAsync">
-                                    Retry
-                                </MudButton>
-                            </MudAlert>
-                        }
+                        <MudStack Spacing="3" Class="pa-4">
+                            @if (!string.IsNullOrWhiteSpace(_membersPagingError))
+                            {
+                                <MudAlert Severity="Severity.Warning" Dense="true" Class="mb-3">
+                                    @_membersPagingError
+                                    <MudButton Variant="Variant.Text"
+                                               Color="Color.Warning"
+                                               Class="ms-2"
+                                               OnClick="RetryMembersPagingAsync">
+                                        Retry
+                                    </MudButton>
+                                </MudAlert>
+                            }
 
-                        <MudStack Spacing="3">
                             <Virtualize Items="@Members"
                                         Context="member"
                                         OverscanCount="5">
                                 <ItemContent>
                                     <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
-                                        <MudAvatar Size="Size.Small" Class="member-avatar">
+                                        <MudAvatar Size="Size.Small" Class="member-avatar" Color="@member.AvatarColor">
                                             @member.Initial
                                         </MudAvatar>
 
@@ -301,50 +329,75 @@
                             <div @ref="_membersBottomSentinelRef" class="observer-sentinel"></div>
                         </MudStack>
                     }
-                </MudPaper>
-            </div>
-        </MudItem>
+                </div>
 
+            </MudPaper>
+        </MudItem>
     </MudGrid>
 </MudContainer>
 
 <style>
-    .full-height {
-        height: 100vh;
+    .channels-page {
+        height: 100%;
+    }
+
+    .channels-grid {
+        height: 100%;
     }
 
     .chat-layout {
         display: flex;
         flex-direction: column;
-        height: 100vh;
+        height: 100%;
+        min-height: 0;
         overflow: hidden;
+        background: white;
     }
 
     .chat-header {
+        position: sticky;
+        top: 0;
+        z-index: 2;
         flex-shrink: 0;
+        background: white;
+        border-bottom: 1px solid #e0e0e0;
     }
 
     .message-container {
-        flex: 1;
+        flex: 1 1 auto;
+        min-height: 0;
         overflow-y: auto;
-        padding: 16px;
-        padding-bottom: 200px;
+        overflow-x: hidden;
+        padding: 16px 24px;
+        overscroll-behavior: contain;
+    }
+
+    .messages-stack {
+        min-height: min-content;
     }
 
     .chat-composer {
-        flex-shrink: 0;
-        border-top: 1px solid #e0e0e0;
-        background: white;
-        position: fixed;
+        position: sticky;
         bottom: 0;
-        left: 300px;
-        right: 0;
-        z-index: 1100;
+        z-index: 2;
+        flex-shrink: 0;
+        background: white;
+        border-top: 1px solid #e0e0e0;
+    }
+
+    .composer-input {
+        background: white;
+    }
+
+    .composer-send-button {
+        align-self: center;
+        min-height: 56px;
     }
 
     .message-row {
         display: flex;
         gap: 12px;
+        align-items: flex-start;
     }
 
         .message-row.mine {
@@ -353,9 +406,10 @@
 
     .message-bubble {
         padding: 12px;
-        max-width: 600px;
+        max-width: min(600px, 100%);
         border-radius: 12px;
         background-color: #f5f5f5;
+        word-break: break-word;
     }
 
     .message-row.mine .message-bubble {
@@ -363,23 +417,44 @@
     }
 
     .members-sidebar {
-        height: 100vh;
-    }
-
-    .members-panel-scroll-host {
-        width: 100%;
-        height: 100vh;
-        overflow-y: auto;
+        height: 100%;
+        min-height: 0;
     }
 
     .members-panel {
         width: 100%;
-        min-height: 100vh;
+        height: 100%;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        background: white;
+    }
+
+    .members-header {
+        position: sticky;
+        top: 0;
+        z-index: 2;
+        flex-shrink: 0;
+        background: white;
+        border-bottom: 1px solid #e0e0e0;
+        min-height: 72px;
+        display: flex;
+        align-items: center;
+    }
+
+    .members-list-scroll-host {
+        flex: 1 1 auto;
+        min-height: 0;
+        overflow-y: scroll;
+        overflow-x: hidden;
+        scrollbar-gutter: stable;
     }
 
     .observer-sentinel {
         width: 100%;
         height: 1px;
+        flex-shrink: 0;
     }
 
     .message-avatar-skeleton {
@@ -399,5 +474,42 @@
     .message-avatar,
     .member-avatar {
         flex-shrink: 0;
+    }
+
+    .section-error-host {
+        min-height: 180px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px;
+    }
+
+    .section-error-host-messages {
+        min-height: 320px;
+    }
+
+    .section-error-host-members {
+        min-height: 260px;
+    }
+
+    .section-error-content {
+        width: 100%;
+        max-width: 420px;
+        text-align: center;
+    }
+
+    @@media (max-width: 959.98px) {
+        .message-container {
+            padding: 12px 16px;
+        }
+
+        .chat-header {
+            padding-left: 16px !important;
+            padding-right: 16px !important;
+        }
+
+        .chat-composer {
+            padding: 16px !important;
+        }
     }
 </style>

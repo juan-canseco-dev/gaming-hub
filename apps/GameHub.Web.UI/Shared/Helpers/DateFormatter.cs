@@ -12,6 +12,6 @@ public static class DateFormatter
         if (value.Date == now.AddDays(-1).Date)
             return $"Yesterday {value:hh:mm tt}";
 
-        return value.ToString("dd/MM/yyyy hh:mm tt");
+        return value.ToString("MM/dd/yyyy hh:mm tt");
     }
 }

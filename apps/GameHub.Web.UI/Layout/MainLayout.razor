@@ -1,4 +1,4 @@
-﻿﻿@using MudBlazor
+﻿@using MudBlazor
 @inherits LayoutComponentBase
 
 <MudThemeProvider Theme="@_theme" />
@@ -15,16 +15,25 @@
                 <MudButton Class="ml-auto" Color="Color.Inherit" Variant="Variant.Text" Href="/auth/register">Sign Up</MudButton>
                 <MudButton Color="Color.Inherit" Variant="Variant.Text" Href="/auth/login">Sign In</MudButton>
             </MudAppBar>
+
             <MudMainContent>
                 @Body
             </MudMainContent>
         </MudLayout>
     </NotAuthorized>
+
     <Authorized>
-        <MudLayout Class="d-flex flex-column" Style="height:100vh; overflow:hidden;">
+        <MudLayout Class="app-shell">
             <MainBody>
                 @Body
             </MainBody>
         </MudLayout>
     </Authorized>
 </AuthorizeView>
+
+<style>
+    .app-shell {
+        height: 100vh;
+        overflow: hidden;
+    }
+</style>

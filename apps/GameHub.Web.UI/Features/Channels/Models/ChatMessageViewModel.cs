@@ -1,4 +1,6 @@
-﻿namespace GameHub.Web.UI.Features.Channels.Models;
+﻿using MudBlazor;
+
+namespace GameHub.Web.UI.Features.Channels.Models;
 
 public class ChatMessageViewModel
 {
@@ -8,8 +10,8 @@ public class ChatMessageViewModel
     public string Content { get; set; } = string.Empty;
     public DateTimeOffset SentAt { get; set; }
     public bool IsMine { get; set; }
-    public string Initial { get; set; } = "?";
-
+    public string Initial { get; set; } = string.Empty; 
+    public Color AvatarColor { get; set; } 
     public class Comparer : IComparer<ChatMessageViewModel>
     {
         public static readonly Comparer Instance = new();

@@ -1,11 +1,6 @@
 ﻿@page "/channels"
 @attribute [Authorize]
 
-@inject NavigationManager NavigationManager
-@inject IChatService ChatService
-@inject ISnackbar Snackbar
-@using static GameHub.Web.UI.Shared.Helpers.UiTextHelper
-
 <MudContainer MaxWidth="MaxWidth.Large" Class="pa-6">
     <MudStack Spacing="3">
 
@@ -117,8 +112,8 @@
                             <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2" Class="w-100">
 
                                 <!-- Avatar -->
-                                <MudAvatar Size="Size.Large">
-                                    @GetInitial(channel.Name)
+                                <MudAvatar Size="Size.Large" Color="@channel.AvatarColor">
+                                    @channel.ChatAlias
                                 </MudAvatar>
 
                                 <!-- Content -->
@@ -131,7 +126,7 @@
                                         </MudText>
 
                                         <MudText Typo="Typo.caption" Color="Color.Secondary">
-                                            @FormatTime(channel.LastMessageAt)
+                                            @DateFormatter.ToChatFormat(channel.LastMessageAt ?? DateTimeOffset.MinValue)
                                         </MudText>
                                     </MudStack>
 
@@ -169,62 +164,3 @@
 
     </MudStack>
 </MudContainer>
-
-@code {
-    private List<ChatDto> _channels = [];
-    private bool _isLoading = true;
-    private bool _hasError = false;
-
-    protected override async Task OnInitializedAsync()
-    {
-        await LoadAsync();
-    }
-
-    private async Task LoadAsync()
-    {
-        _isLoading = true;
-        _hasError = false;
-
-        await Task.Delay(1500);
-
-        var result = await ChatService.GetListAsync();
-
-        if (result.IsFailure)
-        {
-            _hasError = true;
-
-            Snackbar.Clear();
-            Snackbar.Add(result.Error.Description, Severity.Error);
-
-            _isLoading = false;
-            return;
-        }
-
-        _channels = result.Value;
-        _isLoading = false;
-    }
-
-    private void OpenChannel(ChatDto channel)
-    {
-        NavigationManager.NavigateTo($"/channels/{channel.Id}");
-    }
-
-    
-
-    private static string FormatTime(DateTimeOffset? value)
-    {
-        if (value is null)
-            return string.Empty;
-
-        var now = DateTimeOffset.Now;
-        var date = value.Value;
-
-        if (date.Date == now.Date)
-            return date.ToString("hh:mm tt");
-
-        if (date.Date == now.AddDays(-1).Date)
-            return "Yesterday";
-
-        return date.ToString("dd/MM/yyyy");
-    }
-}

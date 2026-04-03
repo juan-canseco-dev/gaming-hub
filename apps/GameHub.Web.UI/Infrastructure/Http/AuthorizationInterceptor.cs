@@ -1,19 +1,21 @@
 ﻿using GameHub.Web.UI.Features.Auth.State;
+using GameHub.Web.UI.Infrastructure.Options;
+using Microsoft.Extensions.Options;
 using System.Net.Http.Headers;
 
 namespace GameHub.Web.UI.Infrastructure.Http;
 
 public class AuthorizationInterceptor : DelegatingHandler
 {
-    private readonly Uri _baseApiUri;
     private readonly JwtAuthenticationStateProvider _authProvider;
+    private readonly ApiSettings _apiSettings;
 
     public AuthorizationInterceptor(
-        Uri baseApiUri, 
+        IOptions<ApiSettings> apiSettingsOptions,
         JwtAuthenticationStateProvider authProvider
     )
     {
-        _baseApiUri = baseApiUri;
+        _apiSettings = apiSettingsOptions.Value;
         _authProvider = authProvider;
     }
 
@@ -30,8 +32,9 @@ public class AuthorizationInterceptor : DelegatingHandler
         CancellationToken cancellationToken
     )
     {
+        var baseApiUri= new Uri(_apiSettings.BaseUrl);
         var uri = request.RequestUri;
-        var isApiUri = uri is null ? false : _baseApiUri.IsBaseOf(uri);
+        var isApiUri = uri is null ? false :baseApiUri.IsBaseOf(uri);
 
         if (isApiUri)
         { 

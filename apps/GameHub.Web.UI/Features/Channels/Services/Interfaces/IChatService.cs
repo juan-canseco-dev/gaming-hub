@@ -8,7 +8,7 @@ namespace GameHub.Web.UI.Features.Channels.Services.Interfaces;
 public interface IChatService
 {
     Task<Result> MarkChatAsReadAsync(Guid chatId);
-    Task<Result> SendMessageAsync(SendMessageRequest request);
+    Task<Result<MessageDto>> SendMessageAsync(SendMessageRequest request);
     Task<Result<ChatDto>> GetByIdAsync(Guid chatId);
     Task<Result<List<ChatDto>>> GetListAsync();
     Task<Result<CursorPage<MessageDto>>> GetMessagesAsync(

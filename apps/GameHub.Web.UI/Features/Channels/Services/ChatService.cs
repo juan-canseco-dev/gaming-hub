@@ -34,7 +34,7 @@ public class ChatService : IChatService
         return Result.Failure(Error.InternalServerError);
     }
 
-    public async Task<Result> SendMessageAsync(SendMessageRequest request)
+    public async Task<Result<MessageDto>> SendMessageAsync(SendMessageRequest request)
     {
         var response = await _httpClient.PostAsJsonAsync(
             requestUri: $"chats/messages",
@@ -43,16 +43,17 @@ public class ChatService : IChatService
 
         if (response.IsSuccessStatusCode)
         {
-            return Result.Success();
+            var message = await response.Content.ReadFromJsonAsync<MessageDto>();   
+            return Result.Success(message!);
         }
         if (response.StatusCode == HttpStatusCode.NotFound ||
           response.StatusCode == HttpStatusCode.BadRequest
         )
         {
             var error = await response.Content.ReadFromJsonAsync<Error>();
-            return Result.Failure(error!);
+            return Result.Failure<MessageDto>(error!);
         }
-        return Result.Failure(Error.InternalServerError);
+        return Result.Failure<MessageDto>(Error.InternalServerError);
     }
 
     public async Task<Result<ChatDto>> GetByIdAsync(Guid chatId)

@@ -52,6 +52,7 @@ public class ChatMessageSentConsumer : IConsumer<ChatMessageSentEvent>
         }
 
         var notification = new MessageNotification(
+            ChatId: message.ChatId,
             Message: getMessageResult.Value
         );
 

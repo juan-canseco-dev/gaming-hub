@@ -68,6 +68,7 @@ public class ChatMemberJoinedConsumer : IConsumer<ChatMemberJoinedEvent>
         }
 
         var notification = new UserJoinedNotification(
+            ChatId: message.ChatId,
             NumberOfParticipants: participantCountResult.Value,
             Message: getMessageResult.Value);
 

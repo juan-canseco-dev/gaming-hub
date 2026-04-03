@@ -1,6 +1,5 @@
 ﻿<MudAppBar Fixed="true" Color="Color.Primary" Elevation="0">
     <MudSpacer />
-
     <MudIconButton Icon="@Icons.Material.Filled.NotificationsNone" Color="Color.Inherit" />
 </MudAppBar>
 
@@ -9,7 +8,8 @@
            Fixed="true"
            Variant="DrawerVariant.Persistent"
            Color="Color.Primary"
-           Elevation="0" Style="z-index: 1200">
+           Elevation="0"
+           Style="z-index:1200">
 
     <MudDrawerHeader>
         <MudText Typo="Typo.h6">GameHub</MudText>
@@ -26,15 +26,13 @@
         </MudStack>
 
         <MudNavMenu Bordered="false" Rounded="true" Color="Color.Secondary">
-
             <MudNavLink Href="/home" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home" IconColor="Color.Inherit">
                 Home
             </MudNavLink>
 
-            <MudNavLink Href="/channels" Match="NavLinkMatch.All" ` Icon="@Icons.Material.Filled.Groups" IconColor="Color.Inherit">
+            <MudNavLink Href="/channels" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Groups" IconColor="Color.Inherit">
                 My Channels
             </MudNavLink>
-
         </MudNavMenu>
 
         <MudSpacer />
@@ -48,8 +46,34 @@
     </MudStack>
 </MudDrawer>
 
-<MudMainContent>
-    <MudContainer MaxWidth="MaxWidth.False" Class="pa-4">
-        @ChildContent
+<MudMainContent Class="main-body-content">
+    <MudContainer MaxWidth="MaxWidth.False" Class="main-body-container">
+        <CascadingValue Value="_hubConnection" Name="HubConnection">
+            @ChildContent
+        </CascadingValue>
     </MudContainer>
 </MudMainContent>
+
+<style>
+    .main-body-content {
+        height: 100vh;
+        overflow: hidden;
+        padding-top: 64px;
+    }
+
+    .main-body-container {
+        height: calc(100vh - 64px);
+        padding: 16px;
+    }
+
+    @@media (max-width: 600px) {
+        .main-body-content {
+            padding-top: 56px;
+        }
+
+        .main-body-container {
+            height: calc(100vh - 56px);
+            padding: 12px;
+        }
+    }
+</style>
