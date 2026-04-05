@@ -1,7 +1,5 @@
-﻿using GameHub.Contracts.Channels;
-using GameHub.Contracts.Chats;
+﻿using GameHub.Contracts.Chats;
 using GameHub.Contracts.Notifications;
-using GameHub.Web.UI.Features.Auth.State;
 using GameHub.Web.UI.Features.Channels.Models;
 using GameHub.Web.UI.Features.Channels.Services.Interfaces;
 using GameHub.Web.UI.Shared.Constants;
@@ -72,7 +70,7 @@ public partial class MyChannels : ComponentBase, IAsyncDisposable
         _isLoading = true;
         _hasError = false;
 
-        await Task.Delay(1500);
+        await Task.Delay(700);
 
         var result = await ChatService.GetListAsync();
 
