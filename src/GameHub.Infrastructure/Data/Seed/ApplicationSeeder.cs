@@ -1,5 +1,6 @@
 ﻿using GameHub.Infrastructure.Data.Seed.Development;
 using GameHub.Infrastructure.Data.Seed.Production;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
@@ -29,35 +30,46 @@ public sealed class ApplicationSeeder
 
     public async Task SeedAsync(CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("Starting database seeding for environment {EnvironmentName}.", _environment.EnvironmentName);
+        _logger.LogInformation(
+            "Starting database seeding for environment {EnvironmentName}.",
+            _environment.EnvironmentName);
 
-        await using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
+        var strategy = _context.Database.CreateExecutionStrategy();
 
-        try
+        await strategy.ExecuteAsync(async () =>
         {
-            foreach (var seeder in _productionSeeders)
-            {
-                await seeder.SeedAsync(cancellationToken);
-            }
+            await using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
 
-            if (_environment.IsDevelopment())
+            try
             {
-                foreach (var seeder in _developmentSeeders)
+                foreach (var seeder in _productionSeeders)
                 {
                     await seeder.SeedAsync(cancellationToken);
                 }
+
+                if (_environment.IsDevelopment())
+                {
+                    foreach (var seeder in _developmentSeeders)
+                    {
+                        await seeder.SeedAsync(cancellationToken);
+                    }
+                }
+
+                await _context.SaveChangesAsync(cancellationToken);
+                await transaction.CommitAsync(cancellationToken);
+
+                _logger.LogInformation("Database seeding completed successfully.");
             }
+            catch (Exception ex)
+            {
+                if (_context.Database.CurrentTransaction is not null)
+                {
+                    await transaction.RollbackAsync(cancellationToken);
+                }
 
-            await _context.SaveChangesAsync(cancellationToken);
-            await transaction.CommitAsync(cancellationToken);
-
-            _logger.LogInformation("Database seeding completed successfully.");
-        }
-        catch (Exception ex)
-        {
-            await transaction.RollbackAsync(cancellationToken);
-            _logger.LogError(ex, "Database seeding failed. Transaction rolled back.");
-            throw;
-        }
+                _logger.LogError(ex, "Database seeding failed. Transaction rolled back.");
+                throw;
+            }
+        });
     }
 }

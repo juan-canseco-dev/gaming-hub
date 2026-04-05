@@ -72,7 +72,7 @@ public partial class MyChannels : ComponentBase, IAsyncDisposable
         _isLoading = true;
         _hasError = false;
 
-        await Task.Delay(1500);
+        await Task.Delay(800);
 
         var result = await ChatService.GetListAsync();
 
