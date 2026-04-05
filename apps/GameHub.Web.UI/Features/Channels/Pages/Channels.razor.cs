@@ -107,7 +107,7 @@ public partial class Channels : ComponentBase, IAsyncDisposable
 
         _joiningChannels.Add(channel.ChatId);
         StateHasChanged();
-        await Task.Delay(800);
+        await Task.Delay(2000);
         var result = await ChannelsService.JoinAsync(channel.ChatId);
 
         _joiningChannels.Remove(channel.ChatId);

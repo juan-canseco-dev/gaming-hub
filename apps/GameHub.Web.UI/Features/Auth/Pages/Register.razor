@@ -124,7 +124,7 @@
     private async Task OnValidSubmit()
     {
         IsLoading = true;
-        await Task.Delay(700);
+        await Task.Delay(1500);
         var result = await AuthService.RegisterAsync(request);
         IsLoading = false;
 
