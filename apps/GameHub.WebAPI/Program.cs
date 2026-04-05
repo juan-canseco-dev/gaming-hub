@@ -1,9 +1,9 @@
-
 using Carter;
 using GameHub.Application;
 using GameHub.Infrastructure;
-using GameHub.WebAPI.Extensions;
 using GameHub.Infrastructure.Hubs;
+using GameHub.WebAPI.Configuration;
+using GameHub.WebAPI.Extensions;
 
 namespace GameHub.WebAPI
 {
@@ -19,7 +19,7 @@ namespace GameHub.WebAPI
 
 
             // Add services to the container.
-            var redisConnectionString = builder.Configuration.GetConnectionString("Redis") 
+            var redisConnectionString = builder.Configuration.GetConnectionString("Redis")
                 ?? throw new InvalidOperationException("Redis connection string was not configured.");
 
             builder.Services
@@ -38,17 +38,20 @@ namespace GameHub.WebAPI
             builder.Services.AddOpenApi();
 
 
+            var corsSection = builder.Configuration.GetSection(CorsOptions.SectionName);
+            builder.Services.Configure<CorsOptions>(corsSection);
+
+            var corsOptions = corsSection.Get<CorsOptions>();
+
             builder.Services.AddCors(options =>
             {
-                options.AddPolicy("MyCors",
-                    builder =>
-                    {
-                        builder.WithOrigins("https://localhost:7238")
-                               .AllowAnyHeader()
-                               .AllowAnyMethod();
-                    });
+                options.AddPolicy(corsOptions!.PolicyName, policy =>
+                {
+                    policy.WithOrigins(corsOptions.AllowedOrigins)
+                          .AllowAnyHeader()
+                          .AllowAnyMethod();
+                });
             });
-
 
 
             var app = builder.Build();
@@ -56,33 +59,24 @@ namespace GameHub.WebAPI
 
 
             // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
+            if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Docker"))
             {
                 app.MapOpenApi();
                 await app.RecreateDatabaseWithMigrationsAsync();
             }
-
             if (!app.Environment.IsEnvironment("IntegrationTesting"))
             {
                 await app.SeedDataAsync();
             }
 
-
-            app.UseHttpsRedirection();
-
             app.UseCustomExceptionHandler();
 
-<<<<<<< HEAD
-            app.UseCors("MyCors");
-=======
             app.UseCors(corsOptions!.PolicyName);
-
->>>>>>> 3a4b0073d12702713a7d74203ea430e299c85200
             app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapGet("/", () => "Welcome to Game Hub");
-            
+
             app.MapHub<ChatHub>("/hubs/chat");
             app.MapCarter();
             app.Run();
