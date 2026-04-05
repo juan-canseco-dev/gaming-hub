@@ -77,6 +77,8 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>, IAsyn
         Environment.SetEnvironmentVariable("Jwt:SecretKey", "3bc3ecfd4d6d0855e7df9b43b452ebcfab80b1ae368873721e7b6e0fe70e1756");
         Environment.SetEnvironmentVariable("Jwt:Issuer", "https://test-issuer");
         Environment.SetEnvironmentVariable("Jwt:Audience", "https://test-audience");
+        Environment.SetEnvironmentVariable("Cors:PolicyName", "TestCorsPolicy");
+        Environment.SetEnvironmentVariable("Cors:AllowedOrigins", "https://localhost:5001");
 
         builder.ConfigureServices(services =>
         {

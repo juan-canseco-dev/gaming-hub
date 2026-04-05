@@ -65,6 +65,7 @@ namespace GameHub.WebAPI
                 app.MapOpenApi();
                 await app.RecreateDatabaseWithMigrationsAsync();
             }
+
             if (!app.Environment.IsEnvironment("IntegrationTesting"))
             {
                 await app.SeedDataAsync();
@@ -73,6 +74,7 @@ namespace GameHub.WebAPI
             app.UseCustomExceptionHandler();
 
             app.UseCors(corsOptions!.PolicyName);
+
             app.UseAuthentication();
             app.UseAuthorization();
 
