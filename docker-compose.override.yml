@@ -1,0 +1,56 @@
+services:
+  gamehub.webapi:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
+      - ASPNETCORE_HTTP_PORTS=8070
+      - ConnectionStrings__ConnectionString=Data Source=gamehub.db;Initial Catalog=GameHub_Db;Persist Security Info=True;User ID=sa;Password=Admin.1234;Encrypt=False;TrustServerCertificate=True
+      - ConnectionStrings__Redis=gamehub.cache:6379
+      - Jwt__SecretKey=297610ed-b758-4e24-80f8-ffc0e75abfcd
+      - Jwt__Issuer=http://localhost:8070
+      - Jwt__Audience=http://localhost:8070
+      - EventBusSettings__Host=amqp://gamehub.rabbitmq:5672
+      - EventBusSettings__Username=guest
+      - EventBusSettings__Password=guest
+      - Cors__PolicyName=MyCors
+      - Cors__AllowedOrigins__0=http://localhost:8080
+    ports:
+      - "8070:8070"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+    depends_on:
+      - gamehub.db
+      - gamehub.cache
+      - gamehub.rabbitmq
+
+  gamehub.webui:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
+    ports:
+      - "8080:80"
+    depends_on:
+      - gamehub.webapi
+
+  gamehub.db:
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=Admin.1234
+    healthcheck:
+      test: ["CMD", "/opt/mssql-tools/bin/sqlcmd", "-S", "localhost", "-U", "sa", "-P", "Admin.1234", "-Q", "SELECT 1"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
+    ports:
+      - "1433:1433"
+
+  gamehub.cache:
+    ports:
+      - "6379:6379"
+
+  gamehub.rabbitmq:
+    ports:
+      - "5672:5672"
+      - "15672:15672"

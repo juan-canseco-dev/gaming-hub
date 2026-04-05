@@ -10,7 +10,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="appsettings.Docker.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="Features\Channels\Pages\Channel.razor.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\appsettings.Docker.json" />
   </ItemGroup>
 
   <ItemGroup>
