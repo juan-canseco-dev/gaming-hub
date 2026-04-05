@@ -1,0 +1,68 @@
+services:
+  gamehub.webapi:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=${WEBAPI_ENVIRONMENT}
+      - ASPNETCORE_HTTP_PORTS=${WEBAPI_HTTP_PORT}
+      - ConnectionStrings__ConnectionString=${DB_CONNECTION_STRING}
+      - ConnectionStrings__Redis=${REDIS_CONNECTION_STRING}
+      - Jwt__SecretKey=${JWT_SECRET_KEY}
+      - Jwt__Issuer=${JWT_ISSUER}
+      - Jwt__Audience=${JWT_AUDIENCE}
+      - EventBusSettings__Host=${RABBITMQ_HOST}
+      - EventBusSettings__Username=${RABBITMQ_USERNAME}
+      - EventBusSettings__Password=${RABBITMQ_PASSWORD}
+      - Cors__PolicyName=${CORS_POLICY_NAME}
+      - Cors__AllowedOrigins__0=${CORS_ALLOWED_ORIGIN_0}
+    ports:
+      - "${WEBAPI_HOST_PORT}:${WEBAPI_HTTP_PORT}"
+    volumes:
+      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
+      - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
+      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+      - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+    depends_on:
+      - gamehub.db
+      - gamehub.cache
+      - gamehub.rabbitmq
+
+  gamehub.webui:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=${WEBUI_ENVIRONMENT}
+    ports:
+      - "${WEBUI_HOST_PORT}:${WEBUI_CONTAINER_PORT}"
+    depends_on:
+      - gamehub.webapi
+
+  gamehub.db:
+    environment:
+      - ACCEPT_EULA=${SQLSERVER_ACCEPT_EULA}
+      - SA_PASSWORD=${SQLSERVER_SA_PASSWORD}
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "/opt/mssql-tools/bin/sqlcmd",
+          "-S",
+          "localhost",
+          "-U",
+          "${SQLSERVER_USER}",
+          "-P",
+          "${SQLSERVER_SA_PASSWORD}",
+          "-Q",
+          "SELECT 1"
+        ]
+      interval: ${SQLSERVER_HEALTHCHECK_INTERVAL}
+      timeout: ${SQLSERVER_HEALTHCHECK_TIMEOUT}
+      retries: ${SQLSERVER_HEALTHCHECK_RETRIES}
+      start_period: ${SQLSERVER_HEALTHCHECK_START_PERIOD}
+    ports:
+      - "${SQLSERVER_HOST_PORT}:${SQLSERVER_CONTAINER_PORT}"
+
+  gamehub.cache:
+    ports:
+      - "${REDIS_HOST_PORT}:${REDIS_CONTAINER_PORT}"
+
+  gamehub.rabbitmq:
+    ports:
+      - "${RABBITMQ_AMQP_HOST_PORT}:${RABBITMQ_AMQP_CONTAINER_PORT}"
+      - "${RABBITMQ_MANAGEMENT_HOST_PORT}:${RABBITMQ_MANAGEMENT_CONTAINER_PORT}"
