@@ -22,10 +22,12 @@ public static class ApplicationBuilderExtensions
 
         try
         {
-            logger.LogInformation("Starting database recreation process.");
-            logger.LogInformation("Deleting existing database...");
-            await context.Database.EnsureDeletedAsync();
-            logger.LogInformation("Database deleted successfully.");
+            //logger.LogInformation("Starting database recreation process.");
+
+            //logger.LogInformation("Deleting existing database...");
+            //await context.Database.EnsureDeletedAsync();
+            //logger.LogInformation("Database deleted successfully.");
+
             logger.LogInformation("Applying migrations...");
             await context.Database.MigrateAsync();
             logger.LogInformation("Database migrations applied successfully.");
