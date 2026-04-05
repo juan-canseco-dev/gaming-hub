@@ -1,0 +1,43 @@
+services:
+  gamehub.webapi:
+    container_name: gamehub.webapi
+    image: ${DOCKER_REGISTRY-}gamehubwebapi
+    build:
+      context: .
+      dockerfile: apps/GameHub.WebAPI/Dockerfile
+    depends_on:
+      - gamehub.db
+      - gamehub.cache
+      - gamehub.rabbitmq
+
+  gamehub.webui:
+    container_name: gamehub.webui
+    image: ${DOCKER_REGISTRY-}gamehubwebui
+    build:
+      context: .
+      dockerfile: apps/GameHub.Web.UI/Dockerfile
+    depends_on:
+      - gamehub.webapi
+
+  gamehub.db:
+    container_name: gamehub.database
+    image: mcr.microsoft.com/mssql/server:latest
+    volumes:
+      - gamehub_sql_data:/var/opt/mssql
+
+  gamehub.cache:
+    container_name: gamehub.cache
+    image: redis:alpine
+    volumes:
+      - gamehub_redis_data:/data
+
+  gamehub.rabbitmq:
+    container_name: gamehub.rabbitmq
+    image: rabbitmq:3-management-alpine
+    volumes:
+      - gamehub_rabbitmq_data:/var/lib/rabbitmq
+
+volumes:
+  gamehub_sql_data:
+  gamehub_redis_data:
+  gamehub_rabbitmq_data:
