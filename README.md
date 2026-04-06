@@ -75,6 +75,7 @@ GameHub.sln
     ├── GameHub.Domain.UnitTests
     ├── GameHub.Application.UnitTests
     └── GameHub.WebAPI.IntegrationTests
+```
 ---
 ## 📸 Screenshots
 
