@@ -144,6 +144,129 @@ GameHub.sln
     └── GameHub.WebAPI.IntegrationTests
 ```
 ---
+## ▶️ Running the Project
+
+GameHub can be run in two ways:
+
+- **Without Docker** for local development
+- **With Docker** using `docker-compose`
+
+---
+
+### 🖥️ Run Without Docker
+
+For local development, update the backend configuration file:
+
+`apps/GameHub.WebAPI/appsettings.Development.json`
+
+Replace the values with your own local settings:
+
+```json
+{
+  "ConnectionStrings": {
+    "ConnectionString": "YOUR_SQL_SERVER_CONNECTION_STRING",
+    "Redis": "YOUR_REDIS_CONNECTION_STRING"
+  },
+  "Jwt": {
+    "SecretKey": "YOUR_JWT_SECRET_KEY",
+    "Issuer": "YOUR_API_BASE_URL",
+    "Audience": "YOUR_API_BASE_URL"
+  },
+  "EventBusSettings": {
+    "Host": "YOUR_RABBITMQ_HOST",
+    "Username": "YOUR_RABBITMQ_USERNAME",
+    "Password": "YOUR_RABBITMQ_PASSWORD"
+  },
+  "Cors": {
+    "PolicyName": "YOUR_CORS_POLICY_NAME",
+    "AllowedOrigins": [
+      "YOUR_BLAZOR_WEBASSEMBLY_URL"
+    ]
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning",
+      "MassTransit": "Debug",
+      "Microsoft.EntityFrameworkCore.Database.Command": "Information"
+    }
+  }
+}
+```
+Then update the frontend configuration file:
+
+`apps/GameHub.Web.UI/wwwroot/appsettings.json`
+```json
+{
+  "ApiSettings": {
+    "BaseUrl": "YOUR_LOCAL_API_URL/api/",
+    "BaseHubUrl": "YOUR_LOCAL_API_URL/hubs/"
+  }
+}
+```
+Make sure the API and hub URLs match your local backend URL:
+
+### 🐳 Run With Docker
+To run the project with Docker, create a .env file in the root of the project and replace the values with your own settings:
+```text
+WEBAPI_ENVIRONMENT=YOUR_WEBAPI_ENVIRONMENT
+WEBAPI_HTTP_PORT=YOUR_WEBAPI_CONTAINER_PORT
+WEBAPI_HOST_PORT=YOUR_WEBAPI_HOST_PORT
+
+DB_CONNECTION_STRING=YOUR_DATABASE_CONNECTION_STRING
+REDIS_CONNECTION_STRING=YOUR_REDIS_CONNECTION_STRING
+
+JWT_SECRET_KEY=YOUR_JWT_SECRET_KEY
+JWT_ISSUER=YOUR_JWT_ISSUER
+JWT_AUDIENCE=YOUR_JWT_AUDIENCE
+
+RABBITMQ_HOST=YOUR_RABBITMQ_HOST
+RABBITMQ_USERNAME=YOUR_RABBITMQ_USERNAME
+RABBITMQ_PASSWORD=YOUR_RABBITMQ_PASSWORD
+
+CORS_POLICY_NAME=YOUR_CORS_POLICY_NAME
+CORS_ALLOWED_ORIGIN_0=YOUR_WEB_UI_URL
+
+WEBUI_ENVIRONMENT=YOUR_WEBUI_ENVIRONMENT
+WEBUI_HOST_PORT=YOUR_WEBUI_HOST_PORT
+WEBUI_CONTAINER_PORT=YOUR_WEBUI_CONTAINER_PORT
+
+SQLSERVER_ACCEPT_EULA=Y
+SQLSERVER_USER=YOUR_SQLSERVER_USER
+SQLSERVER_SA_PASSWORD=YOUR_SQLSERVER_PASSWORD
+SQLSERVER_HOST_PORT=YOUR_SQLSERVER_HOST_PORT
+SQLSERVER_CONTAINER_PORT=YOUR_SQLSERVER_CONTAINER_PORT
+SQLSERVER_HEALTHCHECK_INTERVAL=YOUR_HEALTHCHECK_INTERVAL
+SQLSERVER_HEALTHCHECK_TIMEOUT=YOUR_HEALTHCHECK_TIMEOUT
+SQLSERVER_HEALTHCHECK_RETRIES=YOUR_HEALTHCHECK_RETRIES
+SQLSERVER_HEALTHCHECK_START_PERIOD=YOUR_HEALTHCHECK_START_PERIOD
+
+REDIS_HOST_PORT=YOUR_REDIS_HOST_PORT
+REDIS_CONTAINER_PORT=YOUR_REDIS_CONTAINER_PORT
+
+RABBITMQ_AMQP_HOST_PORT=YOUR_RABBITMQ_AMQP_HOST_PORT
+RABBITMQ_AMQP_CONTAINER_PORT=YOUR_RABBITMQ_AMQP_CONTAINER_PORT
+RABBITMQ_MANAGEMENT_HOST_PORT=YOUR_RABBITMQ_MANAGEMENT_HOST_PORT
+RABBITMQ_MANAGEMENT_CONTAINER_PORT=YOUR_RABBITMQ_MANAGEMENT_CONTAINER_PORT
+```
+Then run the following command from the root of the project:
+```bash
+docker compose -f docker-compose.yml -f docker-compose.override.yml up --build
+```
+Or run it in detached mode:
+```bash
+docker compose -f docker-compose.yml -f docker-compose.override.yml up -d
+```
+For Docker development, update the frontend configuration file:
+```json
+{
+  "ApiSettings": {
+    "BaseUrl": "YOUR_DOCKER_API_URL/api/",
+    "BaseHubUrl": "YOUR_DOCKER_API_URL/hubs/"
+  }
+}
+```
+---
 ## 📸 Screenshots
 
 ### Authentication
