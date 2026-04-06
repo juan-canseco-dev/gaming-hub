@@ -314,6 +314,7 @@ For Docker development, update the frontend configuration file:
 - [Minimal API Vertical Slice Architecture](https://github.com/isaacOjeda/MinimalApiArchitecture) by Issac Ojeda
 - [CQRS and MediatR in ASP.NET Core](https://code-maze.com/cqrs-mediatr-in-aspnet-core/) by CodeMaze
 - [CQRS Validation Pipeline with MediatR and FluentValidation](https://code-maze.com/cqrs-mediatr-fluentvalidation/) by CodeMaze
+- [Implementing the Outbox and Inbox Pattern with MassTransit: A Reliable Messaging Approach in .NET](https://medium.com/@fcakiroglu16/implementing-the-outbox-and-inbox-pattern-with-masstransit-a-reliable-messaging-approach-in-net-52e943f6826d) by Fatih çakıroğlu
 - [ASP.NET Core Integration Tests with Test Containers & Postgres](https://www.azureblue.io/asp-net-core-integration-tests-with-test-containers-and-postgres/) by Matthias Güntert
 - [Understanding Cursor Pagination and Why It's So Fast (Deep Dive)](https://www.milanjovanovic.tech/blog/understanding-cursor-pagination-and-why-its-so-fast-deep-dive) by Milan Jovanović
 - [ASP.NET Core Integration Testing Best Practises](https://antondevtips.com/blog/asp-net-core-integration-testing-best-practises) by Anton Martyniuk
