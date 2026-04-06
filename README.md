@@ -311,3 +311,14 @@ For Docker development, update the frontend configuration file:
 - Explore a **microservices-based version** of GameHub
 ---
 ## 📚 References
+- [Minimal API Vertical Slice Architecture](https://github.com/isaacOjeda/MinimalApiArchitecture) by Issac Ojeda
+- [CQRS and MediatR in ASP.NET Core](https://code-maze.com/cqrs-mediatr-in-aspnet-core/) by CodeMaze
+- [CQRS Validation Pipeline with MediatR and FluentValidation](https://code-maze.com/cqrs-mediatr-fluentvalidation/) by CodeMaze
+- [ASP.NET Core Integration Tests with Test Containers & Postgres](https://www.azureblue.io/asp-net-core-integration-tests-with-test-containers-and-postgres/) by Matthias Güntert
+- [Understanding Cursor Pagination and Why It's So Fast (Deep Dive)](https://www.milanjovanovic.tech/blog/understanding-cursor-pagination-and-why-its-so-fast-deep-dive) by Milan Jovanović
+- [ASP.NET Core Integration Testing Best Practises](https://antondevtips.com/blog/asp-net-core-integration-testing-best-practises) by Anton Martyniuk
+- [How to scale out a SignalR back-end by using Redis](https://sd.blackball.lv/en/articles/read/19361-how-to-scale-out-a-signalr-back-end-by-using-redis) by Fiodar Sazanavets
+- [Using sortable UUID / GUIDs in Entity Framework](https://steven-giesel.com/blogPost/d6150b89-a3ef-407e-add2-7afa4a2a8729/using-sortable-uuid-guids-in-entity-framework)
+- [Blazor WASM Dockerizing](https://ilovedotnet.org/blogs/blazor-wasm-dockerizing/) by  Abdul Rahman
+- [Host and deploy ASP.NET Core Blazor WebAssembly with Nginx](https://learn.microsoft.com/en-us/aspnet/core/blazor/host-and-deploy/webassembly/nginx?view=aspnetcore-9.0) by Andrii Annenko
+
