@@ -258,6 +258,9 @@ Or run it in detached mode:
 docker compose -f docker-compose.yml -f docker-compose.override.yml up -d
 ```
 For Docker development, update the frontend configuration file:
+
+`apps/GameHub.Web.UI/wwwroot/appsettings.Docker.json`
+
 ```json
 {
   "ApiSettings": {
