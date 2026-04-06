@@ -19,6 +19,30 @@ It highlights:
 
 ---
 
+## Screenshots
+
+### Authentication
+
+![GameHub Screenshot 01](assets/images/img01.png)
+![GameHub Screenshot 02](assets/images/img02.png)
+
+### Channels and Navigation
+
+![GameHub Screenshot 03](assets/images/img03.png)
+![GameHub Screenshot 04](assets/images/img04.png)
+
+### Chat Experience
+
+![GameHub Screenshot 05](assets/images/img05.png)
+![GameHub Screenshot 06](assets/images/img06.png)
+![GameHub Screenshot 07](assets/images/img07.png)
+
+### Infinite Scroll and Messaging
+
+![GameHub Screenshot 08](assets/images/img08.png)
+![GameHub Screenshot 09](assets/images/img09.png)
+![GameHub Screenshot 10](assets/images/img010.png)
+
 ## Tech Stack
 
 ### Backend
