@@ -8,6 +8,7 @@ using GameHub.Web.UI.Features.Channels.Services.Interfaces;
 using GameHub.Web.UI.Shared.Constants;
 using GameHub.Web.UI.Shared.Helpers;
 using Microsoft.AspNetCore.Components;
+using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.JSInterop;
 using MudBlazor;
@@ -347,6 +348,14 @@ public partial class Channel : ComponentBase, IAsyncDisposable
     private async Task SendMessageAsync()
     {
         await SendMessageCoreAsync(_messageText);
+    }
+
+    private async Task HandleKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter")
+        {
+            await SendMessageAsync();
+        }
     }
 
     private async Task SendMessageCoreAsync(string? content)

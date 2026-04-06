@@ -16,6 +16,11 @@ namespace GameHub.Web.UI
         public static async Task Main(string[] args)
         {
             var builder = WebAssemblyHostBuilder.CreateDefault(args);
+
+            builder.Configuration
+               .AddJsonFile("appsettings.json", optional: false)
+               .AddJsonFile($"appsettings.{builder.HostEnvironment.Environment}.json", optional: true);
+
             builder.RootComponents.Add<App>("#app");
             builder.RootComponents.Add<HeadOutlet>("head::after");
 

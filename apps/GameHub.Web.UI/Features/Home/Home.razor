@@ -1,5 +1,6 @@
 ﻿@page "/"
-
+@inject JwtAuthenticationStateProvider AuthProvider
+@inject NavigationManager NavManager
 @attribute [AllowAnonymous]
 
 <PageTitle>GameHub</PageTitle>
@@ -139,3 +140,12 @@
     </MudGrid>
 
 </MudContainer>
+@code {
+    protected async override Task OnInitializedAsync()
+    {
+        if (await AuthProvider.IsLoggedInAsync())
+        {
+            NavManager.NavigateTo("/home", true);
+        }
+    }
+}
