@@ -119,6 +119,7 @@ Application Layer (CQRS + MediatR)
 Domain Layer (Entities, Aggregates, Business Rules)
         ↓
 Infrastructure Layer (EF Core, Identity, Messaging, SignalR)
+```
 
 ## 🏗️ Solution Structure
 
