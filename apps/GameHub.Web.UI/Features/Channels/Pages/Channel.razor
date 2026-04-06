@@ -200,6 +200,7 @@
 
                 <MudStack Row="true" Spacing="2" AlignItems="AlignItems.Center">
                     <MudTextField T="string"
+                                  @ref="_messageTextField"
                                   @bind-Value="_messageText"
                                   Placeholder="Write a message..."
                                   Variant="Variant.Outlined"
@@ -207,6 +208,7 @@
                                   FullWidth="true"
                                   Disabled="@_isSendingMessage"
                                   Class="composer-input"
+                                  Immediate="true"
                                   OnKeyDown="HandleKeyDown"
                                   />
 

@@ -42,6 +42,8 @@ public partial class Channel : ComponentBase, IAsyncDisposable
 
     private Guid UserId = Guid.Empty;
 
+    public required MudTextField<string> _messageTextField;
+
     private string ChannelName = string.Empty;
     private string ChannelDescription = string.Empty;
     private int ParticipantsCount = 0;
@@ -399,6 +401,9 @@ public partial class Channel : ComponentBase, IAsyncDisposable
         await ScrollMessagesToBottomAsync();
 
         _isSendingMessage = false;
+
+        await _messageTextField.FocusAsync();
+
         await InvokeAsync(StateHasChanged);
     }
 
