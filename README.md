@@ -270,6 +270,21 @@ For Docker development, update the frontend configuration file:
 }
 ```
 ---
+## 🔮 Roadmap
+
+### Improvements
+- Create dedicated **builders for domain models** in unit tests to improve readability and maintainability
+- Refine the **domain naming across the application** for better consistency and clarity
+
+### Next Features
+- Build a **mobile client**
+- Add **user presence**
+- Add **in-app notifications**
+- Add **push notifications for mobile devices**
+
+### Long-Term Goals
+- Explore a **microservices-based version** of GameHub
+---
 ## 📸 Screenshots
 
 ### Authentication
