@@ -4,21 +4,6 @@ GameHub is a **real-time multi-channel chat application** built with **ASP.NET C
 
 This project was built to showcase modern full-stack .NET development with a strong focus on **scalable backend design**, **real-time communication**, and a polished **single-page chat experience** on the frontend.
 
-It highlights:
-
-- Clean Architecture and separation of concerns
-- CQRS-style application layer organization
-- JWT-based authentication
-- Real-time messaging with SignalR
-- Cursor-based pagination for efficient message loading
-- Infinite scroll experience in Blazor WebAssembly
-- Responsive UI built with MudBlazor
-- Scalable messaging infrastructure with MassTransit + RabbitMQ
-- Redis backplane support for SignalR scale-out
-- Unit and integration testing with Testcontainers
-
----
-
 ## Screenshots
 
 ### Authentication
@@ -42,6 +27,21 @@ It highlights:
 ![GameHub Screenshot 08](assets/images/img08.png)
 ![GameHub Screenshot 09](assets/images/img09.png)
 ![GameHub Screenshot 10](assets/images/img010.png)
+
+It highlights:
+
+- Clean Architecture and separation of concerns
+- CQRS-style application layer organization
+- JWT-based authentication
+- Real-time messaging with SignalR
+- Cursor-based pagination for efficient message loading
+- Infinite scroll experience in Blazor WebAssembly
+- Responsive UI built with MudBlazor
+- Scalable messaging infrastructure with MassTransit + RabbitMQ
+- Redis backplane support for SignalR scale-out
+- Unit and integration testing with Testcontainers
+
+---
 
 ## Tech Stack
 
