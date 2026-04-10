@@ -299,7 +299,6 @@ For Docker development, update the frontend configuration file:
 
 ### Improvements
 - Create dedicated **builders for domain models** in unit tests to improve readability and maintainability
-- Refine the **domain naming across the application** for better consistency and clarity
 
 ### Next Features
 - Build a **mobile client**
