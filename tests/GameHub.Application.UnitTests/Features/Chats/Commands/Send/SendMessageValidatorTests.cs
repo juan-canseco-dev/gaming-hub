@@ -1,4 +1,5 @@
-﻿using GameHub.Domain.Chats;
+using GameHub.Domain.Chats;
+using GameHub.Domain.Channels;
 using GameHub.Application.Features.Chats.Commands.SendMessage;
 using FluentValidation.TestHelper;
 

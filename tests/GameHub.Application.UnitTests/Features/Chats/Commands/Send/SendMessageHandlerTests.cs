@@ -1,7 +1,8 @@
-﻿using FluentAssertions;
+using FluentAssertions;
 using GameHub.Application.Abstractions.Clock;
 using GameHub.Application.Abstractions.Data;
 using GameHub.Domain.Chats;
+using GameHub.Domain.Channels;
 using GameHub.Domain.Users;
 using GameHub.EventBus.Contracts;
 using MassTransit;
@@ -310,7 +311,7 @@ public sealed class SendMessageHandlerTests
             x.Content == content &&
             x.Type == ChatMessageType.User);
 
-        chat.LastMesageId.Should().Be(message.Id);
+        chat.LastMessageId.Should().Be(message.Id);
         chat.LastMessageAt.Should().Be(now);
         chat.LastMessagePreview.Should().Be(content);
 

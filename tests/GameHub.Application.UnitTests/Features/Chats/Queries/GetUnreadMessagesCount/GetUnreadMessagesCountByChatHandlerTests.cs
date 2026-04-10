@@ -1,8 +1,9 @@
-﻿using FluentAssertions;
+using FluentAssertions;
 using GameHub.Application.Abstractions.Authentication;
 using GameHub.Application.Abstractions.Data;
 using GameHub.Application.Features.Chats.Queries.GetUnreadMessagesCount;
 using GameHub.Domain.Chats;
+using GameHub.Domain.Channels;
 using MockQueryable.Moq;
 using Moq;
 using static GameHub.Application.UnitTests.Shared.Helpers.ReflectionTestHelper;

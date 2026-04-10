@@ -3,7 +3,7 @@ using GameHub.Abstractions.Primitives;
 using GameHub.Contracts.Channels;
 using GameHub.Contracts.Profile;
 using GameHub.Web.UI.Features.Channels.Services.Interfaces;
-using GameHub.Web.UI.Features.Channels.Models;
+using GameHub.Web.UI.Features.Chats.Models;
 using System.Net;
 using System.Net.Http.Json;
 
@@ -22,7 +22,7 @@ public class ChannelsService : IChannelsService
 
     public async Task<Result> JoinAsync(Guid chatId)
     {
-        var request = new JoinChannelRequest(chatId);
+        var request = new JoinChatRequest(chatId);
         var response = await _httpClient.PostAsJsonAsync(
            requestUri: "/api/channels/join",
            value: request

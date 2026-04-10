@@ -1,8 +1,9 @@
-﻿using GameHub.Application.Abstractions.Authentication;
+using GameHub.Application.Abstractions.Authentication;
 using GameHub.Application.Abstractions.Clock;
 using GameHub.Application.Abstractions.Data;
 using GameHub.Application.Features.Chats.Commands.MarkAsRead;
 using GameHub.Domain.Chats;
+using GameHub.Domain.Channels;
 using ChatFactory = GameHub.Application.UnitTests.Shared.Factories.ChatTestFactory;
 using Moq;
 using MockQueryable.Moq;

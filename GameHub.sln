@@ -1,4 +1,4 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 18
 VisualStudioVersion = 18.4.11612.150
@@ -21,9 +21,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameHub.Infrastructure", "s
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "apps", "apps", "{B7813C0A-2750-4330-B84A-7DF30D0D39A5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameHub.WebAPI", "apps\GameHub.WebAPI\GameHub.WebAPI.csproj", "{5D343470-43D3-431D-A657-D521868368A0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameHub.Web.API", "apps\GameHub.Web.API\GameHub.Web.API.csproj", "{5D343470-43D3-431D-A657-D521868368A0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameHub.WebAPI.IntegrationTests", "tests\GameHub.WebAPI.IntegrationTests\GameHub.WebAPI.IntegrationTests.csproj", "{566685BF-E2F5-40A9-84B0-2D6F44D84B0B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameHub.Web.API.IntegrationTests", "tests\GameHub.Web.API.IntegrationTests\GameHub.Web.API.IntegrationTests.csproj", "{566685BF-E2F5-40A9-84B0-2D6F44D84B0B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GameHub.Abstractions", "src\GameHub.Abstractions\GameHub.Abstractions.csproj", "{4813CD7E-6870-4690-B3C4-1EE08D21521F}"
 EndProject

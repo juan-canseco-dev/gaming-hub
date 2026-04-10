@@ -1,5 +1,6 @@
-﻿using GameHub.Application.Abstractions.Clock;
+using GameHub.Application.Abstractions.Clock;
 using GameHub.Domain.Chats;
+using GameHub.Domain.Channels;
 using GameHub.Domain.Users;
 using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;

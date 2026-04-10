@@ -1,5 +1,5 @@
 services:
-  gamehub.webapi:
+  gamehub.web.api:
     environment:
       - ASPNETCORE_ENVIRONMENT=${WEBAPI_ENVIRONMENT}
       - ASPNETCORE_HTTP_PORTS=${WEBAPI_HTTP_PORT}
@@ -31,7 +31,7 @@ services:
     ports:
       - "${WEBUI_HOST_PORT}:${WEBUI_CONTAINER_PORT}"
     depends_on:
-      - gamehub.webapi
+      - gamehub.web.api
 
   gamehub.db:
     environment:

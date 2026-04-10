@@ -1,4 +1,5 @@
-﻿using GameHub.Domain.Abstractions;
+using GameHub.Domain.Abstractions;
+using GameHub.Domain.Channels;
 using GameHub.Domain.Users;
 using GameHub.Abstractions.Primitives;
 
@@ -15,7 +16,7 @@ public class Chat : Entity<Guid>
     public DateTimeOffset CreatedAt { get; private init; } = default!;
     public DateTimeOffset LastMessageAt { get; private set; }
     public string? LastMessagePreview { get; private set; }
-    public Guid LastMesageId { get; private set; }
+    public Guid LastMessageId { get; private set; }
     public IReadOnlyCollection<ChatMember> Members => _members.AsReadOnly();
     public IReadOnlyCollection<ChatMessage> Messages => _messages.AsReadOnly();
     public Channel Channel { get; private init; } = default!;
@@ -29,12 +30,12 @@ public class Chat : Entity<Guid>
     }
 
     public Result<ChatMessage> AddMessage(
-        Guid senderUserId, 
-        string content, 
+        Guid senderUserId,
+        string content,
         DateTimeOffset createdAt,
         MessagePreviewService service
     )
-    { 
+    {
 
         if (string.IsNullOrEmpty(content))
         {
@@ -48,18 +49,18 @@ public class Chat : Entity<Guid>
 
         var messageId = Guid.CreateVersion7();
         var message = new ChatMessage(messageId, this.Id, senderUserId, content, createdAt, ChatMessageType.User);
-        
+
         _messages.Add(message);
         LastMessageAt = createdAt;
-        LastMesageId = message.Id;
+        LastMessageId = message.Id;
         LastMessagePreview = service.CreatePreview(content, MaxPreviewLength);
 
         return Result.Success(message);
     }
 
     public ChatMessage Join(
-        Guid userId, 
-        string username, 
+        Guid userId,
+        string username,
         DateTimeOffset joinedAt
     )
     {
@@ -71,16 +72,16 @@ public class Chat : Entity<Guid>
         var messageId = Guid.CreateVersion7();
         var message = new ChatMessage(
             messageId,
-            Id, 
-            SystemUsers.AdminUserId, 
+            Id,
+            SystemUsers.AdminUserId,
             content,
-            joinedAt, 
+            joinedAt,
             ChatMessageType.System
         );
-        
+
         _messages.Add(message);
         LastMessageAt = joinedAt;
-        LastMesageId = message.Id;
+        LastMessageId = message.Id;
         LastMessagePreview = content;
 
         return message;

@@ -1,6 +1,7 @@
-﻿using FluentAssertions;
+using FluentAssertions;
 using GameHub.Application.Abstractions.Data;
 using GameHub.Domain.Chats;
+using GameHub.Domain.Channels;
 using GameHub.Domain.Users;
 using MockQueryable.Moq;
 using Moq;

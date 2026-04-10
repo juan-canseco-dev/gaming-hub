@@ -1,9 +1,10 @@
-﻿using GameHub.Abstractions.Primitives;
+using GameHub.Abstractions.Primitives;
 using GameHub.Application.Abstractions.Authentication;
 using GameHub.Application.Abstractions.Data;
 using GameHub.Application.Abstractions.Messaging;
 using GameHub.Contracts.Chats;
 using GameHub.Domain.Chats;
+using GameHub.Domain.Channels;
 using Microsoft.EntityFrameworkCore;
 
 namespace GameHub.Application.Features.Chats.Queries.GetById;

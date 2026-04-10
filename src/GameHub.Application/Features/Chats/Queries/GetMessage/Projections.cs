@@ -1,7 +1,8 @@
-﻿using GameHub.Application.Abstractions.Authentication;
+using GameHub.Application.Abstractions.Authentication;
 using GameHub.Contracts.Chats;
 using GameHub.Contracts.Profile;
 using GameHub.Domain.Chats;
+using GameHub.Domain.Channels;
 using GameHub.Domain.Users;
 
 namespace GameHub.Application.Features.Chats.Queries.GetMessage;

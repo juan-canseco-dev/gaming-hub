@@ -1,6 +1,7 @@
-﻿using GameHub.Contracts.Chats;
+using GameHub.Contracts.Chats;
 using GameHub.Contracts.Profile;
 using GameHub.Domain.Chats;
+using GameHub.Domain.Channels;
 using GameHub.Domain.Users;
 
 

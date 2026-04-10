@@ -1,10 +1,10 @@
 services:
-  gamehub.webapi:
-    container_name: gamehub.webapi
+  gamehub.web.api:
+    container_name: gamehub.web.api
     image: ${DOCKER_REGISTRY-}gamehubwebapi
     build:
       context: .
-      dockerfile: apps/GameHub.WebAPI/Dockerfile
+      dockerfile: apps/GameHub.Web.API/Dockerfile
     depends_on:
       - gamehub.db
       - gamehub.cache
@@ -17,7 +17,7 @@ services:
       context: .
       dockerfile: apps/GameHub.Web.UI/Dockerfile
     depends_on:
-      - gamehub.webapi
+      - gamehub.web.api
 
   gamehub.db:
     container_name: gamehub.database

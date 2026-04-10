@@ -1,4 +1,5 @@
-﻿using GameHub.Domain.Chats;
+using GameHub.Domain.Chats;
+using GameHub.Domain.Channels;
 
 namespace GameHub.Domain.UnitTests;
 
@@ -29,7 +30,7 @@ public class MessageTests
 
         Assert.Single(chat.Messages);
         Assert.Equal(createdAt, chat.LastMessageAt);
-        Assert.Equal(message.Id, chat.LastMesageId);
+        Assert.Equal(message.Id, chat.LastMessageId);
     }
 
     [Theory]
@@ -56,7 +57,7 @@ public class MessageTests
 
         Assert.Empty(chat.Messages);
         Assert.Equal(default, chat.LastMessageAt);
-        Assert.Equal(default, chat.LastMesageId);
+        Assert.Equal(default, chat.LastMessageId);
     }
 
     [Fact]
@@ -83,7 +84,7 @@ public class MessageTests
 
         Assert.Empty(chat.Messages);
         Assert.Equal(default, chat.LastMessageAt);
-        Assert.Equal(default, chat.LastMesageId);
+        Assert.Equal(default, chat.LastMessageId);
     }
 
     [Fact]
@@ -165,6 +166,6 @@ public class MessageTests
         Assert.Null(chat.LastMessagePreview);
         Assert.Empty(chat.Messages);
         Assert.Equal(default, chat.LastMessageAt);
-        Assert.Equal(default, chat.LastMesageId);
+        Assert.Equal(default, chat.LastMessageId);
     }
 }

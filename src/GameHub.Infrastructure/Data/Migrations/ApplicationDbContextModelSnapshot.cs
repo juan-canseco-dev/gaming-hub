@@ -22,7 +22,7 @@ namespace GameHub.Infrastructure.Data.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("GameHub.Domain.Chats.Channel", b =>
+            modelBuilder.Entity("GameHub.Domain.Channels.Channel", b =>
                 {
                     b.Property<int>("Id")
                         .HasColumnType("int");
@@ -96,11 +96,11 @@ namespace GameHub.Infrastructure.Data.Migrations
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("datetimeoffset");
 
-                    b.Property<Guid>("LastMesageId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<DateTimeOffset>("LastMessageAt")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("LastMessageId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("LastMessagePreview")
                         .HasMaxLength(200)
@@ -659,7 +659,7 @@ namespace GameHub.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("GameHub.Domain.Chats.Chat", b =>
                 {
-                    b.HasOne("GameHub.Domain.Chats.Channel", "Channel")
+                    b.HasOne("GameHub.Domain.Channels.Channel", "Channel")
                         .WithMany()
                         .HasForeignKey("ChannelId")
                         .OnDelete(DeleteBehavior.Cascade)

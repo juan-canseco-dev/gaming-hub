@@ -1,4 +1,4 @@
-﻿namespace GameHub.Contracts.Chats;
+namespace GameHub.Contracts.Chats;
 
 public sealed record ChatDto(
     Guid Id,
@@ -7,7 +7,7 @@ public sealed record ChatDto(
     string Name,
     string Description,
     int ParticipantsCount,
-    string? LastMesagePreview,
+    string? LastMessagePreview,
     DateTimeOffset? LastMessageAt,
     int UnreadCount
 );

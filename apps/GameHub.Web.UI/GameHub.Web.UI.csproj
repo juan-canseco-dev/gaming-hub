@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="Features\Channels\Pages\Channel.razor.cs" />
+    <Content Include="Features\Chats\Pages\Chat.razor.cs" />
   </ItemGroup>
 
   <ItemGroup>

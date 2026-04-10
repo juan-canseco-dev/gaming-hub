@@ -1,5 +1,6 @@
-﻿
+
 using GameHub.Domain.Chats;
+using GameHub.Domain.Channels;
 
 namespace GameHub.Domain.UnitTests;
 

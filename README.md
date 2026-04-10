@@ -127,7 +127,7 @@ Infrastructure Layer (EF Core, Identity, Messaging, SignalR)
 GameHub.sln
 │
 ├── apps
-│   ├── GameHub.WebAPI
+│   ├── GameHub.Web.API
 │   └── GameHub.Web.UI
 │
 ├── src
@@ -141,7 +141,7 @@ GameHub.sln
 └── tests
     ├── GameHub.Domain.UnitTests
     ├── GameHub.Application.UnitTests
-    └── GameHub.WebAPI.IntegrationTests
+    └── GameHub.Web.API.IntegrationTests
 ```
 ---
 ## ▶️ Running the Project
@@ -157,7 +157,7 @@ GameHub can be run in two ways:
 
 For local development, update the backend configuration file:
 
-`apps/GameHub.WebAPI/appsettings.Development.json`
+`apps/GameHub.Web.API/appsettings.Development.json`
 
 Replace the values with your own local settings:
 

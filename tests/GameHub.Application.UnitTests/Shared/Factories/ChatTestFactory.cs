@@ -1,4 +1,5 @@
-﻿using GameHub.Domain.Chats;
+using GameHub.Domain.Chats;
+using GameHub.Domain.Channels;
 using System;
 using System.Collections.Generic;
 using System.Linq;

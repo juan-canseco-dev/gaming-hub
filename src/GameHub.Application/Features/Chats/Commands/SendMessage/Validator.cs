@@ -1,5 +1,6 @@
-﻿using FluentValidation;
+using FluentValidation;
 using GameHub.Domain.Chats;
+using GameHub.Domain.Channels;
 
 namespace GameHub.Application.Features.Chats.Commands.SendMessage;
 

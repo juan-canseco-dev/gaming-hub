@@ -1,7 +1,8 @@
-﻿using FluentAssertions;
+using FluentAssertions;
 using GameHub.Application.Abstractions.Clock;
 using GameHub.Application.Abstractions.Data;
 using GameHub.Domain.Chats;
+using GameHub.Domain.Channels;
 using GameHub.Domain.Users;
 using GameHub.EventBus.Contracts;
 using MassTransit;

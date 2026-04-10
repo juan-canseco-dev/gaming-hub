@@ -1,5 +1,6 @@
-﻿using FluentAssertions;
+using FluentAssertions;
 using GameHub.Domain.Chats;
+using GameHub.Domain.Channels;
 namespace GameHub.Domain.UnitTests;
 
 public sealed class ChatMemberTests

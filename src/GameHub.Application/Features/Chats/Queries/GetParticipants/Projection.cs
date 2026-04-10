@@ -1,5 +1,6 @@
-﻿using GameHub.Contracts.Profile;
+using GameHub.Contracts.Profile;
 using GameHub.Domain.Chats;
+using GameHub.Domain.Channels;
 using GameHub.Domain.Users;
 
 namespace GameHub.Application.Features.Chats.Queries.GetParticipants;

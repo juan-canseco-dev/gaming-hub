@@ -1,8 +1,9 @@
-﻿using FluentAssertions;
+using FluentAssertions;
 using GameHub.Application.Abstractions.Authentication;
 using GameHub.Application.Abstractions.Data;
 using GameHub.Application.Features.Chats.Queries.GetById;
 using GameHub.Domain.Chats;
+using GameHub.Domain.Channels;
 using MockQueryable.Moq;
 using Moq;
 using System.Reflection;
@@ -123,7 +124,7 @@ public sealed class GetChatByIdHandlerTests
         dto.Name.Should().Be(Channel.RpgAndStory.Name);
         dto.Description.Should().Be(Channel.RpgAndStory.Description);
         dto.ParticipantsCount.Should().Be(2);
-        dto.LastMesagePreview.Should().Be("last message");
+        dto.LastMessagePreview.Should().Be("last message");
         dto.LastMessageAt.Should().Be(now);
         dto.UnreadCount.Should().Be(1);
     }

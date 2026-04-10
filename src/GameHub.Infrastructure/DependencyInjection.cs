@@ -1,9 +1,10 @@
-﻿using GameHub.Application.Abstractions.Authentication;
+using GameHub.Application.Abstractions.Authentication;
 using GameHub.Application.Abstractions.Clock;
 using GameHub.Application.Abstractions.Data;
 using GameHub.Application.Abstractions.Identity;
 using GameHub.Application.Abstractions.Realtime.Chats;
 using GameHub.Domain.Chats;
+using GameHub.Domain.Channels;
 using GameHub.Infrastructure.Authentication;
 using GameHub.Infrastructure.Clock;
 using GameHub.Infrastructure.Data;
@@ -19,7 +20,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using ApplicationDI = GameHub.Application.DependecyInjection;
+using ApplicationDI = GameHub.Application.DependencyInjection;
 
 namespace GameHub.Infrastructure;
 

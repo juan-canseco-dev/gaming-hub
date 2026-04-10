@@ -1,7 +1,7 @@
-﻿using GameHub.EventBus.Contracts;
+using GameHub.EventBus.Contracts;
 using MassTransit;
 using MediatR;
-using GameHub.Application.Features.Chats.Queries.GetPartcipantsCount;
+using GameHub.Application.Features.Chats.Queries.GetParticipantsCount;
 using GameHub.Application.Features.Chats.Queries.GetMessage;
 using GameHub.Application.Abstractions.Realtime.Chats;
 using GameHub.Contracts.Notifications;

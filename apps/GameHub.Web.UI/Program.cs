@@ -1,5 +1,7 @@
 using GameHub.Web.UI.Features.Auth.Services;
 using GameHub.Web.UI.Features.Auth.State;
+using GameHub.Web.UI.Features.Chats.Services;
+using GameHub.Web.UI.Features.Chats.Services.Interfaces;
 using GameHub.Web.UI.Features.Channels.Services;
 using GameHub.Web.UI.Features.Channels.Services.Interfaces;
 using GameHub.Web.UI.Infrastructure.Http;
@@ -34,14 +36,14 @@ namespace GameHub.Web.UI
             builder.Services.AddScoped<UnauthorizedInterceptor>();
 
             builder.Services.AddHttpClient(
-                "GameHub.Web.Api",
+                "GameHub.Web.API",
                 client => client.BaseAddress = baseApiUri
             ).AddHttpMessageHandler<AuthorizationInterceptor>()
             .AddHttpMessageHandler<UnauthorizedInterceptor>();
 
             builder.Services.AddScoped(
                 sp => sp.GetRequiredService<IHttpClientFactory>()
-                        .CreateClient("GameHub.Web.Api")
+                        .CreateClient("GameHub.Web.API")
             );
 
 

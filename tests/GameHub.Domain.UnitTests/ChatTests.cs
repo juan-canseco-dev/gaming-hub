@@ -1,5 +1,6 @@
-﻿
+
 using GameHub.Domain.Chats;
+using GameHub.Domain.Channels;
 
 namespace GameHub.Domain.UnitTests;
 
@@ -31,7 +32,7 @@ public sealed class ChatTests
 
         // New perf-related state
         Assert.Equal(default, chat.LastMessageAt);
-        Assert.Equal(default, chat.LastMesageId);
+        Assert.Equal(default, chat.LastMessageId);
     }
 
     [Theory]

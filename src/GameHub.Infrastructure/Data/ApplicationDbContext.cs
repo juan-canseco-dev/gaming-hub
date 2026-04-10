@@ -1,5 +1,6 @@
-﻿using GameHub.Application.Abstractions.Data;
+using GameHub.Application.Abstractions.Data;
 using GameHub.Domain.Chats;
+using GameHub.Domain.Channels;
 using GameHub.Domain.Users;
 using GameHub.Infrastructure.Identity.Models;
 using MassTransit;
