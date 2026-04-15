@@ -13,7 +13,6 @@ This project showcases modern full-stack .NET development with a strong focus on
 - JWT-based authentication
 - Real-time messaging with SignalR
 - Cursor-based pagination for efficient message loading
-- Infinite scroll experience in Blazor WebAssembly
 - Responsive UI built with MudBlazor
 - Scalable messaging infrastructure with MassTransit + RabbitMQ
 - Redis backplane support for SignalR scale-out
@@ -40,7 +39,6 @@ This project showcases modern full-stack .NET development with a strong focus on
 - Blazor WebAssembly (.NET 9)
 - MudBlazor
 - SignalR Client
-- Infinite scroll for chat messages and participants
 - Local storage for auth persistence
 
 ### Testing
