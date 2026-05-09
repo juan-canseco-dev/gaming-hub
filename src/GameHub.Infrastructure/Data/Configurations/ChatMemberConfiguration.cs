@@ -39,5 +39,11 @@ public class ChatMemberConfiguration : IEntityTypeConfiguration<ChatMember>
         builder.Property(x => x.LastReadAt);
 
         builder.HasIndex(x => x.LastReadAt);
+
+        builder.Property(x => x.LastSeenAt);
+        builder.HasIndex(x => x.LastSeenAt);
+
+        builder.Property(x => x.PresenceStatus)
+            .HasConversion(x => x!.Id, x => PresenceStatus.FromValue(x));
     }
 }
