@@ -1,6 +1,5 @@
 using FluentAssertions;
 using GameHub.Domain.Chats;
-using GameHub.Domain.Channels;
 namespace GameHub.Domain.UnitTests;
 
 public sealed class ChatMemberTests
@@ -61,57 +60,6 @@ public sealed class ChatMemberTests
 
         // Assert
         chatMember.LastReadAt.Should().Be(firstRead);
-    }
-
-    [Fact]
-    public void UpdatePresence_Should_SetPresenceStatusToOnline_WhenLastConnectionIsWithin2Minutes()
-    {
-        // Arrange
-        var createdAt = new DateTimeOffset(2026, 03, 24, 10, 00, 00, TimeSpan.Zero);
-        var chatMember = new ChatMember(
-            chatId: Guid.NewGuid(),
-            userId: Guid.NewGuid(),
-            createdAt: createdAt);
-        var lastConnection = createdAt.AddMinutes(1);
-        var currentTime = createdAt;
-        // Act
-        chatMember.UpdatePresence(lastConnection, currentTime);
-        // Assert
-        chatMember.PresenceStatus.Should().Be(PresenceStatus.Online);
-    }
-
-    [Fact]
-    public void UpdatePresence_Should_SetPresenceStatusToAway_WhenLastConnectionIsMoreThan2MinutesAgo()
-    {
-        // Arrange
-        var createdAt = new DateTimeOffset(2026, 03, 24, 10, 00, 00, TimeSpan.Zero);
-        var chatMember = new ChatMember(
-            chatId: Guid.NewGuid(),
-            userId: Guid.NewGuid(),
-            createdAt: createdAt);
-        var lastConnection = createdAt.AddMinutes(3);
-        var currentTime = createdAt;
-        // Act
-        chatMember.UpdatePresence(lastConnection, currentTime);
-        // Assert
-        chatMember.PresenceStatus.Should().Be(PresenceStatus.Away);
-    }
-
-    [Fact]
-    public void UpdatePresence_Should_SetPresenceStatusToOffline_WhenLastConnectionIsMoreThan15MinutesAgo()
-    {
-        // Arrange
-        var createdAt = new DateTimeOffset(2026, 03, 24, 10, 00, 00, TimeSpan.Zero);
-        var chatMember = new ChatMember(
-            chatId: Guid.NewGuid(),
-            userId: Guid.NewGuid(),
-            createdAt: createdAt);
-        var lastConnection = createdAt.AddMinutes(16);
-        var currentTime = createdAt;
-        // Act
-        chatMember.UpdatePresence(lastConnection, currentTime);
-        // Assert
-        chatMember.PresenceStatus.Should().Be(PresenceStatus.Offline);
     }
 
     [Fact]

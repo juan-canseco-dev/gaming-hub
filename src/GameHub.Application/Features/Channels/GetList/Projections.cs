@@ -1,6 +1,5 @@
 using GameHub.Contracts.Channels;
 using GameHub.Domain.Chats;
-using GameHub.Domain.Channels;
 
 namespace GameHub.Application.Features.Channels.GetList;
 

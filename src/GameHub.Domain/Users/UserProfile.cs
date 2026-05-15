@@ -1,4 +1,5 @@
 ﻿using GameHub.Domain.Abstractions;
+using GameHub.Domain.Presence;
 
 namespace GameHub.Domain.Users;
 
@@ -8,6 +9,7 @@ public class UserProfile : Entity<Guid>
     public string Username { get; private init; } = default!;
     public string Fullname { get; private init; } = default!;
     public DateTimeOffset CreatedAt { get; private init; } = default!;
+    public UserPresence Presence { get; }  = default!;
     private UserProfile() { }
     public UserProfile(
         Guid id, 
@@ -21,5 +23,6 @@ public class UserProfile : Entity<Guid>
         Username = username;
         Fullname = fullname;
         CreatedAt = createdAt;
+        Presence = new UserPresence(id, createdAt);
     }
 }

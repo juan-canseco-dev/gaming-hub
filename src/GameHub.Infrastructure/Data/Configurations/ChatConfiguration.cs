@@ -1,5 +1,4 @@
 using GameHub.Domain.Chats;
-using GameHub.Domain.Channels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

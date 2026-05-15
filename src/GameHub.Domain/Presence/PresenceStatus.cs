@@ -1,6 +1,6 @@
 ﻿using GameHub.Abstractions.Primitives;
 
-namespace GameHub.Domain.Chats;
+namespace GameHub.Domain.Presence;
 
 public sealed class PresenceStatus : Enumeration<PresenceStatus>
 {

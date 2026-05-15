@@ -21,4 +21,9 @@
     <ProjectReference Include="..\GameHub.EventBus.Contracts\GameHub.EventBus.Contracts.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Features\Presence\Consumers\" />
+    <Folder Include="Features\Presence\Queries\" />
+  </ItemGroup>
+
 </Project>
