@@ -4,7 +4,5 @@ namespace GameHub.Application.Features.Presence.Commands.Update;
 
 public static partial class UpdatePresence
 {
-    public sealed record Command(
-        Guid ChatId
-    ) : ICommand;
+    public sealed record Command : ICommand;
 }

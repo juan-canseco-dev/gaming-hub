@@ -20,6 +20,13 @@ namespace GameHub.Web.UI.Features.Chats.Pages;
 
 public partial class Chat : ComponentBase, IAsyncDisposable
 {
+
+    private readonly ILogger<Chat> _logger;
+    public Chat(ILogger<Chat> logger)
+    {
+        _logger = logger;
+    }
+
     [CascadingParameter(Name = "HubConnection")]
     public required HubConnection HubConnection { get; set; }
     [Parameter]
@@ -28,18 +35,14 @@ public partial class Chat : ComponentBase, IAsyncDisposable
     [Inject]
     public required JwtAuthenticationStateProvider AuthProvider { get; set; }
     [Inject]
-    public required NavigationManager NavigationManager { get; set; }
-    [Inject]
     public required IChatService ChatService { get; set; }
     [Inject]
     public required IChannelsService ChannelsService { get; set; }
     [Inject]
     public required IJSRuntime JS { get; set; }
-    [Inject]
-    public required ISnackbar Snackbar { get; set; }
-
     private const int MessagesPageSize = 30;
     private const int MembersPageSize = 30;
+    private static readonly TimeSpan PresenceRefreshInterval = TimeSpan.FromSeconds(30);
 
     private Guid UserId = Guid.Empty;
 
@@ -48,6 +51,7 @@ public partial class Chat : ComponentBase, IAsyncDisposable
     private string ChatTitle = string.Empty;
     private string ChatDescription = string.Empty;
     private int ParticipantsCount = 0;
+    private int OnlineUsersCount = 0;
 
     private string _messageText = string.Empty;
     private string? _lastFailedMessageText;
@@ -58,6 +62,10 @@ public partial class Chat : ComponentBase, IAsyncDisposable
     private bool _isLoadingMoreMessages;
     private bool _isLoadingMoreMembers;
     private bool _isSendingMessage;
+    private bool _isMessagesNearBottom = true;
+    private bool _scrollToBottomAfterRender;
+    private bool _smoothScrollAfterRender;
+    private int _newMessagesCount;
 
     private string? _headerError;
     private string? _messagesError;
@@ -71,10 +79,12 @@ public partial class Chat : ComponentBase, IAsyncDisposable
 
     private readonly List<ChatMessageViewModel> Messages = new();
     private readonly List<ChatMemberViewModel> Members = new();
+    private readonly List<IDisposable> _hubSubscriptions = new();
+    private readonly CancellationTokenSource _presenceRefreshCancellation = new();
+    private Task? _presenceRefreshTask;
 
     private ElementReference _messagesContainerRef;
     private ElementReference _messagesTopSentinelRef;
-    private ElementReference _messagesBottomAnchorRef;
     private ElementReference _membersContainerRef;
     private ElementReference _membersBottomSentinelRef;
 
@@ -98,32 +108,10 @@ public partial class Chat : ComponentBase, IAsyncDisposable
         var details = await AuthProvider.GetAuthenticatedUserDetailsAsync();
         UserId = details is null ? Guid.Empty : details.Id;
 
+        RegisterHubSubscriptions();
+
         await LoadAllAsync();
-
-        HubConnection.On<UserJoinedNotification>(GameHubConstants.SignalR.UserJoinedChat, async (notification) =>
-        {
-            ParticipantsCount = notification.NumberOfParticipants;
-            if (!Messages.Any(x => x.Id == notification.Message.Id))
-            {
-                var newMessage = MapMessage(notification.Message);
-                Messages.Add(newMessage!);
-                Messages.Sort(ChatMessageViewModel.Comparer.Instance);
-            }
-            await InvokeAsync(StateHasChanged);
-            await ScrollMessagesToBottomAsync();
-        });
-
-        HubConnection.On<MessageNotification>(GameHubConstants.SignalR.MessageSent, async (notification) =>
-        {
-            if (!Messages.Any(x => x.Id == notification.Message.Id))
-            {
-                var newMessage = MapMessage(notification.Message);
-                Messages.Add(newMessage!);
-                Messages.Sort(ChatMessageViewModel.Comparer.Instance);
-            }
-            await InvokeAsync(StateHasChanged);
-            await ScrollMessagesToBottomAsync();
-        });
+        _presenceRefreshTask = RefreshPresenceStatusesAsync(_presenceRefreshCancellation.Token);
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -151,7 +139,87 @@ public partial class Chat : ComponentBase, IAsyncDisposable
         {
             _initialMessagesScrolled = true;
             await Task.Delay(100);
-            await ScrollMessagesToBottomAsync();
+            await ScrollMessagesToBottomAsync(smooth: false);
+            _isMessagesNearBottom = true;
+        }
+
+        if (_scrollToBottomAfterRender)
+        {
+            var smooth = _smoothScrollAfterRender;
+            _scrollToBottomAfterRender = false;
+            _smoothScrollAfterRender = false;
+            await ScrollMessagesToBottomAsync(smooth);
+        }
+    }
+
+    private void RegisterHubSubscriptions()
+    {
+        _hubSubscriptions.Add(HubConnection.On<UserJoinedNotification>(
+            GameHubConstants.SignalR.UserJoinedChat,
+            notification => InvokeAsync(() => HandleUserJoinedAsync(notification))));
+
+        _hubSubscriptions.Add(HubConnection.On<MessageNotification>(
+            GameHubConstants.SignalR.MessageSent,
+            notification => InvokeAsync(() => HandleMessageSentAsync(notification))));
+
+        _hubSubscriptions.Add(HubConnection.On<UserPresenceUpdatedNotification>(
+            GameHubConstants.SignalR.UserPresenceUpdated,
+            notification => InvokeAsync(() => HandlePresenceUpdated(notification))));
+    }
+
+    private async Task HandleUserJoinedAsync(UserJoinedNotification notification)
+    {
+        if (notification.ChatId != ChatId)
+            return;
+
+        ParticipantsCount = notification.NumberOfParticipants;
+        await HandleRealtimeMessageAsync(notification.Message);
+    }
+
+    private async Task HandleMessageSentAsync(MessageNotification notification)
+    {
+        if (notification.ChatId != ChatId)
+            return;
+
+        await HandleRealtimeMessageAsync(notification.Message);
+    }
+
+    private void HandlePresenceUpdated(UserPresenceUpdatedNotification notification)
+    {
+        OnlineUsersCount = notification.OnlineUsersCount;
+
+        var member = Members.FirstOrDefault(x => x.Id == notification.Presence.UserId);
+        if (member is not null)
+        {
+            member.LastActive = notification.Presence.LastActive;
+            member.PresenceStatus = GetPresenceStatus(member.LastActive);
+            Members.Sort(ChatMemberViewModel.Comparer.Instance);
+        }
+
+        StateHasChanged();
+    }
+
+    private async Task HandleRealtimeMessageAsync(MessageDto dto)
+    {
+        if (!TryAddMessage(dto, out var message))
+            return;
+
+        var shouldScrollToBottom = _isMessagesNearBottom || message.IsMine;
+        if (shouldScrollToBottom)
+        {
+            _newMessagesCount = 0;
+            QueueScrollToBottom(smooth: false);
+        }
+        else
+        {
+            _newMessagesCount++;
+        }
+
+        await InvokeAsync(StateHasChanged);
+
+        if (shouldScrollToBottom)
+        {
+            await TryMarkChatAsReadAsync();
         }
     }
 
@@ -161,6 +229,7 @@ public partial class Chat : ComponentBase, IAsyncDisposable
         await LoadInitialMessagesAsync();
         await LoadInitialMembersAsync();
         await HubConnection.InvokeAsync(GameHubConstants.SignalR.JoinChat, ChatId);
+        await HubConnection.InvokeAsync(GameHubConstants.SignalR.UpdatePresence);
     }
 
     private async Task LoadHeaderAsync()
@@ -262,6 +331,19 @@ public partial class Chat : ComponentBase, IAsyncDisposable
     public async Task OnMembersBottomReached()
     {
         await LoadMoreMembersAsync();
+    }
+
+    [JSInvokable]
+    public async Task OnMessagesBottomStateChanged(bool isNearBottom)
+    {
+        _isMessagesNearBottom = isNearBottom;
+
+        if (!isNearBottom || _newMessagesCount == 0)
+            return;
+
+        _newMessagesCount = 0;
+        await InvokeAsync(StateHasChanged);
+        await TryMarkChatAsReadAsync();
     }
 
     private async Task LoadMoreMessagesAsync()
@@ -387,31 +469,42 @@ public partial class Chat : ComponentBase, IAsyncDisposable
             return;
         }
 
-        var createdMessage = MapMessage(result.Value);
-
-        if (createdMessage is not null && Messages.All(x => x.Id != createdMessage.Id))
-        {
-            Messages.Add(createdMessage);
-            Messages.Sort(ChatMessageViewModel.Comparer.Instance);
-        }
+        TryAddMessage(result.Value, out _);
 
         _messageText = string.Empty;
         _lastFailedMessageText = null;
-
-        await InvokeAsync(StateHasChanged);
-        await ScrollMessagesToBottomAsync();
-
+        _newMessagesCount = 0;
+        _isMessagesNearBottom = true;
+        QueueScrollToBottom(smooth: false);
         _isSendingMessage = false;
 
-        await _messageTextField.FocusAsync();
-
         await InvokeAsync(StateHasChanged);
+        await _messageTextField.FocusAsync();
+        await TryMarkChatAsReadAsync();
     }
 
-    private async Task ScrollMessagesToBottomAsync()
+    private async Task ScrollToNewMessagesAsync()
     {
-        await JS.InvokeVoidAsync("chatChannelPage.scrollToBottom", _messagesContainerRef);
+        _newMessagesCount = 0;
+        _isMessagesNearBottom = true;
+        QueueScrollToBottom(smooth: true);
+        await TryMarkChatAsReadAsync();
     }
+
+    private void QueueScrollToBottom(bool smooth)
+    {
+        _scrollToBottomAfterRender = true;
+        _smoothScrollAfterRender = smooth;
+    }
+
+    private async Task ScrollMessagesToBottomAsync(bool smooth)
+    {
+        await JS.InvokeVoidAsync("chatChannelPage.scrollToBottom", _messagesContainerRef, smooth);
+    }
+
+    private string NewMessagesLabel => _newMessagesCount == 1
+        ? "1 new message"
+        : $"{_newMessagesCount} new messages";
 
     private async Task TryMarkChatAsReadAsync()
     {
@@ -428,8 +521,6 @@ public partial class Chat : ComponentBase, IAsyncDisposable
     {
         var incoming = items
             .Select(MapMessage)
-            .Where(x => x is not null)
-            .Cast<ChatMessageViewModel>()
             .ToList();
 
         foreach (var item in incoming)
@@ -441,6 +532,19 @@ public partial class Chat : ComponentBase, IAsyncDisposable
         }
 
         Messages.Sort(ChatMessageViewModel.Comparer.Instance);
+    }
+
+    private bool TryAddMessage(MessageDto dto, out ChatMessageViewModel message)
+    {
+        var mappedMessage = MapMessage(dto);
+        message = mappedMessage;
+
+        if (Messages.Any(x => x.Id == mappedMessage.Id))
+            return false;
+
+        Messages.Add(mappedMessage);
+        Messages.Sort(ChatMessageViewModel.Comparer.Instance);
+        return true;
     }
 
     private void MergeMembers(IEnumerable<UserDto> items)
@@ -460,7 +564,7 @@ public partial class Chat : ComponentBase, IAsyncDisposable
         Members.Sort(ChatMemberViewModel.Comparer.Instance);
     }
 
-    private ChatMessageViewModel? MapMessage(MessageDto dto)
+    private ChatMessageViewModel MapMessage(MessageDto dto)
     {
         var authorName = dto.IsSystem
             ? "System"
@@ -503,10 +607,50 @@ public partial class Chat : ComponentBase, IAsyncDisposable
             Id = dto.Id,
             Username = dto.Username,
             DisplayName = displayName,
+            PresenceStatus = GetPresenceStatus(dto.Presence?.LastActive),
             Initial = UiTextHelper.GetInitial(string.IsNullOrWhiteSpace(dto.Fullname) ? dto.Username : dto.Fullname),
             IsYou = isYou,
-            AvatarColor = GetColor(dto.Username)
+            AvatarColor = GetColor(dto.Username),
+            LastActive = dto.Presence?.LastActive
         };
+    }
+
+    private static string GetPresenceStatus(DateTimeOffset? lastActive)
+    {
+        if (!lastActive.HasValue)
+            return "Offline";
+
+        var elapsed = DateTimeOffset.UtcNow - lastActive.Value;
+        if (elapsed <= TimeSpan.FromMinutes(2))
+            return "Online";
+
+        return elapsed <= TimeSpan.FromMinutes(15) ? "Away" : "Offline";
+    }
+
+    private static string GetPresenceCssClass(ChatMemberViewModel member) =>
+        GetPresenceStatus(member.LastActive).ToLowerInvariant();
+
+    private async Task RefreshPresenceStatusesAsync(CancellationToken cancellationToken)
+    {
+        using var timer = new PeriodicTimer(PresenceRefreshInterval);
+
+        try
+        {
+            while (await timer.WaitForNextTickAsync(cancellationToken))
+            {
+                _logger.LogTrace("Refreshing locally derived presence statuses");
+                Members.ForEach(x => x.PresenceStatus = GetPresenceStatus(x.LastActive));
+                Members.Sort(ChatMemberViewModel.Comparer.Instance);
+
+                await HubConnection.InvokeAsync(GameHubConstants.SignalR.UpdatePresence);
+
+                await InvokeAsync(StateHasChanged);
+            }
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            // Component disposal stops the local presence refresh loop.
+        }
     }
 
     private string? BuildMessagesNextCursor(CursorPage<MessageDto> page)
@@ -533,18 +677,34 @@ public partial class Chat : ComponentBase, IAsyncDisposable
             return null;
 
         var lastLoaded = Members
-            .OrderBy(x => x.Username, StringComparer.OrdinalIgnoreCase)
+            .OrderByDescending(x => x.LastActive.HasValue)
+            .ThenByDescending(x => x.LastActive)
+            .ThenBy(x => x.Username, StringComparer.OrdinalIgnoreCase)
             .ThenBy(x => x.Id)
             .LastOrDefault();
 
         if (lastLoaded is null)
             return null;
 
-        return ChatParticipantCursor.Cursor.Encode(lastLoaded.Username, lastLoaded.Id);
+        return ChatParticipantCursor.Cursor.Encode(lastLoaded.LastActive, lastLoaded.Username, lastLoaded.Id);
     }
 
     public async ValueTask DisposeAsync()
     {
+        await _presenceRefreshCancellation.CancelAsync();
+
+        if (_presenceRefreshTask is not null)
+        {
+            await _presenceRefreshTask;
+        }
+
+        _presenceRefreshCancellation.Dispose();
+
+        foreach (var subscription in _hubSubscriptions)
+        {
+            subscription.Dispose();
+        }
+
         await HubConnection.InvokeAsync(GameHubConstants.SignalR.LeaveChat, ChatId);
         await JS.InvokeVoidAsync("chatChannelPage.dispose");
         _dotNetRef?.Dispose();

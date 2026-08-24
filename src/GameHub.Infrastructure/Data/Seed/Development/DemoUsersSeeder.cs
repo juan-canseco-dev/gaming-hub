@@ -33,7 +33,7 @@ internal sealed class DemoUsersSeeder : IDevelopmentDataSeeder
 
     public async Task SeedAsync(CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("Starting demo users seeding...");
+        _logger.LogInformation("Starting demo user seeding");
 
         if (await _context.UserProfiles.AnyAsync(cancellationToken))
         {

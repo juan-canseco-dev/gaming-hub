@@ -1,4 +1,5 @@
 using GameHub.Application.Exceptions;
+using GameHub.Application.Abstractions.Observability;
 using Microsoft.AspNetCore.Mvc;
 
 namespace GameHub.Web.API.Middleware;
@@ -22,8 +23,19 @@ public class ExceptionHandlingMiddleware
         }
         catch (Exception exception)
         {
-            _logger.LogError(exception, "An exception occurred: {Message}", exception.Message);
             var exceptionDetails = GetExceptionDetails(exception);
+
+            if (exceptionDetails.Status >= StatusCodes.Status500InternalServerError)
+            {
+                _logger.LogError(exception, "Unhandled exception while processing the request");
+            }
+            else
+            {
+                _logger.LogWarning(
+                    "Request rejected with {ErrorType} and status code {StatusCode}",
+                    exceptionDetails.Type,
+                    exceptionDetails.Status);
+            }
             var problemDetails = new ProblemDetails
             {
                 Status = exceptionDetails.Status,
@@ -36,6 +48,10 @@ public class ExceptionHandlingMiddleware
             {
                 problemDetails.Extensions["errors"] = exceptionDetails.Errors;
             }
+
+            problemDetails.Extensions["correlationId"] =
+                context.Items[CorrelationIdConstants.LogPropertyName]?.ToString()
+                ?? context.TraceIdentifier;
 
             context.Response.StatusCode = exceptionDetails.Status;
 

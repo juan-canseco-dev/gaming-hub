@@ -2,6 +2,7 @@ using GameHub.Domain.Chats;
 using GameHub.Domain.Channels;
 using GameHub.Domain.Users;
 using Microsoft.EntityFrameworkCore;
+using GameHub.Domain.Presence;
 
 namespace GameHub.Application.Abstractions.Data;
 
@@ -12,6 +13,7 @@ public interface IApplicationDbContext
     public DbSet<ChatMessage> ChatMessages { get; }
     public DbSet<ChatMember> ChatMembers { get; }
     public DbSet<UserProfile> UserProfiles { get; }
+    public DbSet<UserPresence> UserPresences { get; }
     public DbSet<UserChat> UserChats { get;  }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

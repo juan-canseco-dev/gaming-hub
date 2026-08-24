@@ -30,9 +30,9 @@ public class ChatMessageSentConsumer : IConsumer<ChatMessageSentEvent>
         ArgumentNullException.ThrowIfNull(context);
         var message = context.Message;
 
-        _logger.LogInformation(
+        _logger.LogDebug(
             "Consuming {EventName} for ChatId {ChatId} and MessageId {MessageId}.",
-            nameof(ChatMemberJoinedEvent),
+            nameof(ChatMessageSentEvent),
             message.ChatId,
             message.MessageId);
 
@@ -42,11 +42,11 @@ public class ChatMessageSentConsumer : IConsumer<ChatMessageSentEvent>
         if (getMessageResult.IsFailure)
         {
             _logger.LogWarning(
-                "Failed to get message {MessageId} for ChatId {ChatId}. Error: {ErrorCode} - {ErrorMessage}",
+                "Unable to process {EventName}: message {MessageId} for ChatId {ChatId} returned {ErrorCode}",
+                nameof(ChatMessageSentEvent),
                 message.MessageId,
                 message.ChatId,
-                getMessageResult.Error.Code,
-                getMessageResult.Error.Description);
+                getMessageResult.Error.Code);
 
             return;
         }
@@ -56,15 +56,11 @@ public class ChatMessageSentConsumer : IConsumer<ChatMessageSentEvent>
             Message: getMessageResult.Value
         );
 
-        _logger.LogInformation(
-            "Sending chat-message notification for ChatId {ChatId} and MessageId {MessageId}.",
-            message.ChatId,
-            message.MessageId);
-
         await _notifier.NotifyAsync(message.ChatId, notification, context.CancellationToken);
 
-        _logger.LogInformation(
-            "Chat-message notification sent successfully for ChatId {ChatId} and MessageId {MessageId}.",
+        _logger.LogDebug(
+            "Processed {EventName} for ChatId {ChatId} and MessageId {MessageId}",
+            nameof(ChatMessageSentEvent),
             message.ChatId,
             message.MessageId);
     }

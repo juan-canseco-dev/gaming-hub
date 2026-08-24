@@ -28,7 +28,7 @@ internal class AdminUserSeeder : IProductionDataSeeder
 
     public async Task SeedAsync(CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("Starting admin user seeding...");
+        _logger.LogInformation("Starting admin user seeding");
 
         var user = await _userManager.FindByEmailAsync(SystemUsers.AdminEmail);
         if (user is not null)

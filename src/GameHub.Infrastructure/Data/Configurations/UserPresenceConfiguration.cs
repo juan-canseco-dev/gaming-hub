@@ -21,9 +21,12 @@ public class UserPresenceConfiguration : IEntityTypeConfiguration<UserPresence>
 
         builder.HasIndex(x => x.LastActive);
 
+        builder.HasIndex(x => x.UserId)
+            .IsUnique();
+
         builder.HasOne(x => x.UserProfile)
-            .WithMany()
-            .HasForeignKey(x => x.UserId)
+            .WithOne(x => x.Presence)
+            .HasForeignKey<UserPresence>(x => x.UserId)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }

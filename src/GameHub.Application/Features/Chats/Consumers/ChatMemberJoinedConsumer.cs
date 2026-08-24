@@ -32,7 +32,7 @@ public class ChatMemberJoinedConsumer : IConsumer<ChatMemberJoinedEvent>
 
         var message = context.Message;
 
-        _logger.LogInformation(
+        _logger.LogDebug(
             "Consuming {EventName} for ChatId {ChatId} and MessageId {MessageId}.",
             nameof(ChatMemberJoinedEvent),
             message.ChatId,
@@ -44,10 +44,10 @@ public class ChatMemberJoinedConsumer : IConsumer<ChatMemberJoinedEvent>
         if (participantCountResult.IsFailure)
         {
             _logger.LogWarning(
-                "Failed to get participant count for ChatId {ChatId}. Error: {ErrorCode} - {ErrorMessage}",
+                "Unable to process {EventName}: participant count for ChatId {ChatId} returned {ErrorCode}",
+                nameof(ChatMemberJoinedEvent),
                 message.ChatId,
-                participantCountResult.Error.Code,
-                participantCountResult.Error.Description);
+                participantCountResult.Error.Code);
 
             return;
         }
@@ -58,11 +58,11 @@ public class ChatMemberJoinedConsumer : IConsumer<ChatMemberJoinedEvent>
         if (getMessageResult.IsFailure)
         {
             _logger.LogWarning(
-                "Failed to get message {MessageId} for ChatId {ChatId}. Error: {ErrorCode} - {ErrorMessage}",
+                "Unable to process {EventName}: message {MessageId} for ChatId {ChatId} returned {ErrorCode}",
+                nameof(ChatMemberJoinedEvent),
                 message.MessageId,
                 message.ChatId,
-                getMessageResult.Error.Code,
-                getMessageResult.Error.Description);
+                getMessageResult.Error.Code);
 
             return;
         }
@@ -72,15 +72,12 @@ public class ChatMemberJoinedConsumer : IConsumer<ChatMemberJoinedEvent>
             NumberOfParticipants: participantCountResult.Value,
             Message: getMessageResult.Value);
 
-        _logger.LogInformation(
-            "Sending user-joined-chat notification for ChatId {ChatId} with {ParticipantCount} participants.",
-            message.ChatId,
-            participantCountResult.Value);
-
         await _notifier.NotifyAsync(message.ChatId, notification, context.CancellationToken);
 
-        _logger.LogInformation(
-            "User-joined-chat notification sent successfully for ChatId {ChatId}.",
-            message.ChatId);
+        _logger.LogDebug(
+            "Processed {EventName} for ChatId {ChatId} and MessageId {MessageId}",
+            nameof(ChatMemberJoinedEvent),
+            message.ChatId,
+            message.MessageId);
     }
 }

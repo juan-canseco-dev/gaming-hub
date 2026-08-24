@@ -175,6 +175,28 @@ namespace GameHub.Infrastructure.Data.Migrations
                     b.ToTable("ChatMessages", "GameHub");
                 });
 
+            modelBuilder.Entity("GameHub.Domain.Presence.UserPresence", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("LastActive")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LastActive");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("UserPresences", "GameHub");
+                });
+
             modelBuilder.Entity("GameHub.Domain.Users.UserChat", b =>
                 {
                     b.Property<Guid>("Id")
@@ -700,6 +722,17 @@ namespace GameHub.Infrastructure.Data.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("GameHub.Domain.Presence.UserPresence", b =>
+                {
+                    b.HasOne("GameHub.Domain.Users.UserProfile", "UserProfile")
+                        .WithOne("Presence")
+                        .HasForeignKey("GameHub.Domain.Presence.UserPresence", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("UserProfile");
+                });
+
             modelBuilder.Entity("GameHub.Domain.Users.UserChat", b =>
                 {
                     b.HasOne("GameHub.Domain.Chats.Chat", null)
@@ -783,6 +816,11 @@ namespace GameHub.Infrastructure.Data.Migrations
                     b.Navigation("Members");
 
                     b.Navigation("Messages");
+                });
+
+            modelBuilder.Entity("GameHub.Domain.Users.UserProfile", b =>
+                {
+                    b.Navigation("Presence");
                 });
 #pragma warning restore 612, 618
         }

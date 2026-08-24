@@ -5,6 +5,13 @@ namespace GameHub.Domain.UnitTests;
 
 public class UserPresenceTests
 {
+    public static TheoryData<int, PresenceStatus> PresenceStatusCases => new()
+    {
+        { 2, PresenceStatus.Online },
+        { 15, PresenceStatus.Away },
+        { 16, PresenceStatus.Offline }
+    };
+
     [Fact]
     public void UserPresence_Properties_Should_Be_Set_Correctly()
     {
@@ -25,8 +32,9 @@ public class UserPresenceTests
         var expectedLastActive = lastActiveAt.AddMinutes(1);
 
         var userPresence = new UserPresence(userId, lastActiveAt);
-        userPresence.Update(expectedLastActive);
+        var wasUpdated = userPresence.Update(expectedLastActive);
 
+        wasUpdated.Should().BeTrue();
         userPresence.LastActive.Should().Be(expectedLastActive);
     }
 
@@ -39,8 +47,23 @@ public class UserPresenceTests
         var lastActiveUpdate = lastActiveAt.AddMinutes(-1);
 
         var userPresence = new UserPresence(userId, lastActiveAt);
-        userPresence.Update(lastActiveUpdate);
+        var wasUpdated = userPresence.Update(lastActiveUpdate);
 
+        wasUpdated.Should().BeFalse();
         userPresence.LastActive.Should().Be(lastActiveAt);
+    }
+
+    [Theory]
+    [MemberData(nameof(PresenceStatusCases))]
+    public void UserPresence_GetStatus_Should_Return_Status_For_Elapsed_Time(
+        int elapsedMinutes,
+        PresenceStatus expectedStatus)
+    {
+        var lastActiveAt = DateTimeOffset.UtcNow;
+        var userPresence = new UserPresence(Guid.CreateVersion7(), lastActiveAt);
+
+        var status = userPresence.GetStatus(lastActiveAt.AddMinutes(elapsedMinutes));
+
+        status.Should().Be(expectedStatus);
     }
 }

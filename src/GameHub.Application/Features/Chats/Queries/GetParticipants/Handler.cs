@@ -2,11 +2,12 @@ using GameHub.Application.Abstractions.Data;
 using GameHub.Application.Abstractions.Messaging;
 using GameHub.Contracts.Profile;
 using GameHub.Domain.Chats;
-using GameHub.Domain.Channels;
 using GameHub.Abstractions.Primitives;
 using Microsoft.EntityFrameworkCore;
 using GameHub.Abstractions.Pagination;
+using GameHub.Application.Abstractions.Clock;
 using static GameHub.Contracts.Chats.ChatParticipantCursor;
+using GameHub.Contracts.Presence;
 
 namespace GameHub.Application.Features.Chats.Queries.GetParticipants;
 
@@ -15,10 +16,12 @@ public static partial class GetChatParticipants
     public sealed class Handler : IQueryHandler<Query, CursorPage<UserDto>>
     {
         private readonly IApplicationDbContext _context;
+        private readonly IDateTimeProvider _timeProvider;
 
-        public Handler(IApplicationDbContext context)
+        public Handler(IApplicationDbContext context, IDateTimeProvider timeProvider)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
+            _timeProvider = timeProvider ?? throw new ArgumentNullException(nameof(timeProvider));
         }
 
         public async Task<Result<CursorPage<UserDto>>> Handle(Query request, CancellationToken cancellationToken)
@@ -46,21 +49,31 @@ public static partial class GetChatParticipants
                 cursor = decodeCursorResult.Value;
             }
 
+            var currentTime = _timeProvider.CurrentTimeUtc;
             var query = _context.ChatMembers
                 .AsNoTracking()
                 .Where(x => x.ChatId == request.ChatId)
-                .ProjectToDto(_context.UserProfiles.AsNoTracking());
+                .ProjectToParticipant(
+                    _context.UserProfiles.AsNoTracking(),
+                    _context.UserPresences.AsNoTracking());
 
             if (cursor is not null)
             {
+                if (!cursor.LastActive.HasValue)
+                {
+                    return Result.Failure<CursorPage<UserDto>>(Errors.InvalidCursor);
+                }
+
                 query = query.Where(x =>
-                   x.Username.CompareTo(cursor.Username) > 0 ||
-                   (x.Username == cursor.Username && x.Id.CompareTo(cursor.UserId) > 0)
-                );
+                    x.Presence.LastActive < cursor.LastActive.Value ||
+                    (x.Presence.LastActive == cursor.LastActive.Value &&
+                        (x.Username.CompareTo(cursor.Username) > 0 ||
+                         (x.Username == cursor.Username && x.Id.CompareTo(cursor.UserId) > 0))));
             }
 
             var items = await query
-                .OrderBy(x => x.Username)
+                .OrderByDescending(x => x.Presence.LastActive)
+                .ThenBy(x => x.Username)
                 .ThenBy(x => x.Id)
                 .Take(request.Limit + 1)
                 .ToListAsync(cancellationToken);
@@ -73,13 +86,24 @@ public static partial class GetChatParticipants
             }
 
             string? afterCursor = hasMore
-                ? Cursor.Encode(items[^1].Username, items[^1].Id)
+                ? Cursor.Encode(items[^1].Presence.LastActive, items[^1].Username, items[^1].Id)
                 : null;
 
+            var participants = items.Select(x => new UserDto
+            {
+                Id = x.Id,
+                Username = x.Username,
+                Email = x.Email,
+                Fullname = x.Fullname,
+                Presence = new UserPresenceDto(
+                    x.Id,
+                    x.Presence.LastActive,
+                    x.Presence.GetStatus(currentTime).Name)
+            }).ToArray();
 
             return Result.Success(new CursorPage<UserDto>
             {
-                Items = items,
+                Items = participants,
                 Next = afterCursor
             });
 

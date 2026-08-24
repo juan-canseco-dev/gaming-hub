@@ -9,11 +9,11 @@ namespace GameHub.Infrastructure.Realtime;
 
 internal sealed class SignalRMessageSentNotifier : IMessageSentNotifier
 {
-    private readonly IHubContext<ChatHub, IChatClient> _hubContext;
+    private readonly IHubContext<ChatHub, ChatClientAdapter> _hubContext;
     private readonly ILogger<SignalRMessageSentNotifier> _logger;
 
     public SignalRMessageSentNotifier(
-      IHubContext<ChatHub, IChatClient> hubContext,
+      IHubContext<ChatHub, ChatClientAdapter> hubContext,
       ILogger<SignalRMessageSentNotifier> logger)
     {
         _hubContext = hubContext ?? throw new ArgumentNullException(nameof(hubContext));
@@ -31,18 +31,14 @@ internal sealed class SignalRMessageSentNotifier : IMessageSentNotifier
 
         var groupName = ChatHub.GetChatGroupName(chatId);
 
-        _logger.LogInformation(
-            "Sending SignalR message notification to chat {ChatId}. MessageId: {MessageId}",
-            chatId,
-            notification.Message.Id);
-
         await _hubContext.Clients
             .Group(groupName)
             .MessageSent(notification);
 
 
-        _logger.LogInformation(
-            "SignalR message notification sent to chat {ChatId}.",
-            chatId);
+        _logger.LogDebug(
+            "Sent SignalR message notification to ChatId {ChatId} for MessageId {MessageId}",
+            chatId,
+            notification.Message.Id);
     }
 }

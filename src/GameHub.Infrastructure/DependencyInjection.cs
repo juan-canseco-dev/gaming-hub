@@ -3,6 +3,7 @@ using GameHub.Application.Abstractions.Clock;
 using GameHub.Application.Abstractions.Data;
 using GameHub.Application.Abstractions.Identity;
 using GameHub.Application.Abstractions.Realtime.Chats;
+using GameHub.Application.Abstractions.Realtime.Presence;
 using GameHub.Domain.Chats;
 using GameHub.Domain.Channels;
 using GameHub.Infrastructure.Authentication;
@@ -14,6 +15,8 @@ using GameHub.Infrastructure.Data.Seed.Production;
 using GameHub.Infrastructure.Identity;
 using GameHub.Infrastructure.Identity.Models;
 using GameHub.Infrastructure.Realtime;
+using GameHub.Infrastructure.Observability;
+using GameHub.Application.Abstractions.Observability;
 using MassTransit;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -32,6 +35,9 @@ public static class DependencyInjection
         services.AddTransient<MessagePreviewService>();
         services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
         services.AddSingleton<IAuthenticatedUserService, AuthenticatedUserService>();
+        services.AddSingleton<ICorrelationIdAccessor, CorrelationIdAccessor>();
+        services.AddScoped(typeof(CorrelationIdPublishFilter<>));
+        services.AddScoped(typeof(CorrelationIdConsumeFilter<>));
 
         // Register Ef core dependencies 
         var connectionString = configuration.GetConnectionString("ConnectionString")
@@ -39,7 +45,6 @@ public static class DependencyInjection
         services.AddDbContext<ApplicationDbContext>((sp, options) =>
         {
             options.UseSqlServer(connectionString);
-            options.EnableSensitiveDataLogging();
         });
 
         services.AddScoped<IApplicationDbContext>(sp => sp.GetRequiredService<ApplicationDbContext>());
@@ -87,6 +92,8 @@ public static class DependencyInjection
                     h.Password(configuration["EventBusSettings:Password"]!);
                 });
 
+                cfg.UsePublishFilter(typeof(CorrelationIdPublishFilter<>), context);
+                cfg.UseConsumeFilter(typeof(CorrelationIdConsumeFilter<>), context);
                 cfg.ConfigureEndpoints(context);
             });
         });
@@ -102,6 +109,7 @@ public static class DependencyInjection
         // Add realtime notifiers
         services.AddScoped<IMessageSentNotifier, SignalRMessageSentNotifier>();
         services.AddScoped<IUserJoinedChatNotifier, SignalRUserJoinedChatNotifier>();
+        services.AddScoped<IUpdatePresenceNotifier, SignalRUpdatePresenceNotifier>();
 
         return services;
     }

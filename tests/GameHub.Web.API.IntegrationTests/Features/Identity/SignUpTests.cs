@@ -56,9 +56,11 @@ public class SignUpTests(CustomWebApplicationFactory factory) : IAsyncLifetime
 
         var identityUser = await UserManager.FindByEmailAsync(request.Email);
         var domainUser = await DbContext.UserProfiles.FindAsync([userId]);
+        var userPresence = DbContext.UserPresences.SingleOrDefault(x => x.UserId == userId);
 
         identityUser.Should().NotBeNull();
         domainUser.Should().NotBeNull();
+        userPresence.Should().NotBeNull();
 
         identityUser.Id.Should().Be(userId);
         identityUser.Email.Should().Be(request.Email);
@@ -70,6 +72,8 @@ public class SignUpTests(CustomWebApplicationFactory factory) : IAsyncLifetime
         domainUser.Username.Should().Be(request.Username);
         domainUser.Email.Should().Be(request.Email);
         domainUser.CreatedAt.Should().Be(identityUser.CreatedAt);
+        userPresence!.UserId.Should().Be(userId);
+        userPresence.LastActive.Should().Be(identityUser.CreatedAt);
     }
 
     [Fact]

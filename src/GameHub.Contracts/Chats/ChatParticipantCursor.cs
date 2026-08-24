@@ -6,13 +6,14 @@ namespace GameHub.Contracts.Chats;
 public static class ChatParticipantCursor
 {
     public sealed record Cursor(
+        DateTimeOffset? LastActive,
         string Username,
         Guid UserId
     )
     {
-        public static string Encode(string username, Guid userId)
+        public static string Encode(DateTimeOffset? lastActive, string username, Guid userId)
         {
-            var cursor = new Cursor(username, userId);
+            var cursor = new Cursor(lastActive, username, userId);
             var json = JsonSerializer.Serialize(cursor);
             return Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(json));
         }

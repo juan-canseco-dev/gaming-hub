@@ -1,4 +1,4 @@
-﻿using GameHub.Abstractions.Primitives;
+﻿ using GameHub.Abstractions.Primitives;
 
 namespace GameHub.Domain.Presence;
 

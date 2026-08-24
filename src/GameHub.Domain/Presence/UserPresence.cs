@@ -6,20 +6,43 @@ namespace GameHub.Domain.Presence;
 
 public class UserPresence : Entity<Guid>
 {
+    private static readonly TimeSpan OnlineThreshold = TimeSpan.FromMinutes(2);
+    private static readonly TimeSpan AwayThreshold = TimeSpan.FromMinutes(15);
+
     public Guid UserId { get; }
     public DateTimeOffset LastActive { get; private set; }
-    public UserProfile UserProfile{ get; } = default!;
+    public UserProfile UserProfile { get; } = default!;
 
-    public void Update(DateTimeOffset currentTime)
+    public bool Update(DateTimeOffset currentTime)
     {
-        if (currentTime > LastActive) 
+        if (currentTime <= LastActive)
         {
-            LastActive = currentTime;
+            return false;
         }
+
+        LastActive = currentTime;
+        return true;
     }
 
+    public PresenceStatus GetStatus(DateTimeOffset currentTime)
+    {
+        var elapsed = currentTime - LastActive;
+
+        if (elapsed <= OnlineThreshold)
+        {
+            return PresenceStatus.Online;
+        }
+
+        return elapsed <= AwayThreshold
+            ? PresenceStatus.Away
+            : PresenceStatus.Offline;
+    }
+
+    public static DateTimeOffset GetOnlineCutoff(DateTimeOffset currentTime) =>
+        currentTime.Subtract(OnlineThreshold);
+
     private UserPresence() { }
-    
+
     public UserPresence(Guid userId, DateTimeOffset lastActive)
     {
         UserId = userId;

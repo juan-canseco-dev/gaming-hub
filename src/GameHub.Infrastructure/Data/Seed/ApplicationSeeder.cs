@@ -29,7 +29,9 @@ public sealed class ApplicationSeeder
 
     public async Task SeedAsync(CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("Starting database seeding for environment {EnvironmentName}.", _environment.EnvironmentName);
+        _logger.LogInformation(
+            "Starting database seeding for environment {EnvironmentName}",
+            _environment.EnvironmentName);
 
         await using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
 
@@ -51,12 +53,12 @@ public sealed class ApplicationSeeder
             await _context.SaveChangesAsync(cancellationToken);
             await transaction.CommitAsync(cancellationToken);
 
-            _logger.LogInformation("Database seeding completed successfully.");
+            _logger.LogInformation("Database seeding completed successfully");
         }
         catch (Exception ex)
         {
             await transaction.RollbackAsync(cancellationToken);
-            _logger.LogError(ex, "Database seeding failed. Transaction rolled back.");
+            _logger.LogError(ex, "Database seeding failed and the transaction was rolled back");
             throw;
         }
     }

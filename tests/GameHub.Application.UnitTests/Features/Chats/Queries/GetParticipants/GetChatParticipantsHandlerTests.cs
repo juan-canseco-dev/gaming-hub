@@ -1,5 +1,6 @@
 using FluentAssertions;
 using GameHub.Application.Abstractions.Data;
+using GameHub.Application.Abstractions.Clock;
 using GameHub.Application.Features.Chats.Queries.GetParticipants;
 using GameHub.Domain.Chats;
 using GameHub.Domain.Channels;
@@ -28,7 +29,7 @@ public sealed class GetChatParticipantsHandlerTests
             chatMembers.Object,
             userProfiles.Object);
 
-        var handler = new GetChatParticipants.Handler(context.Object);
+        var handler = new GetChatParticipants.Handler(context.Object, CreateClock(DateTimeOffset.UtcNow));
         var query = new GetChatParticipants.Query(chatId, 10, null);
 
         // Act
@@ -57,7 +58,7 @@ public sealed class GetChatParticipantsHandlerTests
             chatMembers.Object,
             userProfiles.Object);
 
-        var handler = new GetChatParticipants.Handler(context.Object);
+        var handler = new GetChatParticipants.Handler(context.Object, CreateClock(DateTimeOffset.UtcNow));
         var query = new GetChatParticipants.Query(chatId, 10, "not-a-valid-base64-cursor");
         // Act
         var result = await handler.Handle(query, CancellationToken.None);
@@ -94,7 +95,7 @@ public sealed class GetChatParticipantsHandlerTests
             chatMembers.Object,
             userProfiles.Object);
 
-        var handler = new GetChatParticipants.Handler(context.Object);
+        var handler = new GetChatParticipants.Handler(context.Object, CreateClock(joinedAt));
         var query = new GetChatParticipants.Query(chatId, 2, null);
 
         // Act
@@ -108,6 +109,7 @@ public sealed class GetChatParticipantsHandlerTests
 
         items[0].Username.Should().Be("ana");
         items[1].Username.Should().Be("bob");
+        items.Should().OnlyContain(x => x.Presence != null && x.Presence.Status == "Online");
 
         result.Value.Next.Should().NotBeNull();
     }
@@ -138,9 +140,9 @@ public sealed class GetChatParticipantsHandlerTests
             chatMembers.Object,
             userProfiles.Object);
 
-        var cursor = EncodeCursor("ana", user1.Id);
+        var cursor = EncodeCursor(joinedAt, "ana", user1.Id);
 
-        var handler = new GetChatParticipants.Handler(context.Object);
+        var handler = new GetChatParticipants.Handler(context.Object, CreateClock(joinedAt));
         var query = new GetChatParticipants.Query(chatId, 2, cursor);
 
         // Act
@@ -157,6 +159,40 @@ public sealed class GetChatParticipantsHandlerTests
         result.Value.Next.Should().BeNull();
     }
 
+    [Fact]
+    public async Task Handle_Should_Derive_Each_Presence_Status_From_UserPresence()
+    {
+        var now = new DateTimeOffset(2026, 8, 24, 12, 0, 0, TimeSpan.Zero);
+        var createdAt = now.AddMinutes(-20);
+        var chatId = Guid.NewGuid();
+        var chat = Shared.Factories.ChatTestFactory.CreateNew(chatId, 1, createdAt);
+        var onlineUser = new UserProfile(Guid.NewGuid(), "online@example.com", "online", "Online", createdAt);
+        var awayUser = new UserProfile(Guid.NewGuid(), "away@example.com", "away", "Away", createdAt);
+        var offlineUser = new UserProfile(Guid.NewGuid(), "offline@example.com", "offline", "Offline", createdAt);
+
+        onlineUser.Presence.Update(now.AddMinutes(-2));
+        awayUser.Presence.Update(now.AddMinutes(-15));
+
+        var users = new[] { onlineUser, awayUser, offlineUser };
+        var context = CreateContext(
+            new List<Chat> { chat }.BuildMockDbSet().Object,
+            users.Select(x => CreateNew(chatId, x.Id, createdAt)).ToList().BuildMockDbSet().Object,
+            users.ToList().BuildMockDbSet().Object);
+        var handler = new GetChatParticipants.Handler(context.Object, CreateClock(now));
+
+        var result = await handler.Handle(
+            new GetChatParticipants.Query(chatId, 10, null),
+            CancellationToken.None);
+
+        result.IsSuccess.Should().BeTrue();
+        result.Value.Items.Should().ContainSingle(x =>
+            x.Id == onlineUser.Id && x.Presence != null && x.Presence.Status == "Online");
+        result.Value.Items.Should().ContainSingle(x =>
+            x.Id == awayUser.Id && x.Presence != null && x.Presence.Status == "Away");
+        result.Value.Items.Should().ContainSingle(x =>
+            x.Id == offlineUser.Id && x.Presence != null && x.Presence.Status == "Offline");
+    }
+
     private static Mock<IApplicationDbContext> CreateContext(
         DbSet<Chat> chats,
         DbSet<ChatMember> chatMembers,
@@ -167,6 +203,8 @@ public sealed class GetChatParticipantsHandlerTests
         context.Setup(x => x.Chats).Returns(chats);
         context.Setup(x => x.ChatMembers).Returns(chatMembers);
         context.Setup(x => x.UserProfiles).Returns(userProfiles);
+        context.Setup(x => x.UserPresences).Returns(
+            userProfiles.Select(x => x.Presence).ToList().BuildMockDbSet().Object);
 
         context.Setup(x => x.Channels).Returns(new List<Channel>().BuildMockDbSet().Object);
         context.Setup(x => x.ChatMessages).Returns(new List<ChatMessage>().BuildMockDbSet().Object);
@@ -174,17 +212,20 @@ public sealed class GetChatParticipantsHandlerTests
         return context;
     }
 
+    private static IDateTimeProvider CreateClock(DateTimeOffset currentTime) =>
+        Mock.Of<IDateTimeProvider>(x => x.CurrentTimeUtc == currentTime);
+
 
     private static ChatMember CreateNew(Guid chatId, Guid userId, DateTimeOffset joinedAt)
     {
         return new ChatMember(chatId, userId, joinedAt);
     }
 
-    private static string EncodeCursor(string username, Guid userId)
+    private static string EncodeCursor(DateTimeOffset? lastActive, string username, Guid userId)
     {
-        var json = JsonSerializer.Serialize(new TestCursor(username, userId));
+        var json = JsonSerializer.Serialize(new TestCursor(lastActive, username, userId));
         return Convert.ToBase64String(Encoding.UTF8.GetBytes(json));
     }
 
-    private sealed record TestCursor(string Username, Guid UserId);
+    private sealed record TestCursor(DateTimeOffset? LastActive, string Username, Guid UserId);
 }

@@ -34,7 +34,7 @@ internal sealed class DemoChatSeeder : IDevelopmentDataSeeder
     public async Task SeedAsync(CancellationToken cancellationToken = default)
     {
 
-        _logger.LogInformation("Starting demo Chats seeding...");
+        _logger.LogInformation("Starting demo chat seeding");
 
         var users = await _context.UserProfiles
             .ToListAsync(cancellationToken);
@@ -44,7 +44,7 @@ internal sealed class DemoChatSeeder : IDevelopmentDataSeeder
 
         if (await _context.ChatMembers.AnyAsync(cancellationToken))
         {
-            _logger.LogInformation("Demo chats seeding skipped because users already members");
+            _logger.LogInformation("Skipping demo chat seeding because memberships already exist");
             return;
         }
 

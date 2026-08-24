@@ -7,6 +7,11 @@ namespace GameHub.Web.API.Extensions;
 
 public static class ApplicationBuilderExtensions
 {
+    public static void UseCorrelationId(this IApplicationBuilder app)
+    {
+        app.UseMiddleware<CorrelationIdMiddleware>();
+    }
+
     public static void UseCustomExceptionHandler(this IApplicationBuilder app)
     {
         app.UseMiddleware<ExceptionHandlingMiddleware>();
@@ -22,15 +27,15 @@ public static class ApplicationBuilderExtensions
 
         try
         {
-            logger.LogInformation("Applying migrations...");
+            logger.LogInformation("Applying database migrations");
             await context.Database.MigrateAsync();
-            logger.LogInformation("Database migrations applied successfully.");
+            logger.LogInformation("Database migrations applied successfully");
         }
         catch (Exception ex)
         {
             logger.LogError(
                 ex,
-                "An error occurred while applying the database migrations."
+                "Failed to apply database migrations"
             );
 
             throw;

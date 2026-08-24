@@ -9,5 +9,7 @@ public static partial class GameHubConstants
         public const string LeaveChat = "LeaveChat";
         public const string MessageSent = "MessageSent";
         public const string UserJoinedChat = "UserJoinedChat";
+        public const string UpdatePresence = "UpdatePresence";
+        public const string UserPresenceUpdated = "OnUserPresenceUpdated";
     }
 }

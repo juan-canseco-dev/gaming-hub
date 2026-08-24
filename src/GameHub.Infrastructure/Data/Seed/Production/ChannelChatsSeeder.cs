@@ -21,10 +21,10 @@ public class ChannelChatsSeeder : IProductionDataSeeder
 
     public async Task SeedAsync(CancellationToken cancellationToken = default)
     {
-        _logger.LogInformation("Starting channels chats seeding...");
+        _logger.LogInformation("Starting channel chat seeding");
         if (await _context.Chats.AnyAsync(cancellationToken))
         {
-            _logger.LogInformation("Channel chats already exists. Skipping.");
+            _logger.LogInformation("Skipping channel chat seeding because records already exist");
             return;
         }
         var newChats = Channel.GetValues()
@@ -32,7 +32,7 @@ public class ChannelChatsSeeder : IProductionDataSeeder
             .ToList();
 
         _context.AddRange(newChats);
-        _logger.LogInformation("Channels chats were prepared prepared successfully for seeding");
+        _logger.LogInformation("Prepared channel chats for seeding");
     }
 
     public int Order => 2;
