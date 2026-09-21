@@ -2,6 +2,8 @@
 using GameHub.Infrastructure.Data.Seed.Production;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.EntityFrameworkCore;
 
 namespace GameHub.Infrastructure.Data.Seed;
 
@@ -33,6 +35,12 @@ public sealed class ApplicationSeeder
             "Starting database seeding for environment {EnvironmentName}",
             _environment.EnvironmentName);
 
+        var executionStrategy = _context.Database.CreateExecutionStrategy();
+        await executionStrategy.ExecuteAsync(() => SeedInTransactionAsync(cancellationToken));
+    }
+
+    private async Task SeedInTransactionAsync(CancellationToken cancellationToken)
+    {
         await using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
 
         try

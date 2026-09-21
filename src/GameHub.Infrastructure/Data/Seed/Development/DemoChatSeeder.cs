@@ -11,6 +11,7 @@ internal sealed class DemoChatSeeder : IDevelopmentDataSeeder
 {
     private const int JoinIntervalMinutes = 5;
     private const int MessageIntervalMinutes = 5;
+    private static readonly DateTimeOffset FixedSeedDate = new(2026, 8, 8, 9, 0, 0, TimeSpan.Zero);
 
     private readonly ApplicationDbContext _context;
     private readonly IDateTimeProvider _timeProvider;
@@ -62,7 +63,7 @@ internal sealed class DemoChatSeeder : IDevelopmentDataSeeder
         IReadOnlyCollection<Chat> chats)
     {
         var joinedCount = 0;
-        var joinedAt = _timeProvider.CurrentTimeUtc.AddDays(-14);
+        var joinedAt = FixedSeedDate;
 
         foreach (var chat in chats)
         {
@@ -84,7 +85,7 @@ internal sealed class DemoChatSeeder : IDevelopmentDataSeeder
         IReadOnlyCollection<Chat> chats)
     {
         var messageCount = 0;
-        var messageAt = _timeProvider.CurrentTimeUtc.AddDays(-13);
+        var messageAt = FixedSeedDate;
 
         foreach (var chat in chats)
         {

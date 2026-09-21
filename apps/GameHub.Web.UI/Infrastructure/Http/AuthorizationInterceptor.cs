@@ -19,14 +19,6 @@ public class AuthorizationInterceptor : DelegatingHandler
         _authProvider = authProvider;
     }
 
-    protected override HttpResponseMessage Send(
-        HttpRequestMessage request, 
-        CancellationToken cancellationToken
-    )
-    {
-        return SendAsync(request, cancellationToken).Result;
-    }
-
     protected override Task<HttpResponseMessage> SendAsync(
         HttpRequestMessage request, 
         CancellationToken cancellationToken

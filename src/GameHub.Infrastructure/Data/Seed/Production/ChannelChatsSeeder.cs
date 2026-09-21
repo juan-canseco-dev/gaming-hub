@@ -8,6 +8,7 @@ namespace GameHub.Infrastructure.Data.Seed.Production;
 
 public class ChannelChatsSeeder : IProductionDataSeeder
 {
+    private static readonly DateTimeOffset FixedSeedDate = new(2026, 8, 8, 9, 0, 0, TimeSpan.Zero);
     private readonly ApplicationDbContext _context;
     private readonly IDateTimeProvider _timeProvider;
     private readonly ILogger<ChannelChatsSeeder> _logger;
@@ -28,7 +29,7 @@ public class ChannelChatsSeeder : IProductionDataSeeder
             return;
         }
         var newChats = Channel.GetValues()
-            .Select(c => Chat.Create(c.Id, _timeProvider.CurrentTimeUtc).Value)
+            .Select(c => Chat.Create(c.Id, FixedSeedDate).Value)
             .ToList();
 
         _context.AddRange(newChats);

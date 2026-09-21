@@ -16,7 +16,7 @@ public class SignUp : ICarterModule
             var result = await service.RegisterAsync(request, cancellationToken);
             return result.IsSuccess
             ? Results.Ok(result.Value)
-            : Results.BadRequest(result.Error);
+            : result.Error.ToProblem(StatusCodes.Status400BadRequest);
         }
         )
         .AllowAnonymous()

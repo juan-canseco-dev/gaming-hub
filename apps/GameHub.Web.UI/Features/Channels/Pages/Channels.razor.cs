@@ -29,6 +29,7 @@ public partial class Channels : ComponentBase, IAsyncDisposable
 
     // Track loading per channel
     private readonly HashSet<Guid> _joiningChannels = new();
+    private readonly CancellationTokenSource _lifetimeCancellation = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -52,7 +53,7 @@ public partial class Channels : ComponentBase, IAsyncDisposable
     private async Task LoadChannelsAsync()
     {
         IsLoading = true;
-        var result = await ChannelsService.GetListAsync();
+        var result = await ChannelsService.GetListAsync(_lifetimeCancellation.Token);
 
         if (result.IsFailure)
         {
@@ -75,10 +76,12 @@ public partial class Channels : ComponentBase, IAsyncDisposable
             .Distinct()
             .ToList();
 
-        var tasks = channelIds
-            .Select(chatId => HubConnection.InvokeAsync(GameHubConstants.SignalR.JoinChat, chatId));
-
-        await Task.WhenAll(tasks);
+        foreach (var chatId in channelIds)
+        {
+            await HubConnection
+                .InvokeAsync(GameHubConstants.SignalR.JoinChat, chatId)
+                .WaitAsync(_lifetimeCancellation.Token);
+        }
     }
 
     private async Task LeaveChannels(List<ChannelDto> channelList)
@@ -107,8 +110,8 @@ public partial class Channels : ComponentBase, IAsyncDisposable
 
         _joiningChannels.Add(channel.ChatId);
         StateHasChanged();
-        await Task.Delay(700);
-        var result = await ChannelsService.JoinAsync(channel.ChatId);
+        await Task.Delay(700, _lifetimeCancellation.Token);
+        var result = await ChannelsService.JoinAsync(channel.ChatId, _lifetimeCancellation.Token);
 
         _joiningChannels.Remove(channel.ChatId);
 
@@ -132,6 +135,14 @@ public partial class Channels : ComponentBase, IAsyncDisposable
 
     public async ValueTask DisposeAsync()
     {
-        await LeaveChannels(ChannelList);
+        await _lifetimeCancellation.CancelAsync();
+        try
+        {
+            await LeaveChannels(ChannelList);
+        }
+        finally
+        {
+            _lifetimeCancellation.Dispose();
+        }
     }
 }

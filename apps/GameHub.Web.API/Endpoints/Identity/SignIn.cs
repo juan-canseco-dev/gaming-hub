@@ -16,7 +16,7 @@ public class SignIn : ICarterModule
             var result = await service.GetTokenAsync(request, cancellationToken);
             return result.IsSuccess
             ? Results.Ok(result.Value)
-            : Results.BadRequest(result.Error);
+            : result.Error.ToProblem(StatusCodes.Status400BadRequest);
         }
         )
         .AllowAnonymous()

@@ -8,6 +8,7 @@ namespace GameHub.Infrastructure.Data.Seed.Production;
 
 internal class AdminUserSeeder : IProductionDataSeeder
 {
+    private static readonly DateTimeOffset FixedSeedDate = new(2026, 8, 8, 9, 0, 0, TimeSpan.Zero);
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly ApplicationDbContext _context;
     private readonly IDateTimeProvider _timeProvider;
@@ -39,7 +40,7 @@ internal class AdminUserSeeder : IProductionDataSeeder
             );
             return;
         }
-        var createdAt = _timeProvider.CurrentTimeUtc;
+        var createdAt = FixedSeedDate;
 
         var adminUser = new ApplicationUser
         {

@@ -4,6 +4,10 @@ GameHub is a **real-time multi-channel chat application** built with **ASP.NET C
 
 This project showcases modern full-stack .NET development with a strong focus on **scalable backend design**, **real-time communication**, and a polished **single-page chat experience**.
 
+## Developing with ChatGPT and Codex
+
+Start with the [developer guide](docs/codex/guide.md) for setup, workflows, prompts, and verification. Coding agents should follow [AGENTS.md](AGENTS.md) and its scoped instructions. The [shared .NET standard](docs/engineering/dotnet-standard.md) and [GameHub reference map](docs/engineering/gamehub-reference.md) define the architecture baseline and explain how to apply it to other projects.
+
 ---
 
 ## 🚀 Features

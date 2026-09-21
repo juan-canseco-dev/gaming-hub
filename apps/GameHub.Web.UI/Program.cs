@@ -37,7 +37,12 @@ namespace GameHub.Web.UI
 
             builder.Services.AddHttpClient(
                 "GameHub.Web.API",
-                client => client.BaseAddress = baseApiUri
+                client =>
+                {
+                    client.BaseAddress = baseApiUri;
+                    client.DefaultRequestHeaders.Accept.ParseAdd("application/json");
+                    client.DefaultRequestHeaders.Accept.ParseAdd("application/problem+json");
+                }
             ).AddHttpMessageHandler<AuthorizationInterceptor>()
             .AddHttpMessageHandler<UnauthorizedInterceptor>();
 

@@ -8,6 +8,9 @@ using GameHub.Application.Abstractions.Observability;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using Serilog.Events;
+using GameHub.Web.API.ProblemDetails;
+using GameHub.Web.API.HealthChecks;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 
 namespace GameHub.Web.API
 {
@@ -48,8 +51,27 @@ namespace GameHub.Web.API
                     .AddStackExchangeRedis(redisConnectionString);
 
                 builder.Services.AddControllers();
+                builder.Services.AddProblemDetails(options =>
+                {
+                    options.CustomizeProblemDetails = context =>
+                    {
+                        context.ProblemDetails.Instance = context.HttpContext.Request.Path;
+                        context.ProblemDetails.Extensions["correlationId"] =
+                            context.HttpContext.Items[CorrelationIdConstants.LogPropertyName]?.ToString()
+                            ?? context.HttpContext.TraceIdentifier;
+
+                        if (string.IsNullOrWhiteSpace(context.ProblemDetails.Type))
+                        {
+                            context.ProblemDetails.Type = ProblemTypes.ForStatus(
+                                context.ProblemDetails.Status
+                                ?? context.HttpContext.Response.StatusCode);
+                        }
+                    };
+                });
                 builder.Services.AddApplication();
                 builder.Services.AddInfrastructure(builder.Configuration);
+                builder.Services.AddHealthChecks()
+                    .AddCheck<SqlServerHealthCheck>("sql-server", tags: ["ready"]);
                 builder.Services.AddAuthorization();
                 builder.Services.AddCarter();
                 builder.Services.AddJwtAuthentication(builder.Configuration);
@@ -105,12 +127,22 @@ namespace GameHub.Web.API
                     };
                 });
                 app.UseCustomExceptionHandler();
+                app.UseStatusCodePages();
 
                 app.UseCors(corsOptions!.PolicyName);
                 app.UseAuthentication();
                 app.UseAuthorization();
 
                 app.MapGet("/", () => "Welcome to Game Hub");
+
+                app.MapHealthChecks("/health/live", new HealthCheckOptions
+                {
+                    Predicate = _ => false
+                });
+                app.MapHealthChecks("/health/ready", new HealthCheckOptions
+                {
+                    Predicate = registration => registration.Tags.Contains("ready")
+                });
 
                 app.MapHub<ChatHub>("/hubs/chat");
                 app.MapCarter();

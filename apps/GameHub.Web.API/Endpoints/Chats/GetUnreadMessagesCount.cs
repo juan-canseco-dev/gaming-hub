@@ -22,9 +22,9 @@ public class GetUnreadMessagesCount : ICarterModule
             {
                 if (result.Error.Equals(ChatErrors.ChatGroupNotFound(chatId)))
                 {
-                    return Results.NotFound(result.Error);
+                    return result.Error.ToProblem(StatusCodes.Status404NotFound);
                 }
-                return Results.BadRequest(result.Error);
+                return result.Error.ToProblem(StatusCodes.Status400BadRequest);
             }
             return Results.Ok(result.Value);
         })

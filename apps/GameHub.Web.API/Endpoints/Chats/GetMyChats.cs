@@ -19,7 +19,7 @@ public class GetMyChats : ICarterModule
 
             return result.IsSuccess
                 ? Results.Ok(result.Value)
-                : Results.BadRequest(result.Error);
+                : result.Error.ToProblem(StatusCodes.Status400BadRequest);
         })
         .WithName(nameof(GetUserChats))
         .WithTags(nameof(Chat))

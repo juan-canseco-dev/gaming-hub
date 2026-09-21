@@ -13,6 +13,7 @@ internal sealed class DemoUsersSeeder : IDevelopmentDataSeeder
 {
     private const int DemoUsersCount = 50;
     private const string DefaultPassword = "Password.01";
+    private static readonly DateTimeOffset FixedSeedDate = new(2026, 8, 8, 9, 0, 0, TimeSpan.Zero);
 
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly ApplicationDbContext _context;
@@ -42,7 +43,7 @@ internal sealed class DemoUsersSeeder : IDevelopmentDataSeeder
         }
 
         var requests = CreateRegisterUserFaker().Generate(DemoUsersCount);
-        var createdAt = _timeProvider.CurrentTimeUtc;
+        var createdAt = FixedSeedDate;
         var seededCount = 0;
 
         foreach (var request in requests)
@@ -88,7 +89,6 @@ internal sealed class DemoUsersSeeder : IDevelopmentDataSeeder
             _context.UserProfiles.Add(userProfile);
 
             seededCount++;
-            createdAt = createdAt.AddMinutes(5);
         }
 
         _logger.LogInformation(

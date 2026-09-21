@@ -1,6 +1,7 @@
 using FluentAssertions;
 using GameHub.Application.Abstractions.Data;
 using GameHub.Application.Abstractions.Identity;
+using GameHub.Web.API.IntegrationTests.Helpers;
 using GameHub.Contracts.Identity;
 using GameHub.Abstractions.Primitives;
 using GameHub.Infrastructure.Identity.Models;
@@ -103,8 +104,9 @@ public class SignUpTests(CustomWebApplicationFactory factory) : IAsyncLifetime
         var httpResponse = await factory.HttpClient.PostAsJsonAsync("api/identity/auth/register", request);
         httpResponse.StatusCode.Should().Be(HttpStatusCode.BadRequest);
 
-        var errorResult = await httpResponse.Content.ReadFromJsonAsync<Error>();
-        errorResult.Should().Be(IdentityErrors.EmailAlreadyExists);
+        await httpResponse.ShouldBeProblemAsync(
+            IdentityErrors.EmailAlreadyExists,
+            (int)HttpStatusCode.BadRequest);
     }
 
 
@@ -135,8 +137,9 @@ public class SignUpTests(CustomWebApplicationFactory factory) : IAsyncLifetime
         var httpResponse = await factory.HttpClient.PostAsJsonAsync("api/identity/auth/register", request);
         httpResponse.StatusCode.Should().Be(HttpStatusCode.BadRequest);
 
-        var errorResult = await httpResponse.Content.ReadFromJsonAsync<Error>();
-        errorResult.Should().Be(IdentityErrors.UsernameAlreadyExists);
+        await httpResponse.ShouldBeProblemAsync(
+            IdentityErrors.UsernameAlreadyExists,
+            (int)HttpStatusCode.BadRequest);
     }
 
 

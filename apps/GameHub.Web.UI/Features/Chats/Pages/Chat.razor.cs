@@ -81,6 +81,7 @@ public partial class Chat : ComponentBase, IAsyncDisposable
     private readonly List<ChatMemberViewModel> Members = new();
     private readonly List<IDisposable> _hubSubscriptions = new();
     private readonly CancellationTokenSource _presenceRefreshCancellation = new();
+    private readonly CancellationTokenSource _lifetimeCancellation = new();
     private Task? _presenceRefreshTask;
 
     private ElementReference _messagesContainerRef;
@@ -138,7 +139,7 @@ public partial class Chat : ComponentBase, IAsyncDisposable
             !_isMessagesLoading)
         {
             _initialMessagesScrolled = true;
-            await Task.Delay(100);
+            await Task.Delay(100, _lifetimeCancellation.Token);
             await ScrollMessagesToBottomAsync(smooth: false);
             _isMessagesNearBottom = true;
         }
@@ -228,8 +229,12 @@ public partial class Chat : ComponentBase, IAsyncDisposable
         await LoadHeaderAsync();
         await LoadInitialMessagesAsync();
         await LoadInitialMembersAsync();
-        await HubConnection.InvokeAsync(GameHubConstants.SignalR.JoinChat, ChatId);
-        await HubConnection.InvokeAsync(GameHubConstants.SignalR.UpdatePresence);
+        await HubConnection
+            .InvokeAsync(GameHubConstants.SignalR.JoinChat, ChatId)
+            .WaitAsync(_lifetimeCancellation.Token);
+        await HubConnection.InvokeAsync(
+            GameHubConstants.SignalR.UpdatePresence,
+            _lifetimeCancellation.Token);
     }
 
     private async Task LoadHeaderAsync()
@@ -238,7 +243,7 @@ public partial class Chat : ComponentBase, IAsyncDisposable
         _headerError = null;
         await InvokeAsync(StateHasChanged);
 
-        var result = await ChatService.GetByIdAsync(ChatId);
+        var result = await ChatService.GetByIdAsync(ChatId, _lifetimeCancellation.Token);
 
         if (result.IsFailure)
         {
@@ -267,7 +272,7 @@ public partial class Chat : ComponentBase, IAsyncDisposable
         Messages.Clear();
         _messagesNextCursor = null;
 
-        var result = await ChatService.GetMessagesAsync(ChatId, MessagesPageSize);
+        var result = await ChatService.GetMessagesAsync(ChatId, MessagesPageSize, cancellationToken: _lifetimeCancellation.Token);
 
         if (result.IsFailure)
         {
@@ -296,7 +301,7 @@ public partial class Chat : ComponentBase, IAsyncDisposable
         Members.Clear();
         _membersNextCursor = null;
 
-        var result = await ChannelsService.GetParticipantsAsync(ChatId, MembersPageSize);
+        var result = await ChannelsService.GetParticipantsAsync(ChatId, MembersPageSize, cancellationToken: _lifetimeCancellation.Token);
 
         if (result.IsFailure)
         {
@@ -364,7 +369,7 @@ public partial class Chat : ComponentBase, IAsyncDisposable
                 "chatChannelPage.getScrollHeight",
                 _messagesContainerRef);
 
-            var result = await ChatService.GetMessagesAsync(ChatId, MessagesPageSize, _messagesNextCursor);
+            var result = await ChatService.GetMessagesAsync(ChatId, MessagesPageSize, _messagesNextCursor, _lifetimeCancellation.Token);
 
             if (result.IsFailure)
             {
@@ -412,7 +417,7 @@ public partial class Chat : ComponentBase, IAsyncDisposable
         _membersPagingError = null;
         await InvokeAsync(StateHasChanged);
 
-        var result = await ChannelsService.GetParticipantsAsync(ChatId, MembersPageSize, _membersNextCursor);
+        var result = await ChannelsService.GetParticipantsAsync(ChatId, MembersPageSize, _membersNextCursor, _lifetimeCancellation.Token);
 
         if (result.IsFailure)
         {
@@ -459,7 +464,7 @@ public partial class Chat : ComponentBase, IAsyncDisposable
         await InvokeAsync(StateHasChanged);
 
         var request = new SendMessageRequest(ChatId, normalizedContent);
-        var result = await ChatService.SendMessageAsync(request);
+        var result = await ChatService.SendMessageAsync(request, _lifetimeCancellation.Token);
 
         if (result.IsFailure)
         {
@@ -510,7 +515,7 @@ public partial class Chat : ComponentBase, IAsyncDisposable
     {
         try
         {
-            await ChatService.MarkChatAsReadAsync(ChatId);
+            await ChatService.MarkChatAsReadAsync(ChatId, _lifetimeCancellation.Token);
         }
         catch
         {
@@ -642,7 +647,7 @@ public partial class Chat : ComponentBase, IAsyncDisposable
                 Members.ForEach(x => x.PresenceStatus = GetPresenceStatus(x.LastActive));
                 Members.Sort(ChatMemberViewModel.Comparer.Instance);
 
-                await HubConnection.InvokeAsync(GameHubConstants.SignalR.UpdatePresence);
+                await HubConnection.InvokeAsync(GameHubConstants.SignalR.UpdatePresence, cancellationToken);
 
                 await InvokeAsync(StateHasChanged);
             }
@@ -691,6 +696,7 @@ public partial class Chat : ComponentBase, IAsyncDisposable
 
     public async ValueTask DisposeAsync()
     {
+        await _lifetimeCancellation.CancelAsync();
         await _presenceRefreshCancellation.CancelAsync();
 
         if (_presenceRefreshTask is not null)
@@ -699,6 +705,7 @@ public partial class Chat : ComponentBase, IAsyncDisposable
         }
 
         _presenceRefreshCancellation.Dispose();
+        _lifetimeCancellation.Dispose();
 
         foreach (var subscription in _hubSubscriptions)
         {

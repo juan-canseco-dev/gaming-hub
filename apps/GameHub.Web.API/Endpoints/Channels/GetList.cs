@@ -17,7 +17,7 @@ public class GetList : ICarterModule
         {
             var query = new Query();
             var result = await mediator.Send(query, cancellationToken);
-            if (result.IsFailure) return Results.BadRequest(result.Error);
+            if (result.IsFailure) return result.Error.ToProblem(StatusCodes.Status400BadRequest);
             return Results.Ok(result.Value);
         })
         .RequireAuthorization()

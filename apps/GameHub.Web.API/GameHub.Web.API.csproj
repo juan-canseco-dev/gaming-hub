@@ -22,6 +22,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\GameHub.Infrastructure\GameHub.Infrastructure.csproj" />
+    <ProjectReference Include="..\GameHub.Web.UI\GameHub.Web.UI.csproj" />
   </ItemGroup>
 
 </Project>

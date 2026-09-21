@@ -1,10 +1,10 @@
-﻿using GameHub.Abstractions.Pagination;
+using GameHub.Abstractions.Pagination;
 using GameHub.Abstractions.Primitives;
 using GameHub.Contracts.Channels;
 using GameHub.Contracts.Profile;
 using GameHub.Web.UI.Features.Channels.Services.Interfaces;
 using GameHub.Web.UI.Features.Chats.Models;
-using System.Net;
+using GameHub.Web.UI.Infrastructure.Http;
 using System.Net.Http.Json;
 
 namespace GameHub.Web.UI.Features.Channels.Services;
@@ -20,80 +20,60 @@ public class ChannelsService : IChannelsService
         _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
     }
 
-    public async Task<Result> JoinAsync(Guid chatId)
+    public async Task<Result> JoinAsync(Guid chatId, CancellationToken cancellationToken = default)
     {
         var request = new JoinChatRequest(chatId);
         var response = await _httpClient.PostAsJsonAsync(
            requestUri: "/api/channels/join",
-           value: request
+           value: request,
+           cancellationToken: cancellationToken
         );
         if (response.IsSuccessStatusCode)
         {
             return Result.Success();
         }
-        if (response.StatusCode == HttpStatusCode.NotFound || 
-            response.StatusCode == HttpStatusCode.BadRequest
-        )
-        {
-            var error = await response.Content.ReadFromJsonAsync<Error>();
-            return Result.Failure(error!);
-        } 
-        return Result.Failure(Error.InternalServerError);
+        return Result.Failure(await response.ReadProblemAsync());
     }
 
-    public async Task<Result<List<ChannelDto>>> GetListAsync()
+    public async Task<Result<List<ChannelDto>>> GetListAsync(CancellationToken cancellationToken = default)
     {
-        var result = await _httpClient.GetAsync("channels");
+        var result = await _httpClient.GetAsync("channels", cancellationToken);
         if (result.IsSuccessStatusCode)
         {
-            var channels = await result.Content.ReadFromJsonAsync<List<ChannelDto>>();
+            var channels = await result.Content.ReadFromJsonAsync<List<ChannelDto>>(cancellationToken: cancellationToken);
             return Result.Success(channels!);
         }
-        if (result.StatusCode == HttpStatusCode.BadRequest)
-        {
-            var error = await result.Content.ReadFromJsonAsync<Error>();
-            return Result.Failure<List<ChannelDto>>(error!);
-        }
-        return Result.Failure<List<ChannelDto>>(Error.InternalServerError);
+        return Result.Failure<List<ChannelDto>>(await result.ReadProblemAsync());
     }
 
     public async Task<Result<CursorPage<UserDto>>> GetParticipantsAsync(
         Guid chatId, 
         int limit = 50, 
-        string? cursor = null
+        string? cursor = null,
+        CancellationToken cancellationToken = default
     )
     {
         var uri = cursor is null
            ? $"chat/{chatId}/members?limit={limit}"
            : $"chat/{chatId}/members?limit={limit}&cursor={cursor}";
 
-        var result = await _httpClient.GetAsync(uri);
+        var result = await _httpClient.GetAsync(uri, cancellationToken);
         if (result.IsSuccessStatusCode)
         {
-            var page = await result.Content.ReadFromJsonAsync<CursorPage<UserDto>>();
+            var page = await result.Content.ReadFromJsonAsync<CursorPage<UserDto>>(cancellationToken: cancellationToken);
             return Result.Success(page!);
         }
-        if (result.StatusCode == HttpStatusCode.BadRequest)
-        {
-            var error = await result.Content.ReadFromJsonAsync<Error>();
-            return Result.Failure<CursorPage<UserDto>>(error!);
-        }
-        return Result.Failure<CursorPage<UserDto>>(Error.InternalServerError);
+        return Result.Failure<CursorPage<UserDto>>(await result.ReadProblemAsync());
     }
 
-    public async Task<Result<int>> GetParticipantsCountAsync(Guid chatId)
+    public async Task<Result<int>> GetParticipantsCountAsync(Guid chatId, CancellationToken cancellationToken = default)
     {
-        var response = await _httpClient.GetAsync($"chat/{chatId}/members/count");
+        var response = await _httpClient.GetAsync($"chat/{chatId}/members/count", cancellationToken);
         if (response.IsSuccessStatusCode) 
         {
-            var count = await response.Content.ReadFromJsonAsync<int>();
+            var count = await response.Content.ReadFromJsonAsync<int>(cancellationToken: cancellationToken);
             return Result.Success(count);
         }
-        if (response.StatusCode == HttpStatusCode.BadRequest)
-        {
-            var error = await response.Content.ReadFromJsonAsync<Error>();
-            return Result.Failure<int>(error!);
-        }
-        return Result.Failure<int>(Error.InternalServerError);
+        return Result.Failure<int>(await response.ReadProblemAsync());
     }
 }

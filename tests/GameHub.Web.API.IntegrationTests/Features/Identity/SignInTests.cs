@@ -1,5 +1,6 @@
 using FluentAssertions;
 using GameHub.Application.Abstractions.Identity;
+using GameHub.Web.API.IntegrationTests.Helpers;
 using GameHub.Contracts.Identity;
 using GameHub.Abstractions.Primitives;
 using GameHub.Infrastructure.Identity.Models;
@@ -93,8 +94,8 @@ public class SignInTests(CustomWebApplicationFactory factory) : IAsyncLifetime
         var httpResponse = await factory.HttpClient.PostAsJsonAsync("api/identity/auth", request);
         httpResponse.StatusCode.Should().Be(HttpStatusCode.BadRequest);
 
-        var errorResult = await httpResponse.Content.ReadFromJsonAsync<Error>();
-        errorResult.Should().NotBeNull();
-        errorResult.Should().Be(IdentityErrors.InvalidCredentials);
+        await httpResponse.ShouldBeProblemAsync(
+            IdentityErrors.InvalidCredentials,
+            (int)HttpStatusCode.BadRequest);
     }
 }

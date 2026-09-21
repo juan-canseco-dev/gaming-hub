@@ -49,8 +49,7 @@ public class JwtProvider : IJwtProvider
             signingCredentials
         );
 
-        var tokenValue = new JwtSecurityTokenHandler().WriteToken(token);
-
-        return await Task.FromResult(tokenValue);
+        cancellationToken.ThrowIfCancellationRequested();
+        return new JwtSecurityTokenHandler().WriteToken(token);
     }
 }

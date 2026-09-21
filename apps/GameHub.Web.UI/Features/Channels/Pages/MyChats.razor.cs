@@ -24,10 +24,11 @@ public partial class MyChats : ComponentBase, IAsyncDisposable
     private List<ChatViewModel> _channels = new();
     private bool _isLoading = true;
     private bool _hasError = false;
+    private readonly CancellationTokenSource _lifetimeCancellation = new();
 
     private async Task<int> GetUnreadCount(Guid chatId, int previousUnreadCount)
     {
-        var result = await ChatService.GetUnreadMesasgesCount(chatId);
+        var result = await ChatService.GetUnreadMesasgesCount(chatId, _lifetimeCancellation.Token);
         return result.IsSuccess ? result.Value : previousUnreadCount;
     }
 
@@ -70,9 +71,9 @@ public partial class MyChats : ComponentBase, IAsyncDisposable
         _isLoading = true;
         _hasError = false;
 
-        await Task.Delay(700);
+        await Task.Delay(700, _lifetimeCancellation.Token);
 
-        var result = await ChatService.GetListAsync();
+        var result = await ChatService.GetListAsync(_lifetimeCancellation.Token);
 
         if (result.IsFailure)
         {
@@ -129,10 +130,12 @@ public partial class MyChats : ComponentBase, IAsyncDisposable
             .Distinct()
             .ToList();
 
-        var tasks = chatIds
-            .Select(chatId => HubConnection.InvokeAsync(GameHubConstants.SignalR.JoinChat, chatId));
-
-        await Task.WhenAll(tasks);
+        foreach (var chatId in chatIds)
+        {
+            await HubConnection
+                .InvokeAsync(GameHubConstants.SignalR.JoinChat, chatId)
+                .WaitAsync(_lifetimeCancellation.Token);
+        }
     }
 
     private async Task LeaveChannels(List<ChatViewModel> chats)
@@ -149,6 +152,14 @@ public partial class MyChats : ComponentBase, IAsyncDisposable
 
     public async ValueTask DisposeAsync()
     {
-        await LeaveChannels(_channels);
+        await _lifetimeCancellation.CancelAsync();
+        try
+        {
+            await LeaveChannels(_channels);
+        }
+        finally
+        {
+            _lifetimeCancellation.Dispose();
+        }
     }
 }

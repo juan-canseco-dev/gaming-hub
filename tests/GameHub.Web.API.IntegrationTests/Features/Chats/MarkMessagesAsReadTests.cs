@@ -79,9 +79,9 @@ public class MarkMessagesAsReadTests(CustomWebApplicationFactory factory) : IAsy
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
 
-        var error = await response.Content.ReadFromJsonAsync<Error>();
-        error.Should().NotBeNull();
-        error!.Code.Should().Be(ChatErrors.NotParticipant(user.Id).Code);
+        await response.ShouldBeProblemAsync(
+            ChatErrors.NotParticipant(user.Id),
+            (int)HttpStatusCode.BadRequest);
     }
 
     [Fact]

@@ -1,7 +1,7 @@
-﻿using GameHub.Abstractions.Pagination;
+using GameHub.Abstractions.Pagination;
 using GameHub.Abstractions.Primitives;
 using GameHub.Contracts.Chats;
-using System.Net;
+using GameHub.Web.UI.Infrastructure.Http;
 using System.Net.Http.Json;
 using GameHub.Web.UI.Features.Chats.Models;
 using GameHub.Web.UI.Features.Chats.Services.Interfaces;
@@ -17,151 +17,103 @@ public class ChatService : IChatService
         _httpClient = httpClient ?? throw new ArgumentNullException(nameof(httpClient));
     }
 
-    public async Task<Result> MarkChatAsReadAsync(Guid chatId)
+    public async Task<Result> MarkChatAsReadAsync(Guid chatId, CancellationToken cancellationToken = default)
     {
-        var response = await _httpClient.PostAsync($"chats/{chatId}/read", content: null);
+        var response = await _httpClient.PostAsync($"chats/{chatId}/read", content: null, cancellationToken);
         if (response.IsSuccessStatusCode)
         {
             return Result.Success();
         }
-        if (response.StatusCode == HttpStatusCode.NotFound ||
-          response.StatusCode == HttpStatusCode.BadRequest
-        )
-        {
-            var error = await response.Content.ReadFromJsonAsync<Error>();
-            return Result.Failure(error!);
-        }
-        return Result.Failure(Error.InternalServerError);
+        return Result.Failure(await response.ReadProblemAsync());
     }
 
-    public async Task<Result<MessageDto>> SendMessageAsync(SendMessageRequest request)
+    public async Task<Result<MessageDto>> SendMessageAsync(SendMessageRequest request, CancellationToken cancellationToken = default)
     {
         var response = await _httpClient.PostAsJsonAsync(
             requestUri: $"chats/messages",
-            value: request
+            value: request,
+            cancellationToken: cancellationToken
         );
 
         if (response.IsSuccessStatusCode)
         {
-            var message = await response.Content.ReadFromJsonAsync<MessageDto>();   
+            var message = await response.Content.ReadFromJsonAsync<MessageDto>(cancellationToken: cancellationToken);
             return Result.Success(message!);
         }
-        if (response.StatusCode == HttpStatusCode.NotFound ||
-          response.StatusCode == HttpStatusCode.BadRequest
-        )
-        {
-            var error = await response.Content.ReadFromJsonAsync<Error>();
-            return Result.Failure<MessageDto>(error!);
-        }
-        return Result.Failure<MessageDto>(Error.InternalServerError);
+        return Result.Failure<MessageDto>(await response.ReadProblemAsync());
     }
 
-    public async Task<Result<ChatDto>> GetByIdAsync(Guid chatId)
+    public async Task<Result<ChatDto>> GetByIdAsync(Guid chatId, CancellationToken cancellationToken = default)
     {
-        var response = await _httpClient.GetAsync($"chats/{chatId}");
+        var response = await _httpClient.GetAsync($"chats/{chatId}", cancellationToken);
         if (response.IsSuccessStatusCode)
         {
-            var chat = await response.Content.ReadFromJsonAsync<ChatDto>();
+            var chat = await response.Content.ReadFromJsonAsync<ChatDto>(cancellationToken: cancellationToken);
             return Result.Success(chat!);
         }
-        if (response.StatusCode == HttpStatusCode.NotFound)
-        {
-            var error = await response.Content.ReadFromJsonAsync<Error>();
-            return Result.Failure<ChatDto>(error!);
-        }
-        return Result.Failure<ChatDto>(Error.InternalServerError);
+        return Result.Failure<ChatDto>(await response.ReadProblemAsync());
     }
 
-    public async Task<Result<List<ChatDto>>> GetListAsync()
+    public async Task<Result<List<ChatDto>>> GetListAsync(CancellationToken cancellationToken = default)
     {
-        var response = await _httpClient.GetAsync("chats");
+        var response = await _httpClient.GetAsync("chats", cancellationToken);
         if(response.IsSuccessStatusCode)
         {
-            var chats = await response.Content.ReadFromJsonAsync<List<ChatDto>>();
+            var chats = await response.Content.ReadFromJsonAsync<List<ChatDto>>(cancellationToken: cancellationToken);
             return Result.Success(chats!);
         }
-        if (response.StatusCode == HttpStatusCode.BadRequest)
-        {
-            var error = await response.Content.ReadFromJsonAsync<Error>();
-            return Result.Failure<List<ChatDto>>(error!);
-        }
-        return Result.Failure<List<ChatDto>>(Error.InternalServerError);
+        return Result.Failure<List<ChatDto>>(await response.ReadProblemAsync());
     }
 
-    public async Task<Result<CursorPage<MessageDto>>> GetMessagesAsync(Guid chatId, int limit = 50, string? cursor = null)
+    public async Task<Result<CursorPage<MessageDto>>> GetMessagesAsync(Guid chatId, int limit = 50, string? cursor = null, CancellationToken cancellationToken = default)
     {
         var uri = cursor is null
             ? $"chat/{chatId}/messages?limit={limit}"
             : $"chat/{chatId}/messages?limit={limit}&cursor={cursor}";
 
-        var response = await _httpClient.GetAsync(uri);
+        var response = await _httpClient.GetAsync(uri, cancellationToken);
         
         if (response.IsSuccessStatusCode)
         {
-            var page = await response.Content.ReadFromJsonAsync<CursorPage<MessageDto>>();
+            var page = await response.Content.ReadFromJsonAsync<CursorPage<MessageDto>>(cancellationToken: cancellationToken);
             return Result.Success(page!);
         }
-        if (response.StatusCode == HttpStatusCode.NotFound ||
-            response.StatusCode == HttpStatusCode.BadRequest
-        )
-        {
-            var error = await response.Content.ReadFromJsonAsync<Error>();
-            return Result.Failure<CursorPage<MessageDto>>(error!);
-        }
-        return Result.Failure<CursorPage<MessageDto>>(Error.InternalServerError);
+        return Result.Failure<CursorPage<MessageDto>>(await response.ReadProblemAsync());
     }
 
-    public async Task<Result<MessageDto>> GetMessageAsync(Guid messageId)
+    public async Task<Result<MessageDto>> GetMessageAsync(Guid messageId, CancellationToken cancellationToken = default)
     {
-        var response = await _httpClient.GetAsync($"chat/messages/{messageId}");
+        var response = await _httpClient.GetAsync($"chat/messages/{messageId}", cancellationToken);
         
 
         if (response.IsSuccessStatusCode)
         {
-            var message = await response.Content.ReadFromJsonAsync<MessageDto>();
+            var message = await response.Content.ReadFromJsonAsync<MessageDto>(cancellationToken: cancellationToken);
             return Result.Success(message!); 
         }
 
-        if (response.StatusCode == HttpStatusCode.NotFound)
-        {
-            var error = await response.Content.ReadFromJsonAsync<Error>();
-            return Result.Failure<MessageDto>(error!);
-        }
-
-        return Result.Failure<MessageDto>(Error.InternalServerError);
+        return Result.Failure<MessageDto>(await response.ReadProblemAsync());
     }
-    public async Task<Result<int>> GetUnreadMesasgesCount(Guid chatId)
+    public async Task<Result<int>> GetUnreadMesasgesCount(Guid chatId, CancellationToken cancellationToken = default)
     {
 
-        var response = await _httpClient.GetAsync($"chats/{chatId}/messages/unread/count");
+        var response = await _httpClient.GetAsync($"chats/{chatId}/messages/unread/count", cancellationToken);
         if (response.IsSuccessStatusCode)
         {
-            var count = await response.Content.ReadFromJsonAsync<int>();
+            var count = await response.Content.ReadFromJsonAsync<int>(cancellationToken: cancellationToken);
             return Result.Success(count);
         }
-        if (response.StatusCode == HttpStatusCode.NotFound ||
-            response.StatusCode == HttpStatusCode.BadRequest
-        )
-        {
-            var error = await response.Content.ReadFromJsonAsync<Error>();
-            return Result.Failure<int>(error!);
-        }
-        return Result.Failure<int>(Error.InternalServerError);
+        return Result.Failure<int>(await response.ReadProblemAsync());
     }
 
-    public async Task<Result<int>> GetTotalUnreadMesasgesCount()
+    public async Task<Result<int>> GetTotalUnreadMesasgesCount(CancellationToken cancellationToken = default)
     {
-        var response = await _httpClient.GetAsync("chats/unread-count");
+        var response = await _httpClient.GetAsync("chats/unread-count", cancellationToken);
         if (response.IsSuccessStatusCode)
         {
-            var unreadCount = await response.Content.ReadFromJsonAsync<int>();
+            var unreadCount = await response.Content.ReadFromJsonAsync<int>(cancellationToken: cancellationToken);
             return Result.Success(unreadCount);
         }
-        if (response.StatusCode == HttpStatusCode.BadRequest)
-        {
-            var error = await response.Content.ReadFromJsonAsync<Error>();
-            return Result.Failure<int>(error!);
-        }
-        return Result.Failure<int>(Error.InternalServerError);
+        return Result.Failure<int>(await response.ReadProblemAsync());
     }
 }

@@ -20,7 +20,7 @@ public class GetChat : ICarterModule
 
             return result.IsSuccess
                 ? Results.Ok(result.Value)
-                : Results.NotFound(result.Error);
+                : result.Error.ToProblem(StatusCodes.Status404NotFound);
         })
                 .WithName(nameof(GetChatById))
                 .WithTags(nameof(Chat))

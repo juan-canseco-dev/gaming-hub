@@ -17,14 +17,6 @@ public class UnauthorizedInterceptor : DelegatingHandler
         _navManager = navManager;
     }
 
-    protected override HttpResponseMessage Send(
-        HttpRequestMessage request, 
-        CancellationToken cancellationToken
-    )
-    {
-        return SendAsync(request, cancellationToken).Result;
-    }
-
     protected async override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
         var response = await base.SendAsync(request, cancellationToken);

@@ -65,9 +65,9 @@ public class GetUnreadMessagesCountTests(CustomWebApplicationFactory factory) : 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
 
-        var error = await response.Content.ReadFromJsonAsync<Error>();
-        error.Should().NotBeNull();
-        error!.Code.Should().Be(ChatErrors.ChatGroupNotFound(chatId).Code);
+        await response.ShouldBeProblemAsync(
+            ChatErrors.ChatGroupNotFound(chatId),
+            (int)HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -89,9 +89,9 @@ public class GetUnreadMessagesCountTests(CustomWebApplicationFactory factory) : 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
 
-        var error = await response.Content.ReadFromJsonAsync<Error>();
-        error.Should().NotBeNull();
-        error!.Code.Should().Be(ChatErrors.NotParticipant(user.Id).Code);
+        await response.ShouldBeProblemAsync(
+            ChatErrors.NotParticipant(user.Id),
+            (int)HttpStatusCode.BadRequest);
     }
 
     [Fact]

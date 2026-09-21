@@ -21,7 +21,7 @@ public class GetParticipantCount : ICarterModule
             );
 
             var result = await mediator.Send(query, cancellationToken);
-            if (result.IsFailure) return Results.NotFound(result.Error);
+            if (result.IsFailure) return result.Error.ToProblem(StatusCodes.Status404NotFound);
             return Results.Ok(result.Value);
         })
         .RequireAuthorization()

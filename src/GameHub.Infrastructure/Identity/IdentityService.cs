@@ -8,6 +8,8 @@ using GameHub.Infrastructure.Data;
 using GameHub.Infrastructure.Identity.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore.Storage;
+using Microsoft.EntityFrameworkCore;
 
 namespace GameHub.Infrastructure.Identity;
 
@@ -38,9 +40,11 @@ public class IdentityService : IIdentityService
     }
     public async Task<Result<GetTokenResponse>> GetTokenAsync(GetTokenRequest request, CancellationToken cancellationToken = default)
     {
+        cancellationToken.ThrowIfCancellationRequested();
         _logger.LogDebug("Starting authentication");
 
         var user = await _userManager.FindByEmailAsync(request.Email);
+        cancellationToken.ThrowIfCancellationRequested();
 
         if (user is null)
         {
@@ -49,6 +53,7 @@ public class IdentityService : IIdentityService
         }
 
         var result = await _signInManager.CheckPasswordSignInAsync(user, request.Password, false);
+        cancellationToken.ThrowIfCancellationRequested();
 
         if (!result.Succeeded)
         {
@@ -68,9 +73,11 @@ public class IdentityService : IIdentityService
 
     public async Task<Result<Guid>> RegisterAsync(RegisterUserRequest request, CancellationToken cancellationToken = default)
     {
+        cancellationToken.ThrowIfCancellationRequested();
         _logger.LogDebug("Starting user registration");
 
         var userWithSameEmail = await _userManager.FindByEmailAsync(request.Email);
+        cancellationToken.ThrowIfCancellationRequested();
         if (userWithSameEmail is not null)
         {
             _logger.LogInformation(
@@ -80,6 +87,7 @@ public class IdentityService : IIdentityService
         }
 
         var userWithSameUsername = await _userManager.FindByNameAsync(request.Username);
+        cancellationToken.ThrowIfCancellationRequested();
         if (userWithSameUsername is not null)
         {
             _logger.LogInformation(
@@ -102,6 +110,23 @@ public class IdentityService : IIdentityService
             CreatedAt = createdAt
         };
 
+        var executionStrategy = _context.Database.CreateExecutionStrategy();
+
+        return await executionStrategy.ExecuteAsync(() => RegisterInTransactionAsync(
+            newIdentityUser,
+            request,
+            createdAt,
+            cancellationToken));
+    }
+
+    private async Task<Result<Guid>> RegisterInTransactionAsync(
+        ApplicationUser newIdentityUser,
+        RegisterUserRequest request,
+        DateTimeOffset createdAt,
+        CancellationToken cancellationToken)
+    {
+        var newUserId = newIdentityUser.Id;
+
         await using var transaction = await _context.Database.BeginTransactionAsync(cancellationToken);
 
         _logger.LogDebug("Started user registration transaction for UserId {UserId}", newUserId);
@@ -109,6 +134,7 @@ public class IdentityService : IIdentityService
         try
         {
             var result = await _userManager.CreateAsync(newIdentityUser, request.Password);
+            cancellationToken.ThrowIfCancellationRequested();
 
             if (!result.Succeeded)
             {

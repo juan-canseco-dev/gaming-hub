@@ -1,4 +1,4 @@
-﻿using GameHub.Contracts.Presence;
+﻿ using GameHub.Contracts.Presence;
 
 namespace GameHub.Contracts.Notifications;
 

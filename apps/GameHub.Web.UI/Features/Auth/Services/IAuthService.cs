@@ -6,6 +6,6 @@ namespace GameHub.Web.UI.Features.Auth.Services;
 
 public interface IAuthService
 {
-    Task<Result> RegisterAsync(RegisterUserRequest request);
-    Task<Result<UserDetails>> LoginAsync(GetTokenRequest request);
+    Task<Result> RegisterAsync(RegisterUserRequest request, CancellationToken cancellationToken = default);
+    Task<Result<UserDetails>> LoginAsync(GetTokenRequest request, CancellationToken cancellationToken = default);
 }
