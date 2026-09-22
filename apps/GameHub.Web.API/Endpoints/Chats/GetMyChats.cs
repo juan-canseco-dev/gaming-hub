@@ -4,6 +4,7 @@ using GameHub.Domain.Chats;
 using GameHub.Domain.Channels;
 using MediatR;
 using static GameHub.Application.Features.Chats.Queries.GetMyChats.GetUserChats;
+using GameHub.Contracts.Chats;
 
 namespace GameHub.Web.API.Endpoints.Chats;
 
@@ -23,8 +24,10 @@ public class GetMyChats : ICarterModule
         })
         .WithName(nameof(GetUserChats))
         .WithTags(nameof(Chat))
-        .Produces(StatusCodes.Status200OK)
-        .Produces(StatusCodes.Status400BadRequest)
+        .WithSummary("List my chats")
+        .WithDescription("Returns the chats joined by the authenticated user, including unread counts and last-message previews.")
+        .Produces<IReadOnlyCollection<ChatDto>>(StatusCodes.Status200OK)
+        .ProducesProblem(StatusCodes.Status400BadRequest)
         .RequireAuthorization();
     }
 }

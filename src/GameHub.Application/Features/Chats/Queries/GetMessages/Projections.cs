@@ -1,5 +1,4 @@
 using GameHub.Contracts.Chats;
-using GameHub.Contracts.Profile;
 using GameHub.Domain.Chats;
 using GameHub.Domain.Channels;
 using GameHub.Domain.Users;
@@ -28,7 +27,7 @@ public static class GetMessagesByChatProjections
                 IsSystem = message.Type == ChatMessageType.System,
                 User = user == null
                     ? null
-                    : new UserDto
+                    : new MessageAuthorDto
                     {
                         Id = user.Id,
                         Username = user.Username,

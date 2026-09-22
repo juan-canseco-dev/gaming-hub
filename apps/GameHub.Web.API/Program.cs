@@ -11,6 +11,7 @@ using Serilog.Events;
 using GameHub.Web.API.ProblemDetails;
 using GameHub.Web.API.HealthChecks;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+using GameHub.Web.API.OpenApi;
 
 namespace GameHub.Web.API
 {
@@ -76,8 +77,7 @@ namespace GameHub.Web.API
                 builder.Services.AddCarter();
                 builder.Services.AddJwtAuthentication(builder.Configuration);
 
-                // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-                builder.Services.AddOpenApi();
+                builder.Services.AddGameHubOpenApi();
 
                 var corsSection = builder.Configuration.GetSection(CorsOptions.SectionName);
                 builder.Services.Configure<CorsOptions>(corsSection);
@@ -98,9 +98,21 @@ namespace GameHub.Web.API
                 var app = builder.Build();
 
                 // Configure the HTTP request pipeline.
-                if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Docker"))
+                if (app.Environment.IsDevelopment() ||
+                    app.Environment.IsEnvironment("Docker") ||
+                    app.Environment.IsEnvironment("IntegrationTesting"))
                 {
                     app.MapOpenApi();
+                    app.UseSwaggerUI(options =>
+                    {
+                        options.RoutePrefix = "swagger";
+                        options.SwaggerEndpoint("../openapi/v1.json", "GameHub API v1");
+                        options.DocumentTitle = "GameHub API";
+                        options.DisplayRequestDuration();
+                    });
+                }
+                if (app.Environment.IsDevelopment() || app.Environment.IsEnvironment("Docker"))
+                {
                     await app.ApplyMigrationsAsync();
                 }
                 if (!app.Environment.IsEnvironment("IntegrationTesting"))
@@ -133,16 +145,23 @@ namespace GameHub.Web.API
                 app.UseAuthentication();
                 app.UseAuthorization();
 
-                app.MapGet("/", () => "Welcome to Game Hub");
+                app.MapGet("/", () => "Welcome to Game Hub")
+                    .ExcludeFromDescription();
 
                 app.MapHealthChecks("/health/live", new HealthCheckOptions
                 {
                     Predicate = _ => false
-                });
+                })
+                    .WithSummary("Check API liveness")
+                    .WithDescription("Returns healthy when the API process can serve requests.")
+                    .WithTags("Health");
                 app.MapHealthChecks("/health/ready", new HealthCheckOptions
                 {
                     Predicate = registration => registration.Tags.Contains("ready")
-                });
+                })
+                    .WithSummary("Check API readiness")
+                    .WithDescription("Checks whether the API and its SQL Server dependency are ready to serve traffic.")
+                    .WithTags("Health");
 
                 app.MapHub<ChatHub>("/hubs/chat");
                 app.MapCarter();

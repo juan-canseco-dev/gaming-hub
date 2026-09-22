@@ -25,8 +25,10 @@ public class GetTotalUnreadMessagesCount : ICarterModule
             return Results.Ok(result.Value);
         })
         .RequireAuthorization()
-        .ProducesValidationProblem()
-        .Produces(StatusCodes.Status200OK)
+        .Produces<int>(StatusCodes.Status200OK)
+        .ProducesProblem(StatusCodes.Status400BadRequest)
+        .WithSummary("Get total unread messages")
+        .WithDescription("Returns the authenticated user's unread message count across all joined chats.")
         .WithName(nameof(GetTotalUnreadMessagesCount))
         .WithTags(nameof(Chat));
     }

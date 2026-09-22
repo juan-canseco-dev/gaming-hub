@@ -11,9 +11,10 @@ public class JoinChat : ICarterModule
     {
         app.MapPost("/api/channels/join", async (
                    IMediator mediator,
-                   JoinChatCommand.Command command,
+                   JoinChatRequest request,
                    CancellationToken cancellationToken) =>
         {
+            var command = new JoinChatCommand.Command(request.ChatId);
             var result = await mediator.Send(command, cancellationToken);
             if (result.IsFailure)
             {
@@ -30,10 +31,13 @@ public class JoinChat : ICarterModule
         .RequireAuthorization()
         .ProducesValidationProblem()
         .Produces(StatusCodes.Status200OK)
-        .Produces(StatusCodes.Status400BadRequest)
-        .Produces(StatusCodes.Status400BadRequest)
-        .Produces(StatusCodes.Status401Unauthorized)
+        .ProducesProblem(StatusCodes.Status400BadRequest)
+        .ProducesProblem(StatusCodes.Status404NotFound)
+        .WithSummary("Join a chat")
+        .WithDescription("Adds the authenticated user to the chat associated with a channel.")
         .WithName(nameof(JoinChat))
         .WithTags(nameof(Chat));
     }
+
+    internal sealed record JoinChatRequest(Guid ChatId);
 }

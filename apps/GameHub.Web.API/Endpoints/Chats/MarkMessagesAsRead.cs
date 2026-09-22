@@ -30,6 +30,11 @@ public class MarkMessagesAsRead : ICarterModule
             return Results.Ok();
         })
         .RequireAuthorization()
+        .Produces(StatusCodes.Status200OK)
+        .ProducesProblem(StatusCodes.Status400BadRequest)
+        .ProducesProblem(StatusCodes.Status404NotFound)
+        .WithSummary("Mark a chat as read")
+        .WithDescription("Advances the authenticated user's read position to the latest message in the chat.")
         .WithName(nameof(MarkMessagesAsRead))
         .WithTags(nameof(Chat));
     }

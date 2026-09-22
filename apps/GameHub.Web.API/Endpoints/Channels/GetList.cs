@@ -3,6 +3,7 @@ using GameHub.Application.Features.Channels.GetList;
 using GameHub.Domain.Channels;
 using MediatR;
 using static GameHub.Application.Features.Channels.GetList.GetChannels;
+using GameHub.Contracts.Channels;
 
 namespace GameHub.Web.API.Endpoints.Channels;
 
@@ -21,8 +22,10 @@ public class GetList : ICarterModule
             return Results.Ok(result.Value);
         })
         .RequireAuthorization()
-        .ProducesValidationProblem()
-        .Produces(StatusCodes.Status200OK)
+        .Produces<IReadOnlyCollection<ChannelDto>>(StatusCodes.Status200OK)
+        .ProducesProblem(StatusCodes.Status400BadRequest)
+        .WithSummary("List channels")
+        .WithDescription("Returns every available channel and whether the authenticated user has joined its chat.")
         .WithName(nameof(GetChannels))
         .WithTags(nameof(Channel));
     }

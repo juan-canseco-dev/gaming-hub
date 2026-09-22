@@ -1,6 +1,5 @@
 using GameHub.Application.Abstractions.Realtime.Chats;
 using GameHub.Contracts.Chats;
-using GameHub.Contracts.Profile;
 using GameHub.Application.Features.Chats.Consumers;
 using GameHub.Application.Features.Chats.Queries.GetMessage;
 using GameHub.Abstractions.Primitives;
@@ -50,7 +49,7 @@ public class ChatMessageSentConsumerTests
             Content = "Test message",
             CreatedAt = DateTime.UtcNow,
             IsSystem = false,
-            User = new UserDto
+            User = new MessageAuthorDto
             {
                 Id = Guid.NewGuid(),
                 Username = "juan",

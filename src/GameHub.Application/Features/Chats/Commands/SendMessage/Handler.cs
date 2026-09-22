@@ -9,7 +9,6 @@ using GameHub.EventBus.Contracts;
 using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using GameHub.Contracts.Chats;
-using GameHub.Contracts.Profile;
 
 namespace GameHub.Application.Features.Chats.Commands.SendMessage;
 
@@ -88,7 +87,7 @@ public static partial class ChatSendMessage
             return new MessageDto
             {
                 Id = messageResult.Value.Id,
-                User = new UserDto
+                User = new MessageAuthorDto
                 {
                     Id = userProfile.Id,
                     Email = userProfile.Email,

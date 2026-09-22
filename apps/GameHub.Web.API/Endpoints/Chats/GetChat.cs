@@ -4,6 +4,7 @@ using GameHub.Domain.Chats;
 using GameHub.Domain.Channels;
 using MediatR;
 using static GameHub.Application.Features.Chats.Queries.GetById.GetChatById;
+using GameHub.Contracts.Chats;
 
 namespace GameHub.Web.API.Endpoints.Chats;
 
@@ -24,8 +25,10 @@ public class GetChat : ICarterModule
         })
                 .WithName(nameof(GetChatById))
                 .WithTags(nameof(Chat))
-                .Produces(StatusCodes.Status200OK)
-                .Produces(StatusCodes.Status404NotFound)
+                .WithSummary("Get a chat")
+                .WithDescription("Returns one chat by its identifier for the authenticated user.")
+                .Produces<ChatDto>(StatusCodes.Status200OK)
+                .ProducesProblem(StatusCodes.Status404NotFound)
                 .RequireAuthorization();
     }
 }

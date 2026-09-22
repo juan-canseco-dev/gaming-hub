@@ -21,8 +21,10 @@ public class SignIn : ICarterModule
         )
         .AllowAnonymous()
         .ProducesValidationProblem()
-        .Produces(StatusCodes.Status200OK)
-        .Produces(StatusCodes.Status400BadRequest)
+        .Produces<GetTokenResponse>(StatusCodes.Status200OK)
+        .ProducesProblem(StatusCodes.Status400BadRequest)
+        .WithSummary("Sign in")
+        .WithDescription("Validates email and password credentials and returns a JWT for protected API and SignalR operations.")
         .WithName(nameof(SignIn))
         .WithTags("Auth");
     }

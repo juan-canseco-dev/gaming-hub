@@ -56,11 +56,14 @@ public class UpdateUserPresenceConsumer : IConsumer<UserPresenceUpdateEvent>
 
         var currentTime = _timeProvider.CurrentTimeUtc;
         var userPresence = new UserPresence(message.UserId, message.LastActive);
+
         var presence = new UserPresenceDto(
             message.UserId,
             message.LastActive,
             userPresence.GetStatus(currentTime).Name);
+        
         var onlineCutoff = UserPresence.GetOnlineCutoff(currentTime);
+        
         var onlineCounts = await (
                 from member in _context.ChatMembers
                 join memberPresence in _context.UserPresences on member.UserId equals memberPresence.UserId

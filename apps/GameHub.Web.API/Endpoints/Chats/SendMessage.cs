@@ -3,6 +3,7 @@ using GameHub.Application.Features.Chats.Commands.SendMessage;
 using GameHub.Domain.Chats;
 using GameHub.Domain.Channels;
 using MediatR;
+using GameHub.Contracts.Chats;
 
 namespace GameHub.Web.API.Endpoints.Chats;
 
@@ -12,9 +13,10 @@ public class SendMessage : ICarterModule
     {
         app.MapPost("/api/chats/messages", async (
                    IMediator mediator,
-                   ChatSendMessage.Command command,
+                   SendMessageRequest request,
                    CancellationToken cancellationToken) =>
         {
+            var command = new ChatSendMessage.Command(request.ChatId, request.Content);
             var result = await mediator.Send(command, cancellationToken);
             if (result.IsFailure)
             {
@@ -29,11 +31,14 @@ public class SendMessage : ICarterModule
         )
         .RequireAuthorization()
         .ProducesValidationProblem()
-        .Produces(StatusCodes.Status200OK)
-        .Produces(StatusCodes.Status400BadRequest)
-        .Produces(StatusCodes.Status404NotFound)
-        .Produces(StatusCodes.Status401Unauthorized)
+        .Produces<MessageDto>(StatusCodes.Status200OK)
+        .ProducesProblem(StatusCodes.Status400BadRequest)
+        .ProducesProblem(StatusCodes.Status404NotFound)
+        .WithSummary("Send a chat message")
+        .WithDescription("Creates a message in a chat joined by the authenticated user. Content is limited to 2,000 characters.")
         .WithName(nameof(SendMessage))
         .WithTags(nameof(Chat));
     }
+
+    internal sealed record SendMessageRequest(Guid ChatId, string Content);
 }

@@ -29,9 +29,11 @@ public class GetUnreadMessagesCount : ICarterModule
             return Results.Ok(result.Value);
         })
         .RequireAuthorization()
-        .ProducesValidationProblem()
-        .Produces(StatusCodes.Status200OK)
-        .Produces(StatusCodes.Status404NotFound)
+        .Produces<int>(StatusCodes.Status200OK)
+        .ProducesProblem(StatusCodes.Status400BadRequest)
+        .ProducesProblem(StatusCodes.Status404NotFound)
+        .WithSummary("Get unread messages for a chat")
+        .WithDescription("Returns the authenticated user's unread message count for one chat.")
         .WithName(nameof(GetUnreadMessagesCount))
         .WithTags(nameof(Chat));
     }

@@ -3,6 +3,7 @@ using GameHub.Application.Features.Chats.Queries.GetMessage;
 using GameHub.Domain.Chats;
 using GameHub.Domain.Channels;
 using MediatR;
+using GameHub.Contracts.Chats;
 
 namespace GameHub.Web.API.Endpoints.Chats;
 
@@ -25,9 +26,10 @@ public class GetMessage : ICarterModule
             return Results.Ok(result.Value);
         })
         .RequireAuthorization()
-        .ProducesValidationProblem()
-        .Produces(StatusCodes.Status200OK)
-        .Produces(StatusCodes.Status404NotFound)
+        .Produces<MessageDto>(StatusCodes.Status200OK)
+        .ProducesProblem(StatusCodes.Status404NotFound)
+        .WithSummary("Get a message")
+        .WithDescription("Returns one chat message by its identifier.")
         .WithName(nameof(GetMessage))
         .WithTags(nameof(Chat));
     }

@@ -3,6 +3,8 @@ using GameHub.Application.Features.Chats.Queries.GetMessages;
 using GameHub.Domain.Chats;
 using GameHub.Domain.Channels;
 using MediatR;
+using GameHub.Abstractions.Pagination;
+using GameHub.Contracts.Chats;
 
 namespace GameHub.Web.API.Endpoints.Chats;
 
@@ -30,9 +32,10 @@ public class GetMessages : ICarterModule
             return Results.Ok(result.Value);
         })
         .RequireAuthorization()
-        .ProducesValidationProblem()
-        .Produces(StatusCodes.Status200OK)
-        .Produces(StatusCodes.Status400BadRequest)  
+        .Produces<CursorPage<MessageDto>>(StatusCodes.Status200OK)
+        .ProducesProblem(StatusCodes.Status400BadRequest)
+        .WithSummary("List chat messages")
+        .WithDescription("Returns a newest-first cursor page of messages. Pass the returned next value as cursor to continue.")
         .WithName(nameof(GetMessages))
         .WithTags(nameof(Chat));
     }

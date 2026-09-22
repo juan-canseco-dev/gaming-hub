@@ -21,8 +21,10 @@ public class SignUp : ICarterModule
         )
         .AllowAnonymous()
         .ProducesValidationProblem()
-        .Produces(StatusCodes.Status200OK)
-        .Produces(StatusCodes.Status400BadRequest)
+        .Produces<Guid>(StatusCodes.Status200OK)
+        .ProducesProblem(StatusCodes.Status400BadRequest)
+        .WithSummary("Register a user")
+        .WithDescription("Creates an identity account and GameHub profile, then returns the new user identifier.")
         .WithName(nameof(SignUp))
         .WithTags("Auth");
     }

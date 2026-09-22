@@ -3,6 +3,8 @@ using GameHub.Domain.Chats;
 using GameHub.Domain.Channels;
 using GameHub.Application.Features.Chats.Queries.GetParticipants;
 using MediatR;
+using GameHub.Abstractions.Pagination;
+using GameHub.Contracts.Profile;
 
 namespace GameHub.Web.API.Endpoints.Chats;
 
@@ -29,9 +31,10 @@ public class GetParticipants : ICarterModule
             return Results.Ok(result.Value);
         })
         .RequireAuthorization()
-        .ProducesValidationProblem()
-        .Produces(StatusCodes.Status200OK)
-        .Produces(StatusCodes.Status400BadRequest)
+        .Produces<CursorPage<UserDto>>(StatusCodes.Status200OK)
+        .ProducesProblem(StatusCodes.Status400BadRequest)
+        .WithSummary("List chat participants")
+        .WithDescription("Returns a cursor page of chat members ordered by recent activity, username, and user identifier.")
         .WithName(nameof(GetParticipants))
         .WithTags(nameof(Chat));
     }

@@ -25,9 +25,10 @@ public class GetParticipantCount : ICarterModule
             return Results.Ok(result.Value);
         })
         .RequireAuthorization()
-        .ProducesValidationProblem()
-        .Produces(StatusCodes.Status200OK)
-        .Produces(StatusCodes.Status404NotFound)
+        .Produces<int>(StatusCodes.Status200OK)
+        .ProducesProblem(StatusCodes.Status404NotFound)
+        .WithSummary("Get the participant count")
+        .WithDescription("Returns the number of members in a chat.")
         .WithName(nameof(GetParticipantCount))
         .WithTags(nameof(Chat));
     }
